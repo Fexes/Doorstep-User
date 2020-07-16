@@ -3,21 +3,23 @@
 <plist version="1.0">
 <dict>
 	<key>CLIENT_ID</key>
-	<string>331974863267-7p66okdji4r0586gct4qpjk09042p89b.apps.googleusercontent.com</string>
+	<string>391131119962-38mf18kgck7i6cbulqrak326nqgn4rpe.apps.googleusercontent.com</string>
 	<key>REVERSED_CLIENT_ID</key>
-	<string>com.googleusercontent.apps.331974863267-7p66okdji4r0586gct4qpjk09042p89b</string>
+	<string>com.googleusercontent.apps.391131119962-38mf18kgck7i6cbulqrak326nqgn4rpe</string>
+	<key>ANDROID_CLIENT_ID</key>
+	<string>391131119962-k8tnqddsen2jahrm5a720lpt2bm8t483.apps.googleusercontent.com</string>
 	<key>API_KEY</key>
-	<string>AIzaSyDvsl0y6D8hEC0lkzneFoFfMu7TcZpueDk</string>
+	<string>AIzaSyCJPa2Cf3f__gOrC16ln1pmEJEMFThAkWI</string>
 	<key>GCM_SENDER_ID</key>
-	<string>331974863267</string>
+	<string>391131119962</string>
 	<key>PLIST_VERSION</key>
 	<string>1</string>
 	<key>BUNDLE_ID</key>
-	<string>com.naqel.naqelapp</string>
+	<string>com.doorstep.app</string>
 	<key>PROJECT_ID</key>
-	<string>naqel-transport-jobs</string>
+	<string>doorstep-fdb26</string>
 	<key>STORAGE_BUCKET</key>
-	<string>naqel-transport-jobs.appspot.com</string>
+	<string>doorstep-fdb26.appspot.com</string>
 	<key>IS_ADS_ENABLED</key>
 	<false></false>
 	<key>IS_ANALYTICS_ENABLED</key>
@@ -29,8 +31,8 @@
 	<key>IS_SIGNIN_ENABLED</key>
 	<true></true>
 	<key>GOOGLE_APP_ID</key>
-	<string>1:331974863267:ios:9baa76ff91246766b5d216</string>
+	<string>1:391131119962:ios:7800a1fb8c2e8cfcdcf363</string>
 	<key>DATABASE_URL</key>
-	<string>https://naqel-transport-jobs.firebaseio.com</string>
+	<string>https://doorstep-fdb26.firebaseio.com</string>
 </dict>
 </plist>

@@ -5,12 +5,11 @@ import 'dart:math';
 import 'package:country_list_pick/country_list_pick.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter_spinkit/flutter_spinkit.dart';
-import 'package:naqelapp/utilts/UI/toast_utility.dart';
+import 'package:Doorstep/utilts/UI/toast_utility.dart';
 import 'package:flutter/material.dart';
-import 'package:naqelapp/styles/styles.dart';
-import 'package:naqelapp/screens/auth/sign-in.dart';
+import 'package:Doorstep/styles/styles.dart';
+import 'package:Doorstep/screens/auth/sign-in.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
-import '../../utilts/URLs.dart';
 
 class SignUp extends StatefulWidget {
   @override
@@ -280,7 +279,7 @@ class _SignUpState extends State<SignUp> {
                   print(_codeController.text);
                   if(_codeController.text==code){
                     Navigator.of(context).pop();
-                    signup();
+
                   }else{
                     ToastUtils.showCustomToast(context, "Invalid code",false);
 
@@ -313,76 +312,7 @@ class _SignUpState extends State<SignUp> {
     'Broker',
   ] ;
 
-  void signup() async {
 
-    final FormState form = _formKey.currentState;
-    if (!form.validate()) {
-      return;
-    }
-
-
-    form.save();
-
-
-    showLoadingDialogue("Creating Account");
-
-
-    print(username);
-    print(password);
-    print(mobilenumber);
-    print(email);
-    print(dateSel);
-    print(nationality);
-    print(first_name);
-    print(last_name);
-    print(gender);
-    print(address);
-    print(loginas);
-
-
-    final client = HttpClient();
-    final request = await client.postUrl(Uri.parse(URLs.signUpUrl()));
-    request.headers.set(HttpHeaders.contentTypeHeader, "application/json; charset=UTF-8");
-  //  request.headers.add("Authorization", "JWT " + token);
-
-    request.write('{"Username": "'+username+'",'
-        '"Password": "'+password+'", '
-        '"PhoneNumber": "'+mobilenumber+'",'
-        '"FirstName": "'+first_name+'", '
-        '"LastName": "'+last_name+'",'
-        '"Nationality": "'+nationality+'",'
-        '"Email": "'+email+'",'
-        '"Gender": "'+gender+'" ,'
-        '"DateOfBirth": "'+dateSel+'",'
-        '"Address": "'+address+'" ,'
-        '"RegisterAs": "'+loginas+'"}');
-
-
-
-
-
-    final response = await request.close();
-
-    response.transform(utf8.decoder).listen((contents) {
-      print(contents);
-
-      hideLoadingDialogue();
-      if(contents.contains("Driver created")){
-        ToastUtils.showCustomToast(context, "SignUp Successful",true);
-        Navigator.of(context).pushReplacement(MaterialPageRoute(builder: (context) => SignIn()));
-
-      } else  if(contents.contains("Trader/Broker created")){
-        ToastUtils.showCustomToast(context, "SignUp Successful",true);
-        Navigator.of(context).pushReplacement(MaterialPageRoute(builder: (context) => SignIn()));
-
-      }
-
-      else{
-        ToastUtils.showCustomToast(context, "SignUp Failed",false);
-      }
-
-    });
-  }
   TextEditingController _controllerCode = TextEditingController();
 
   phoneAuth(String phone) async {
@@ -470,88 +400,7 @@ class _SignUpState extends State<SignUp> {
         },
         codeAutoRetrievalTimeout: null);
   }
-  void registercheck() async {
 
-
-
-
-
-    final FormState form = _formKey.currentState;
-    if (!form.validate()) {
-      return;
-    }
-    if(dateSel.contains("Select Date of Birth")){
-
-      print("Please Select Date of Birth");
-      ToastUtils.showCustomToast(context, "Please Select Date of Birth", false);
-      return;
-    }
-    if(gender == null){
-
-      print("Please Select Gender");
-      ToastUtils.showCustomToast(context, "Please Select Gender", false);
-      return;
-    }
-    form.save();
-
-    showLoadingDialogue("Registering User");
-
-    print(username);
-    print(password);
-    print(mobilenumber);
-    print(email);
-    print(dateSel);
-    print(nationality);
-    print(first_name);
-    print(last_name);
-    print(gender);
-    print(address);
-    print(loginas);
-
-
-
-    final client = HttpClient();
-    final request = await client.postUrl(Uri.parse(URLs.registercheckUrl()));
-    request.headers.set(HttpHeaders.contentTypeHeader, "application/json; charset=UTF-8");
-    request.write('{"Username": "'+username+'","Password": "'+password+'", "PhoneNumber": "'+mobilenumber+'" ,"RegisterAs": "Driver"}');
-
-    final response = await request.close();
-
-    response.transform(utf8.decoder).listen((contents) {
-      print(contents);
-      hideLoadingDialogue();
-
-      Map<String, dynamic> updateMap = new Map<String, dynamic>.from(
-          jsonDecode(contents));
-      print(updateMap["Token"]);
-
-
-
-      if(contents.contains("Token received")){
-
-        phoneAuth(mobilenumber);
-
-       // sendOtp('958347XXXX');
-//        String verfication_code;
-//        verfication_code= getRandomString(6);
-//
-//        print(verfication_code);
-//        twilioFlutter.sendSMS(
-//            toNumber : mobilenumber,
-//            messageBody : verfication_code);
-//
-//        confirmationCode( context,verfication_code);
-
-      
-      }else{
-        ToastUtils.showCustomToast(context, "Username or Phone Number \nalready taken",false);
-      }
-
-    });
-
-
-
-  }
   String _chars = '1234567890';
   Random _rnd = Random();
 
@@ -589,93 +438,7 @@ class _SignUpState extends State<SignUp> {
   @override
   Widget build(BuildContext context) {
 
-    Widget firstNameForm = Container(
-      margin: EdgeInsets.only(bottom: 18.0),
-      width: screenWidth(context)*0.35,
-      child: Row(
-        children: <Widget>[
-          Icon(Icons.account_circle,color: Colors.black,),
-          Container(
-            width: (screenWidth(context)*0.3)-4,
-            child: TextFormField(
 
-              cursorColor: Colors.black, cursorRadius: Radius.circular(1.0), cursorWidth: 1.0,
-              keyboardType: TextInputType.text,
-              onSaved: (String value) {
-                if(!value.isEmpty){
-                  first_name = value;
-                }
-
-              },
-              validator: (String value) {
-                if(value.isEmpty)
-                  return 'Please Enter First Name';
-                else
-                  return null;
-              },
-              decoration: InputDecoration(
-                contentPadding: EdgeInsets.only(left: 10.0, right: 0.0, top: 10.0, bottom: 12.0),
-                border: OutlineInputBorder(
-                    borderSide: BorderSide.none
-                ),
-                hintText:"First Name",
-                labelText: "First Name",
-              ),
-              focusNode: _focusNodeLastName,
-            ),
-          ),
-        ],
-      ),
-      decoration: new BoxDecoration(
-        border: new Border(
-          bottom: _focusNodeLastName.hasFocus ? BorderSide(color: Colors.black, style: BorderStyle.solid, width: 2.0) :
-          BorderSide(color: Colors.black.withOpacity(0.7), style: BorderStyle.solid, width: 1.0),
-        ),
-      ),
-    );
-
-    Widget lastNameForm = Container(
-      margin: EdgeInsets.only(bottom: 18.0),
-      width: screenWidth(context)*0.35,
-      child: Row(
-        children: <Widget>[
-          Icon(Icons.account_circle,color:  Colors.black,),
-          Container(
-            width: (screenWidth(context)*0.3)-4,
-            child: TextFormField(
-              cursorColor: Colors.black, cursorRadius: Radius.circular(1.0), cursorWidth: 1.0,
-
-              keyboardType: TextInputType.text,
-              onSaved: (String value) {
-                if(!value.isEmpty)
-                  last_name = value;
-              },
-              validator: (String value) {
-                if(value.isEmpty)
-                  return 'Please Enter Last Name';
-                else
-                  return null;
-              },
-              decoration: InputDecoration(
-                contentPadding: EdgeInsets.only(left: 10.0, right: 0.0, top: 10.0, bottom: 12.0),
-                border: OutlineInputBorder(
-                    borderSide: BorderSide.none
-                ),
-                hintText: "Last Name",
-                labelText: "Last Name",
-              ),
-              focusNode: _focusNodeFirstName,
-            ),
-          ),
-        ],
-      ),
-      decoration: new BoxDecoration(
-        border: new Border(
-          bottom: _focusNodeFirstName.hasFocus ? BorderSide(color: Colors.black, style: BorderStyle.solid, width: 2.0) :
-          BorderSide(color: Colors.black.withOpacity(0.7), style: BorderStyle.solid, width: 1.0),
-        ),
-      ),
-    );
 
     Widget userForm = Container(
       margin: EdgeInsets.only(bottom: 18.0),
@@ -886,157 +649,7 @@ class _SignUpState extends State<SignUp> {
       ),
     );
 
-    Widget date = Container(
 
-      width: screenWidth(context),
-      margin: EdgeInsets.only(bottom: 18.0),
-      child: Row(
-        children: <Widget>[
-          Icon(Icons.calendar_today),
-          SizedBox(width: 10,),
-          Container(
-            width: 100,
-            child: Text("Date of birth",
-
-              style: TextStyle(
-                fontSize: 16,
-              ),
-            ),
-          ),
-
-          SizedBox(width: 10,),
-          Container(
-            child: FlatButton(
-
-              child: Text(dateSel,textAlign: TextAlign.start,),
-              onPressed: () => _selectDate(context),
-            ),
-          ),
-          Icon(Icons.keyboard_arrow_down,color: Colors.black,),
-        ],
-      ),
-
-    );
-
-    Widget addressForm = Container(
-      margin: EdgeInsets.only(bottom: 18.0),
-      child: Row(
-        children: <Widget>[
-          Icon(Icons.home,color:  Colors.black,),
-          Container(
-            width: screenWidth(context)*0.7,
-            child: TextFormField(
-              cursorColor: Colors.black, cursorRadius: Radius.circular(1.0), cursorWidth: 1.0,
-              keyboardType: TextInputType.multiline,
-              maxLines: 2,
-              onSaved: (String value) {
-                if(!value.isEmpty)
-                  address = value;
-              },
-              validator: (String value) {
-                if(value.isEmpty)
-                  return 'Please Enter Address';
-                else
-                  return null;
-              },
-              decoration: InputDecoration(
-                contentPadding: EdgeInsets.only(left: 10.0, right: 0.0, top: 10.0, bottom: 12.0),
-                border: OutlineInputBorder(
-                    borderSide: BorderSide.none
-                ),
-
-                hintText: "Address",
-                labelText: "Address",
-              ),
-              focusNode: _focusNodeAddress,
-            ),
-          ),
-        ],
-      ),
-      decoration: new BoxDecoration(
-        border: new Border(
-          bottom: _focusNodeAddress.hasFocus ? BorderSide(color: Colors.black, style: BorderStyle.solid, width: 2.0) :
-          BorderSide(color: Colors.black.withOpacity(0.7), style: BorderStyle.solid, width: 1.0),
-        ),
-      ),
-    );
-
-    Widget nationalityForm =  Row(
-      mainAxisAlignment: MainAxisAlignment.start,
-      crossAxisAlignment: CrossAxisAlignment.center,
-      children: <Widget>[
-        Icon(Icons.local_airport,color: Colors.black,),
-        Row(
-          children: <Widget>[
-            SizedBox(width: 10,),
-
-            Container(
-              width: 95,
-              child: Text("Nationality",
-                style: TextStyle(
-                  fontSize: 16,
-                ),
-              ),
-            ),
-            SizedBox(width: 10,),
-            CountryListPick(
-
-              isShowFlag: true,
-              isShowTitle: true,
-              isShowCode: false,
-              isDownIcon: true,
-              initialSelection: '+966',
-              showEnglishName: true,
-              onChanged: (CountryCode code) {
-
-                nationality=code.name;
-                print(code.name);
-
-              },
-            ),
-          ],
-        ),
-      ],
-    );
-
-    Widget genderForm = Container(
-
-        margin: EdgeInsets.only(bottom: 18.0),
-        child: ButtonBar(
-          alignment: MainAxisAlignment.center,
-          children: <Widget>[
-            Radio(
-              value: 1,
-              groupValue: selectedRadio,
-              activeColor: Colors.redAccent,
-              onChanged: (val) {
-                print("Radio $val");
-                setSelectedRadio(val);
-              },
-            ),
-
-            InkWell(
-              child: Text("Male"),
-              onTap: () {setSelectedRadio(1);},
-            ),
-            Radio(
-              value: 2,
-              groupValue: selectedRadio,
-              activeColor: Colors.redAccent,
-              onChanged: (val) {
-                print("Radio $val");
-                setSelectedRadio(val);
-              },
-            ),
-            InkWell(
-              child: Text("Female"),
-              onTap: () {setSelectedRadio(2);},
-            ),
-
-
-          ],
-        )
-    );
 
     return Scaffold(
       backgroundColor: Color(0xffF7F7F7),
@@ -1060,12 +673,13 @@ class _SignUpState extends State<SignUp> {
                       crossAxisAlignment: CrossAxisAlignment.center,
                       children: <Widget>[
                         Image.asset("assets/icons/logo.png", width: 200.0, height: 180.0, fit: BoxFit.contain,),
+                        SizedBox(height: 20,),
                         Text("Sign Up",style: TextStyle(fontSize: 32) ),
                         Container(
                           margin: EdgeInsets.only(top: 24.0,bottom: 30.0),
                           alignment: AlignmentDirectional.center,
                           width: screenWidth(context)*0.8,
-                          child: Text("Sign Up for a new Naqel Account Now",
+                          child: Text("Sign Up for a new Doorstep Account Now",
                            textAlign: TextAlign.center,
                           ),
                         ),
@@ -1078,80 +692,20 @@ class _SignUpState extends State<SignUp> {
                             children: <Widget>[
                               Text("Name",),
                               userForm,
-                              Row(
-                                crossAxisAlignment: CrossAxisAlignment.center,
-                                children: <Widget>[
-                                  firstNameForm,
-                                  SizedBox(width: (screenWidth(context)*0.1)+16),
-                                  lastNameForm
-                                ],
-                              ),
+
 
                               Text("Email", ),
                               emailForm,
 
                               Text("Password",),
+                              mobile,
                               passwordForm,
                               confirmPassword,
                               Text("Detailes",),
-                              mobile,
-
-                              addressForm,
-                              SizedBox(height: 20,),
-
-                              date,
 
 
-                              nationalityForm,
-                              SizedBox(height: 20,),
 
 
-                              Row(
-                                children: <Widget>[
-                                  Icon(Icons.accessibility_new,color: Colors.black,),
-                                  SizedBox(width: 10,),
-
-                                  Container(
-                                    width: 100,
-                                    child: Text("Sign up as",
-                                      style: TextStyle(
-                                        fontSize: 16,
-                                      ),
-                                    ),
-                                  ),
-                                  SizedBox(width: 20,),
-                                  DropdownButton<String>(
-                                    value: loginas,
-                                    icon: Icon(Icons.keyboard_arrow_down,color: Colors.black,),
-                                    iconSize: 24,
-                                    elevation: 16,
-                                    style: TextStyle(color: Colors.black, fontSize: 16),
-                                    underline: Container(
-                                      height: 1,
-                                      color: Color(0x00000000),
-                                    ),
-                                    onChanged: (String data) {
-                                      setState(() {
-                                        loginas = data;
-                                        //  Navigator.of(context).pop();
-                                        //   _displayJobRequestDialog(context);
-
-
-                                      });
-                                    },
-                                    items: spinnerItems.map<DropdownMenuItem<String>>((String value) {
-                                      return DropdownMenuItem<String>(
-                                        value: value,
-                                        child: Align(
-                                            alignment: AlignmentDirectional.center,
-                                            child: Text(value)),
-                                      );
-                                    }).toList(),
-                                  ),
-                                ],
-                              ),
-
-                              genderForm,
                             ],
                           ),
                         ),
@@ -1197,8 +751,7 @@ class _SignUpState extends State<SignUp> {
                               color: primaryDark,
                               onPressed: () async {
                            //     await registerUser();
-                                await registercheck();
-                              },
+                               },
                               child: Text( "SIGN UP",style: TextStyle(color: Colors.white),),
                             ),
                           ),

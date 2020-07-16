@@ -1,4 +1,4 @@
-name: naqelapp
+name: Doorstep
 description: A new Flutter application.
 # The following defines the version and build number for your application.
 # A version number is three numbers separated by dots, like 1.2.43
@@ -16,6 +16,9 @@ environment:
   sdk: ">=2.1.0 <3.0.0"
 
 dependencies:
+  stepper_counter_swipe: ^0.0.6
+  firestore_ui: ^1.10.0
+  carousel_slider: ^2.2.1
   progress_dialog: ^1.1.0+1
   country_list_pick: ^1.0.0+4
   flutter_spinkit: "^4.1.2"
@@ -76,3 +79,8 @@ flutter:
     - assets/imgs/centerLogo.png
     - assets/imgs/curve.png
     - assets/imgs/img.png
+    - assets/imgs/dairy.jpg
+    - assets/imgs/naan.jpg
+    - assets/imgs/super_market.jpg
+    - assets/imgs/grocery_store.jpg
+    - assets/imgs/bbq.jpg

@@ -2,8 +2,8 @@
 
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
-import 'package:naqelapp/styles/styles.dart';
-import 'package:naqelapp/screens/home/first-screen.dart';
+import 'package:Doorstep/styles/styles.dart';
+import 'package:Doorstep/screens/first-screen.dart';
 
 import 'screens/auth/sign-in.dart';
 

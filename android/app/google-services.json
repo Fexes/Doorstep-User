@@ -1,42 +1,109 @@
 {
   "project_info": {
-    "project_number": "331974863267",
-    "firebase_url": "https://naqel-transport-jobs.firebaseio.com",
-    "project_id": "naqel-transport-jobs",
-    "storage_bucket": "naqel-transport-jobs.appspot.com"
+    "project_number": "391131119962",
+    "firebase_url": "https://doorstep-fdb26.firebaseio.com",
+    "project_id": "doorstep-fdb26",
+    "storage_bucket": "doorstep-fdb26.appspot.com"
   },
   "client": [
     {
       "client_info": {
-        "mobilesdk_app_id": "1:331974863267:android:074aeb0a16b2a859b5d216",
+        "mobilesdk_app_id": "1:391131119962:android:8a725968d12020bfdcf363",
         "android_client_info": {
-          "package_name": "com.naqel.naqelapp"
+          "package_name": "com.doorstep.app"
         }
       },
       "oauth_client": [
         {
-          "client_id": "331974863267-2vjl13756m94bef34e6qg8kehmc4qdjt.apps.googleusercontent.com",
+          "client_id": "391131119962-rnj7svvhp9nk84mgum5m71o14an0dmrp.apps.googleusercontent.com",
           "client_type": 3
         }
       ],
       "api_key": [
         {
-          "current_key": "AIzaSyCQ7w7KA6DF96v5jPGy9SiLh1lc2QuCs_I"
+          "current_key": "AIzaSyB0HoBHMzu9-vg2gHzkmZXp8t7zCkXQNL4"
         }
       ],
       "services": {
         "appinvite_service": {
           "other_platform_oauth_client": [
             {
-              "client_id": "331974863267-2vjl13756m94bef34e6qg8kehmc4qdjt.apps.googleusercontent.com",
+              "client_id": "391131119962-rnj7svvhp9nk84mgum5m71o14an0dmrp.apps.googleusercontent.com",
               "client_type": 3
-            },
+            }
+          ]
+        }
+      }
+    },
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:391131119962:android:cb4bdd5e44941fbfdcf363",
+        "android_client_info": {
+          "package_name": "com.doorstep.shopapp"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "391131119962-k8tnqddsen2jahrm5a720lpt2bm8t483.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.doorstep.shopapp",
+            "certificate_hash": "e371af1bf066fab4ed2e3ed944d6d3f9fdb27f6b"
+          }
+        },
+        {
+          "client_id": "391131119962-rnj7svvhp9nk84mgum5m71o14an0dmrp.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyB0HoBHMzu9-vg2gHzkmZXp8t7zCkXQNL4"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
             {
-              "client_id": "331974863267-7p66okdji4r0586gct4qpjk09042p89b.apps.googleusercontent.com",
-              "client_type": 2,
-              "ios_info": {
-                "bundle_id": "com.naqel.naqelapp"
-              }
+              "client_id": "391131119962-rnj7svvhp9nk84mgum5m71o14an0dmrp.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    },
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:391131119962:android:21604420f44d33cfdcf363",
+        "android_client_info": {
+          "package_name": "com.doorstep.userapp"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "391131119962-r4df16igmiib5gok09iuj75u3g8ol6i5.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.doorstep.userapp",
+            "certificate_hash": "e371af1bf066fab4ed2e3ed944d6d3f9fdb27f6b"
+          }
+        },
+        {
+          "client_id": "391131119962-rnj7svvhp9nk84mgum5m71o14an0dmrp.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyB0HoBHMzu9-vg2gHzkmZXp8t7zCkXQNL4"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "391131119962-rnj7svvhp9nk84mgum5m71o14an0dmrp.apps.googleusercontent.com",
+              "client_type": 3
             }
           ]
         }

@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 
-final primaryDark = const Color(0xffFC3204);
-final primaryLight = const Color(0xffFC3204);
+final primaryDark = Colors.green;
+final primaryLight = Colors.green;
 
 final border = const Color(0xFFE4E7F1);
 
