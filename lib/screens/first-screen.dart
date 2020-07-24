@@ -3,6 +3,8 @@ import 'dart:io';
 
 import 'package:Doorstep/screens/home/home_screen.dart';
 import 'package:Doorstep/styles/styles.dart';
+import 'package:Doorstep/utilts/UI/DataStream.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_spinkit/flutter_spinkit.dart';
 import 'package:Doorstep/styles/styles.dart';
@@ -34,6 +36,7 @@ class SplashScreenState extends State<SplashScreen> {
 
     loadData();
   }
+
 
   bool isloadingDialogueShowing=false;
 
@@ -91,17 +94,29 @@ class SplashScreenState extends State<SplashScreen> {
 
   }
 
-
+  static FirebaseUser userD;
   Future<Timer> loadData() async {
 
 
-    SharedPreferences prefs = await SharedPreferences.getInstance();
-    UserToken =prefs.getString("UserToken");
-    loginas =prefs.getString("LoginType");
+    FirebaseAuth.instance.currentUser().then((firebaseUser){
+      if(firebaseUser == null){
 
-    Navigator.pop(context);
 
-    Navigator.push( context, MaterialPageRoute( builder: (BuildContext context) => Home(), ),);
+
+        Navigator.of(context).pushReplacement(
+            MaterialPageRoute(
+                builder: (context) => SignIn()));
+      }
+      else{
+
+        DataStream.UserId=firebaseUser.uid;
+        Navigator.of(context).pushReplacement(
+            MaterialPageRoute(
+                builder: (context) => Home()));
+      }
+    });
+
+
 
 
 
@@ -112,7 +127,7 @@ bool error=false;
   @override
   Widget build(BuildContext context) {
     return ColoredBox(
-      color: Color(0xffF7F7F7),
+      color: Colors.white,
       child: Container(
           padding: EdgeInsets.all(100),
           child: Column(

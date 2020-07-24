@@ -1,10 +1,15 @@
 import 'dart:io';
 
+import 'package:Doorstep/screens/home/home_screen.dart';
+import 'package:Doorstep/utilts/UI/DataStream.dart';
+import 'package:firebase_auth/firebase_auth.dart';
+import 'package:firebase_database/firebase_database.dart';
 import 'package:flutter_spinkit/flutter_spinkit.dart';
 import 'package:Doorstep/utilts/UI/toast_utility.dart';
 import 'package:flutter/material.dart';
 import 'package:Doorstep/styles/styles.dart';
 import 'package:Doorstep/screens/auth/sign-up.dart';
+import 'package:google_sign_in/google_sign_in.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'dart:async';
 import 'dart:convert' show jsonDecode, utf8;
@@ -50,11 +55,11 @@ class _SignInState extends State<SignIn> {
               SpinKitFadingCircle(
                 itemBuilder: (BuildContext context, int index) {
                   return DecoratedBox(
-                    decoration: BoxDecoration(
-                      color: index==1 ? Colors.orange[900] :index==2 ?Colors.orange[800] : index==3 ?Colors.orange[700] : index==4 ?
-                      Colors.orange[600] :index==5 ?Colors.orange[500] : index==6 ?Colors.orange[400]:
-                      index==1 ?Colors.orange[300] : index==1 ?Colors.orange[200] : index==1 ?Colors.orange[100] : index==1 ?
-                      Colors.orange[100] :index==1 ?Colors.orange[100] :Colors.orange[900]
+                     decoration: BoxDecoration(
+                      color: index==1 ? Colors.green[900] :index==2 ?Colors.green[800] : index==3 ?Colors.green[700] : index==4 ?
+                      Colors.green[600] :index==5 ?Colors.green[500] : index==6 ?Colors.green[400]:
+                      index==1 ?Colors.green[300] : index==1 ?Colors.green[200] : index==1 ?Colors.green[100] : index==1 ?
+                      Colors.green[100] :index==1 ?Colors.green[100] :Colors.green[900]
                       ,
                       borderRadius: BorderRadius.all(Radius.circular(30.0)),
                     ),
@@ -125,11 +130,6 @@ class _SignInState extends State<SignIn> {
 
   String email;
   String password;
-  var errorText;
-  String loginas = 'Driver';
-
-
-  bool loading = false;
 
 
 
@@ -219,7 +219,7 @@ class _SignInState extends State<SignIn> {
     );
 
     return Scaffold(
-      backgroundColor: Color(0xffF7F7F7),
+      backgroundColor: Colors.white,
 
       body: GestureDetector(
         onTap: () {
@@ -313,6 +313,47 @@ class _SignInState extends State<SignIn> {
                     ),
                   ),
 
+                  Text( "OR",style: TextStyle(color: Colors.black),),
+                  Padding(
+                    padding: const EdgeInsets.only(top: 10.0, bottom: 12.0),
+                    child: SizedBox(
+                      width: 200,
+                      child: RaisedButton(
+                        shape: RoundedRectangleBorder(
+                          borderRadius: new BorderRadius.circular(18.0),
+
+                        ),
+
+                        color: primaryDark,
+                        onPressed: () async {
+                          //     await registerUser();
+                          signInWithGoogle().whenComplete(() {
+
+
+                            if(userD!=null) {
+
+                              print(userD.email);
+                              print(userD.displayName);
+                              print(userD.uid);
+
+                          //    Navigator.of(context).pop();
+
+                              Navigator.of(context).pushReplacement(
+                                  MaterialPageRoute(
+                                      builder: (context) => Home()));
+                            }else{
+                              ToastUtils.showCustomToast(context, "Sign In Failed", false);
+                            }
+                          });
+
+                          //  phoneAuth(phoneNo);
+                        },
+                        child: Text( "SIGN IN with Google",style: TextStyle(color: Colors.white),),
+                      ),
+                    ),
+                  ),
+
+
                   RawMaterialButton(
                     padding: EdgeInsets.symmetric(vertical: 16.0),
                     onPressed: (){
@@ -339,7 +380,54 @@ class _SignInState extends State<SignIn> {
     );
   }
 
-  void signin() {
+  Future<void> signin() async {
+    final FormState form = _formKey.currentState;
+    form.save();
+   // showLoadingDialogue("Signing In");
+
+  //  print(password);
+    final firebaseUser = await FirebaseAuth.instance
+        .signInWithEmailAndPassword(email: email, password: password).then((value){
+
+         if(value.user.uid!=null) {
+           DataStream.UserId=value.user.uid;
+            print(value.user.uid);
+            Navigator.of(context).pop();
+
+         //   Navigator.push( context, MaterialPageRoute( builder: (BuildContext context) => Home(), ),);
+           Navigator.of(context).pushReplacement(MaterialPageRoute(builder: (context) => Home()));
+
+         }
+    });
 
   }
+
+
+  FirebaseUser userD;
+  final FirebaseAuth _auth = FirebaseAuth.instance;
+  final GoogleSignIn googleSignIn = GoogleSignIn();
+
+  Future<String> signInWithGoogle() async {
+    final GoogleSignInAccount googleSignInAccount = await googleSignIn.signIn();
+    final GoogleSignInAuthentication googleSignInAuthentication =
+    await googleSignInAccount.authentication;
+
+    final AuthCredential credential = GoogleAuthProvider.getCredential(
+      accessToken: googleSignInAuthentication.accessToken,
+      idToken: googleSignInAuthentication.idToken,
+    );
+
+    final AuthResult authResult = await _auth.signInWithCredential(credential);
+    final FirebaseUser user = authResult.user;
+
+    assert(!user.isAnonymous);
+    assert(await user.getIdToken() != null);
+
+    final FirebaseUser currentUser = await _auth.currentUser();
+    assert(user.uid == currentUser.uid);
+    userD=user;
+    return 'signInWithGoogle succeeded: $user';
+  }
+
+
 }

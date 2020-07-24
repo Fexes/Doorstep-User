@@ -1,9 +1,15 @@
 import 'dart:io';
 
+import 'package:Doorstep/models/Cart.dart';
 import 'package:Doorstep/models/Product.dart';
 import 'package:Doorstep/models/Shops.dart';
+import 'package:Doorstep/screens/auth/sign-in.dart';
+import 'package:Doorstep/screens/home/cart_screen.dart';
 import 'package:Doorstep/screens/home/shops_screen.dart';
+import 'package:Doorstep/utilts/UI/DataStream.dart';
+import 'package:badges/badges.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_database/firebase_database.dart';
 import 'package:firebase_database/ui/firebase_animated_list.dart';
 import 'package:firestore_ui/animated_firestore_grid.dart';
@@ -71,11 +77,11 @@ class _SingleProductState extends State<SingleProduct> {
               SpinKitFadingCircle(
                 itemBuilder: (BuildContext context, int index) {
                   return DecoratedBox(
-                    decoration: BoxDecoration(
-                      color: index==1 ? Colors.orange[900] :index==2 ?Colors.orange[800] : index==3 ?Colors.orange[700] : index==4 ?
-                      Colors.orange[600] :index==5 ?Colors.orange[500] : index==6 ?Colors.orange[400]:
-                      index==1 ?Colors.orange[300] : index==1 ?Colors.orange[200] : index==1 ?Colors.orange[100] : index==1 ?
-                      Colors.orange[100] :index==1 ?Colors.orange[100] :Colors.orange[900]
+                     decoration: BoxDecoration(
+                      color: index==1 ? Colors.green[900] :index==2 ?Colors.green[800] : index==3 ?Colors.green[700] : index==4 ?
+                      Colors.green[600] :index==5 ?Colors.green[500] : index==6 ?Colors.green[400]:
+                      index==1 ?Colors.green[300] : index==1 ?Colors.green[200] : index==1 ?Colors.green[100] : index==1 ?
+                      Colors.green[100] :index==1 ?Colors.green[100] :Colors.green[900]
                       ,
                       borderRadius: BorderRadius.all(Radius.circular(30.0)),
                     ),
@@ -105,44 +111,79 @@ class _SingleProductState extends State<SingleProduct> {
   Dialog loadingdialog;
 
 
-
+  List<Cart> carts;
    @override
   initState()   {
     super.initState();
+    carts = new List();
 
 
+        DatabaseReference volunteerRef;
+
+        final FirebaseDatabase database = FirebaseDatabase.instance;
+        volunteerRef = database.reference().child("cart").child(DataStream.UserId);
+        volunteerRef.onChildAdded.listen(_onEntryAdded);
+    volunteerRef.onChildChanged.listen(_onEntryChanged);
+
+
+   }
+
+  _onEntryChanged(Event event) {
+    var old = carts.singleWhere((entry) {
+      return entry.key == event.snapshot.key;
+    });
+    setState(() {
+      carts[carts.indexOf(old)] = Cart.fromSnapshot(event.snapshot);
+    });
   }
 
 
+  _onEntryAdded(Event event) {
+    setState(() {
+      carts.add(Cart.fromSnapshot(event.snapshot));
+    });
+  }
+
+
+
+
+
   int val=0;
+   int itemcount=0;
 
-
+   String UserId;
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: Color(0xffF7F7F7),
+      backgroundColor: Colors.white,
 
       appBar: AppBar(
         leading: new IconButton(
           icon: new Icon(Icons.arrow_back),
           onPressed: () {
+
             Navigator.pop(context);
 
           },
         ),
         title:  Text(product.cardname),
+
         automaticallyImplyLeading: false,
       ),
 
       body:Stack(
         children: [
+
+
+
           ListView(
             children: [
               Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
 
                 children: [
+
                   Padding(
                     padding: EdgeInsets.all(10),
                     child: Container(
@@ -212,7 +253,7 @@ class _SingleProductState extends State<SingleProduct> {
 
                     children: [
                       Padding(
-                        padding: EdgeInsets.all(15),
+                        padding: EdgeInsets.fromLTRB(15,30,0,0),
 
                         child: Text(
                           'Quantity',
@@ -220,10 +261,11 @@ class _SingleProductState extends State<SingleProduct> {
                         ),
                       ),
                       Container(
-                        height: 60,
+                        height: 80,
                         child: Center(
                           child: StepperSwipe(
                             initialValue:0,
+
 
                             speedTransitionLimitCount: 1,
                             firstIncrementDuration: Duration(milliseconds: 450), //Unit time before fast counting
@@ -237,13 +279,21 @@ class _SingleProductState extends State<SingleProduct> {
                             withNaturalNumbers: true,
                             withPlusMinus: true,
                             withFastCount: true,
-                            onChanged: (int val) => print('New value : $val'),
+                            onChanged: (int val) {
+                                itemcount=val;
+                            }),
                           ),
                         ),
-                      ),
+
                     ],
                   ),
 
+                  Center(
+                    child: Text(
+                      'slide to add or remove',
+                      style: TextStyle(fontSize: 12, fontWeight: FontWeight.w300,color: Colors.black),
+                    ),
+                  ),
                   SizedBox(height: 10,),
 
                   Padding(
@@ -286,10 +336,14 @@ class _SingleProductState extends State<SingleProduct> {
 
           Positioned(
             bottom: 0,
-            child: Row(
-              children: [
-                Align(
-                  child: Container(
+            child: Padding(
+              padding: const EdgeInsets.fromLTRB(40.0, 30.0, 40.0, 25),
+              child: Row(
+                children: [
+
+                  Container(
+                    height: 60,
+
                     decoration: BoxDecoration(
                       color: Colors.white,
                       borderRadius: BorderRadius.only(
@@ -303,60 +357,108 @@ class _SingleProductState extends State<SingleProduct> {
                           color: Colors.grey.withOpacity(0.5),
                           spreadRadius: 5,
                           blurRadius: 7,
-                          offset: Offset(0, 3), // changes position of shadow
+                          offset: Offset(0, 3),
                         ),
                       ],
                     ),
-                    height: 70,
-                    width: screenWidth(context)/2,
+                    width: (screenWidth(context)/2)-50,
                     child: FlatButton(
-                      color: Colors.grey[200],
-                      onPressed: (){
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(18.0),
+                      ),
+                      color: Colors.white,
+                      onPressed: () async {
+
+                        if(itemcount>0) {
+
+                          FirebaseDatabase database = new FirebaseDatabase();
+                          DatabaseReference _userRef = database.reference()
+                              .child('cart').child(DataStream.UserId)
+                              .push();
+
+                          _userRef.set(<dynamic, dynamic>{
+                            'no_of_items': itemcount,
+                            'cardid': product.cardid.toString(),
+                            'cardname': product.cardname.toString(),
+                            'cardimage': product.cardimage.toString(),
+                            'cardprice': product.cardprice,
+
+                            'town':"Bahria Town Phase 4",
+                            'shopcatagory': DataStream.ShopCatagory,
+                            'shopid': DataStream.ShopId,
+
+
+                          }).then((_) {
+                            itemcount=0;
+                            ToastUtils.showCustomToast(
+                                context, "Added to Cart", true);
+                          });
+
+
+                        }else{
+                          ToastUtils.showCustomToast(context, "Select Quantity", null);
+                        }
                       },
                       child: Text('Add to Cart',style: TextStyle(color: Colors.black,fontWeight: FontWeight.w500, fontSize: 20),),
                     ),
                   ),
-                ),
-                Align(
-                  child: Container(
-                    height: 70,
-                    decoration: BoxDecoration(
-                      color: Colors.green,
-                      borderRadius: BorderRadius.only(
-                          topLeft: Radius.circular(10),
-                          topRight: Radius.circular(10),
-                          bottomLeft: Radius.circular(10),
-                          bottomRight: Radius.circular(10)
+                  SizedBox(width: 20,),
+
+                  Badge(
+                    badgeColor: Colors.redAccent,
+                    badgeContent: Container(
+                      height: 25,
+                      width: 25,
+                      child: Column(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        crossAxisAlignment: CrossAxisAlignment.center,
+                        children: [
+
+                          Text(carts.length.toString(),style: TextStyle(color: Colors.white,fontSize: 20),),
+                        ],
                       ),
-                      boxShadow: [
-                        BoxShadow(
-                          color: Colors.green.withOpacity(0.5),
-                          spreadRadius: 5,
-                          blurRadius: 7,
-                          offset: Offset(0, 3), // changes position of shadow
-                        ),
-                      ],
                     ),
-                    width: screenWidth(context)/2,
-                    child: FlatButton(
-                      color: Colors.green,
-                      onPressed: (){
-                      },
-                      child: Text('Buy Now',style: TextStyle(color: Colors.white,fontWeight: FontWeight.w500, fontSize: 20),),
+                    child: Container(
+                      height: 60,
+                      decoration: BoxDecoration(
+                        color: Colors.green,
+                        borderRadius: BorderRadius.only(
+                            topLeft: Radius.circular(10),
+                            topRight: Radius.circular(10),
+                            bottomLeft: Radius.circular(10),
+                            bottomRight: Radius.circular(10)
+                        ),
+                        boxShadow: [
+                          BoxShadow(
+                            color: Colors.green.withOpacity(0.5),
+                            spreadRadius: 5,
+                            blurRadius: 7,
+                            offset: Offset(0, 3),
+                          ),
+                        ],
+                      ),
+                      width: (screenWidth(context)/2)-50,
+                      child: FlatButton(
+                        shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(18.0),
+                        ),
+                        color: Colors.green,
+                        onPressed: (){
+                          Navigator.of(context).pushReplacement(MaterialPageRoute(builder: (context) => CartScreen()));
+
+                        },
+                        child: Text('Buy Now',style: TextStyle(color: Colors.white,fontWeight: FontWeight.w500, fontSize: 20),),
+                      ),
                     ),
                   ),
-                ),
-              ],
-            )
-          )
+                ],
+              ),
+            ),
+          ),
+
+
         ],
       )
-
-
-
-
-
-
 
     );
 

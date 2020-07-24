@@ -1,6 +1,7 @@
 import 'dart:io';
 
  import 'package:Doorstep/models/Shops.dart';
+import 'package:Doorstep/utilts/UI/DataStream.dart';
  import 'package:firebase_database/firebase_database.dart';
 import 'package:firebase_database/ui/firebase_animated_list.dart';
 import 'package:flutter_spinkit/flutter_spinkit.dart';
@@ -56,11 +57,11 @@ class _ShopsScreenState extends State<ShopsScreen> {
               SpinKitFadingCircle(
                 itemBuilder: (BuildContext context, int index) {
                   return DecoratedBox(
-                    decoration: BoxDecoration(
-                      color: index==1 ? Colors.orange[900] :index==2 ?Colors.orange[800] : index==3 ?Colors.orange[700] : index==4 ?
-                      Colors.orange[600] :index==5 ?Colors.orange[500] : index==6 ?Colors.orange[400]:
-                      index==1 ?Colors.orange[300] : index==1 ?Colors.orange[200] : index==1 ?Colors.orange[100] : index==1 ?
-                      Colors.orange[100] :index==1 ?Colors.orange[100] :Colors.orange[900]
+                     decoration: BoxDecoration(
+                      color: index==1 ? Colors.green[900] :index==2 ?Colors.green[800] : index==3 ?Colors.green[700] : index==4 ?
+                      Colors.green[600] :index==5 ?Colors.green[500] : index==6 ?Colors.green[400]:
+                      index==1 ?Colors.green[300] : index==1 ?Colors.green[200] : index==1 ?Colors.green[100] : index==1 ?
+                      Colors.green[100] :index==1 ?Colors.green[100] :Colors.green[900]
                       ,
                       borderRadius: BorderRadius.all(Radius.circular(30.0)),
                     ),
@@ -138,13 +139,10 @@ class _ShopsScreenState extends State<ShopsScreen> {
   }
 
 
-
-
-
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-            backgroundColor: Color(0xffF7F7F7),
+            backgroundColor: Colors.white,
 
     appBar: AppBar(
         leading: new IconButton(
@@ -154,7 +152,7 @@ class _ShopsScreenState extends State<ShopsScreen> {
 
           },
         ),
-        title:  Text(HomePage.catagory),
+        title:  Text(DataStream.ShopCatagory),
         automaticallyImplyLeading: false,
       ),
 
@@ -168,6 +166,9 @@ class _ShopsScreenState extends State<ShopsScreen> {
 
                 return GestureDetector(
                   onTap: (){
+                    DataStream.ShopName=shops[index].shopname;
+                    DataStream.ShopId=shops[index].shopid;
+                    DataStream.ShopCatagory=shops[index].shopcategory;
                      Navigator.push( context, MaterialPageRoute( builder: (BuildContext context) => ProductCatalog(shops[index],snapshot.key),),);
 
 

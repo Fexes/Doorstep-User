@@ -4,6 +4,7 @@ import 'package:Doorstep/models/Product.dart';
 import 'package:Doorstep/models/Shops.dart';
 import 'package:Doorstep/screens/home/shops_screen.dart';
 import 'package:Doorstep/screens/home/single_product.dart';
+import 'package:Doorstep/utilts/UI/DataStream.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_database/firebase_database.dart';
 import 'package:firebase_database/ui/firebase_animated_list.dart';
@@ -76,11 +77,11 @@ class _ProductCatalogState extends State<ProductCatalog> {
               SpinKitFadingCircle(
                 itemBuilder: (BuildContext context, int index) {
                   return DecoratedBox(
-                    decoration: BoxDecoration(
-                      color: index==1 ? Colors.orange[900] :index==2 ?Colors.orange[800] : index==3 ?Colors.orange[700] : index==4 ?
-                      Colors.orange[600] :index==5 ?Colors.orange[500] : index==6 ?Colors.orange[400]:
-                      index==1 ?Colors.orange[300] : index==1 ?Colors.orange[200] : index==1 ?Colors.orange[100] : index==1 ?
-                      Colors.orange[100] :index==1 ?Colors.orange[100] :Colors.orange[900]
+                     decoration: BoxDecoration(
+                      color: index==1 ? Colors.green[900] :index==2 ?Colors.green[800] : index==3 ?Colors.green[700] : index==4 ?
+                      Colors.green[600] :index==5 ?Colors.green[500] : index==6 ?Colors.green[400]:
+                      index==1 ?Colors.green[300] : index==1 ?Colors.green[200] : index==1 ?Colors.green[100] : index==1 ?
+                      Colors.green[100] :index==1 ?Colors.green[100] :Colors.green[900]
                       ,
                       borderRadius: BorderRadius.all(Radius.circular(30.0)),
                     ),
@@ -130,7 +131,7 @@ class _ProductCatalogState extends State<ProductCatalog> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: Color(0xffF7F7F7),
+      backgroundColor: Colors.white,
 
       appBar: AppBar(
         leading: new IconButton(
@@ -140,7 +141,7 @@ class _ProductCatalogState extends State<ProductCatalog> {
 
           },
         ),
-        title:  Text(HomePage.catagory),
+        title:  Text(DataStream.ShopName),
         automaticallyImplyLeading: false,
       ),
 

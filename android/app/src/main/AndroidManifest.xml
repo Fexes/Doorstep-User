@@ -15,8 +15,9 @@
 
     <application
         android:name="io.flutter.app.FlutterApplication"
-        android:label="Naqel"
-        android:icon="@drawable/ic_launcher_round"
+        android:label="Doorstep"
+        android:icon="@mipmap/ic_launcher"
+        android:roundIcon="@mipmap/ic_launcher_round"
         tools:ignore="GoogleAppIndexingWarning">
         <activity
             android:name=".MainActivity"
@@ -36,7 +37,7 @@
             android:name="flutterEmbedding"
             android:value="2" />
 
-<!--        <meta-data android:name="com.google.android.geo.API_KEY"-->
-<!--            android:value="AIzaSyD_U_2NzdPIL7TWb8ECBHWO1eROR2yrebI"/>-->
+        <meta-data android:name="com.google.android.geo.API_KEY"
+            android:value="AIzaSyD_U_2NzdPIL7TWb8ECBHWO1eROR2yrebI"/>
     </application>
 </manifest>

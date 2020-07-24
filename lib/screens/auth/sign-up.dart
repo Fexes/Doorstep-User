@@ -2,14 +2,18 @@ import 'dart:convert';
 import 'dart:io';
 import 'dart:math';
 
+import 'package:Doorstep/screens/home/home_screen.dart';
+import 'package:Doorstep/utilts/UI/DataStream.dart';
 import 'package:country_list_pick/country_list_pick.dart';
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:firebase_database/firebase_database.dart';
 import 'package:flutter_spinkit/flutter_spinkit.dart';
 import 'package:Doorstep/utilts/UI/toast_utility.dart';
 import 'package:flutter/material.dart';
 import 'package:Doorstep/styles/styles.dart';
 import 'package:Doorstep/screens/auth/sign-in.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:google_sign_in/google_sign_in.dart';
 
 class SignUp extends StatefulWidget {
   @override
@@ -56,11 +60,11 @@ class _SignUpState extends State<SignUp> {
               SpinKitFadingCircle(
                 itemBuilder: (BuildContext context, int index) {
                   return DecoratedBox(
-                    decoration: BoxDecoration(
-                      color: index==1 ? Colors.orange[900] :index==2 ?Colors.orange[800] : index==3 ?Colors.orange[700] : index==4 ?
-                      Colors.orange[600] :index==5 ?Colors.orange[500] : index==6 ?Colors.orange[400]:
-                      index==1 ?Colors.orange[300] : index==1 ?Colors.orange[200] : index==1 ?Colors.orange[100] : index==1 ?
-                      Colors.orange[100] :index==1 ?Colors.orange[100] :Colors.orange[900]
+                     decoration: BoxDecoration(
+                      color: index==1 ? Colors.green[900] :index==2 ?Colors.green[800] : index==3 ?Colors.green[700] : index==4 ?
+                      Colors.green[600] :index==5 ?Colors.green[500] : index==6 ?Colors.green[400]:
+                      index==1 ?Colors.green[300] : index==1 ?Colors.green[200] : index==1 ?Colors.green[100] : index==1 ?
+                      Colors.green[100] :index==1 ?Colors.green[100] :Colors.green[900]
                       ,
                       borderRadius: BorderRadius.all(Radius.circular(30.0)),
                     ),
@@ -137,303 +141,17 @@ class _SignUpState extends State<SignUp> {
       showText =! showText;
     });
   }
-  String date;
   String username;
   String email;
   String password;
   String password2;
-  String mobilenumber;
-  String address;
-  String nationality = "Saudi Arabia";
-  String first_name,last_name;
+
   var errorText;
 
-  bool loading = false;
-
-  Firestore store;
-
-
-  CollectionReference get users => store.collection('users');
-
   final databaseReference = Firestore.instance;
-   String dateSel = "Select Date of Birth";
-  DateTime selectedDate = DateTime.now();
-  Future<Null> _selectDate(BuildContext context) async {
-    final DateTime picked = await showDatePicker(
-        context: context,
-        initialDate: selectedDate,
-        firstDate: DateTime(1920, 1),
-        lastDate: DateTime.now());
-    if (picked != null && picked != selectedDate)
-      setState(() {
-
-
-        selectedDate = new DateTime(picked.year, picked.month, picked.day);
-        String day = selectedDate.day.toString();
-        String month ;
-        String year = selectedDate.year.toString();
-
-        switch (selectedDate.month) {
-          case 1:
-            month = "Jan";
-            break;
-          case 2:
-            month = "Feb";
-            break;
-          case 3:
-            month = "Mar";
-            break;
-          case 4:
-            month = "Apr";
-            break;
-          case 5:
-            month = "May";
-            break;
-          case 6:
-            month = "Jun";
-            break;
-          case 7:
-            month = "Jul";
-            break;
-          case 8:
-            month = "Aug";
-            break;
-          case 9:
-            month = "Sep";
-            break;
-          case 10:
-            month = "Oct";
-            break;
-          case 11:
-            month = "Nov";
-            break;
-          case 12:
-            month = "Dec";
-            break;
-        }
-
-
-        dateSel=day+'-'+month+'-'+year;
-
-      });
-  }
-  TextEditingController _codeController = TextEditingController();
-  String entered_code;
-
-  confirmationCode(BuildContext context,String code) async {
-    return showDialog(
-        context: context,
-        builder: (context) {
-          return AlertDialog(
-            title: Text('Confirmation code'),
-
-            content:Container(
-              height: 120,
-              child: Column(
-                children: <Widget>[
-                  Text('A Verification code has been sent to '+mobilenumber+' . Please enter that code to Signup'),
-                  SizedBox(height:10),
-                  TextFormField(
-                    controller: _codeController,
-                    cursorColor: Colors.black, cursorRadius: Radius.circular(1.0), cursorWidth: 1.0,
-                    keyboardType: TextInputType.text,
-
-                    validator: (String value) {
-                      if(value.isEmpty)
-                        return 'Please Enter Confirmation code ';
-                      else
-                        return null;
-                    },
-                    decoration: InputDecoration(
-                      contentPadding: EdgeInsets.only(left: 10.0, right: 0.0, top: 10.0, bottom: 12.0),
-                      border: OutlineInputBorder(
-                          borderSide: BorderSide.none
-                      ),
-
-                      labelText: "Code",
-                    ),
-                    focusNode: _focusNodeCode,
-                  ),
-
-                ],
-              ),
-              decoration: new BoxDecoration(
-                border: new Border(
-                  bottom: _focusNodeCode.hasFocus ? BorderSide(color: Colors.black, style: BorderStyle.solid, width: 2.0) :
-                  BorderSide(color: Colors.black.withOpacity(0.7), style: BorderStyle.solid, width: 1.0),
-                ),
-              ),
-            ),
-            actions: <Widget>[
-              new FlatButton(
-                child: new Text('OK'),
-                onPressed: () {
-
-                  final FormState form = _formKey.currentState;
-                  if (!form.validate()) {
-                    return;
-                  }
-
-                  form.save();
-
-                  print(_codeController.text);
-                  if(_codeController.text==code){
-                    Navigator.of(context).pop();
-
-                  }else{
-                    ToastUtils.showCustomToast(context, "Invalid code",false);
-
-                  }
-
-
-                },
-              ),
-              new FlatButton(
-                child: new Text('Cancel'),
-                onPressed: () {
-
-                  Navigator.of(context).pop();
 
 
 
-                },
-              ),
-            ],
-          );
-        });
-  }
-
-
-  String loginas = 'Driver';
-
-  List <String> spinnerItems = [
-    'Driver',
-    'Trader',
-    'Broker',
-  ] ;
-
-
-  TextEditingController _controllerCode = TextEditingController();
-
-  phoneAuth(String phone) async {
-    FirebaseAuth _auth = FirebaseAuth.instance;
-
-    _auth.verifyPhoneNumber(
-        phoneNumber: phone,
-        timeout: Duration(seconds: 60),
-        verificationCompleted: (AuthCredential credential) async {
-
-          ToastUtils.showCustomToast(context, "Phone Verified",true);
-
-
-        },
-        verificationFailed: (AuthException exception) {
-
-
-          ToastUtils.showCustomToast(context, "Error! Try Again Later",false);
-
-        },
-        codeSent: (String verification, [int forceResendingToken]) {
-          showDialog(
-              context: context,
-              barrierDismissible: false,
-              builder: (context) {
-                return AlertDialog(
-                  shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(12)),
-                  title: Text('Enter 6-Digit Code sent to ${mobilenumber}'),
-                  content: Column(
-                    mainAxisSize: MainAxisSize.min,
-                    children: <Widget>[
-                      TextField(
-                        controller: _controllerCode,
-                        keyboardType: TextInputType.number,
-                        maxLength: 6,
-                        decoration: InputDecoration(
-                       //   errorText: validateCode(_controllerCode.text),
-                          hintText: 'Enter Code',
-                          enabledBorder: OutlineInputBorder(
-                              borderRadius: BorderRadius.circular(12.0)),
-                          focusedBorder: OutlineInputBorder(
-                              borderRadius: BorderRadius.circular(12.0)),
-                          errorBorder: OutlineInputBorder(
-                              borderRadius: BorderRadius.circular(12.0),
-                              borderSide: BorderSide(color: Colors.red)),
-                          focusedErrorBorder: OutlineInputBorder(
-                              borderRadius: BorderRadius.circular(12.0),
-                              borderSide: BorderSide(color: Colors.red)),
-                        ),
-                      )
-                    ],
-                  ),
-                  actions: <Widget>[
-
-                    FlatButton(
-                       shape: RoundedRectangleBorder(
-                          borderRadius: BorderRadius.circular(12)),
-                      child: Text("Confirm"),
-                      textColor: Colors.white,
-                      color: Colors.lightBlue,
-                      onPressed: () async {
-
-                        final code = _controllerCode.text.trim();
-                        AuthCredential credential =
-                        PhoneAuthProvider.getCredential(
-                            verificationId: verification, smsCode: code);
-                        AuthResult result =
-                        await _auth.signInWithCredential(credential);
-                        FirebaseUser user = result.user;
-                        if (user != null) {
-                          ToastUtils.showCustomToast(context, "Code Confirmed",true);
-                          Navigator.of(context).pop();
-                        } else {
-                          _controllerCode.clear();
-
-                          ToastUtils.showCustomToast(context, "Code Mismatched",false);
-
-                        }
-                      },
-                    )
-                  ],
-                );
-              });
-        },
-        codeAutoRetrievalTimeout: null);
-  }
-
-  String _chars = '1234567890';
-  Random _rnd = Random();
-
-  String getRandomString(int length) => String.fromCharCodes(Iterable.generate(
-      length, (_) => _chars.codeUnitAt(_rnd.nextInt(_chars.length))));
-  String phoneNo;
-  String smsCode;
-  String verificationId;
-
-
-
-
-  int selectedRadio;
-
-  String gender=null;
-  String uid = '';
-
-  getUid() {}
-// Changes the selected value on 'onChanged' click on each radio button
-  setSelectedRadio(int val) {
-    setState(() {
-      selectedRadio = val;
-      switch (val){
-        case 1:
-          gender="Male";
-          break;
-        case 2:
-          gender="Female";
-          break;
-
-      }
-    });
-  }
 
   @override
   Widget build(BuildContext context) {
@@ -610,49 +328,10 @@ class _SignUpState extends State<SignUp> {
       ),
     );
 
-    Widget mobile  = Container(
-      margin: EdgeInsets.only(bottom: 18.0),
-      child: Row(
-        children: <Widget>[
-          Icon(Icons.phone_android),
-          Container(
-            width: screenWidth(context)*0.7,
-            child: TextFormField(
-              cursorColor: Colors.black, cursorRadius: Radius.circular(1.0), cursorWidth: 1.0,
-              keyboardType: TextInputType.number,
-              onSaved: (String value) {
-                mobilenumber = value;
-              },
-              validator: (String value) {
-                if(value.length > 13 || value.length < 10)
-                  return 'Mobile Number should be 10 or more digits and less than 13';
-                else
-                  return null;
-              },
-              decoration: InputDecoration(
-                contentPadding: EdgeInsets.only(left: 10.0, right: 0.0, top: 10.0, bottom: 12.0),
-                border: OutlineInputBorder(
-                    borderSide: BorderSide.none
-                ),
-                labelText: "Mobile Number",
-              ),
-              focusNode: _focusNodeMobile,
-            ),
-          ),
-        ],
-      ),
-      decoration: new BoxDecoration(
-        border: new Border(
-          bottom: _focusNodeMobile.hasFocus ? BorderSide(color: Colors.black, style: BorderStyle.solid, width: 2.0) :
-          BorderSide(color: Colors.black.withOpacity(0.7), style: BorderStyle.solid, width: 1.0),
-        ),
-      ),
-    );
-
 
 
     return Scaffold(
-      backgroundColor: Color(0xffF7F7F7),
+      backgroundColor: Colors.white,
       body: GestureDetector(
           onTap: () {
             FocusScope.of(context).requestFocus(new FocusNode());
@@ -698,7 +377,7 @@ class _SignUpState extends State<SignUp> {
                               emailForm,
 
                               Text("Password",),
-                              mobile,
+
                               passwordForm,
                               confirmPassword,
                               Text("Detailes",),
@@ -751,11 +430,67 @@ class _SignUpState extends State<SignUp> {
                               color: primaryDark,
                               onPressed: () async {
                            //     await registerUser();
+
+
+                                SignUpUser();
+                              //  phoneAuth(phoneNo);
                                },
                               child: Text( "SIGN UP",style: TextStyle(color: Colors.white),),
                             ),
                           ),
                         ),
+                        Text( "OR",style: TextStyle(color: Colors.black),),
+                        Padding(
+                          padding: const EdgeInsets.only(top: 10.0, bottom: 12.0),
+                          child: SizedBox(
+                            width: 200,
+                            child: RaisedButton(
+                              shape: RoundedRectangleBorder(
+                                borderRadius: new BorderRadius.circular(18.0),
+
+                              ),
+
+                              color: primaryDark,
+                              onPressed: () async {
+                                //     await registerUser();
+                                signInWithGoogle().whenComplete(() {
+
+
+                                  if(userD!=null) {
+
+                                    print(userD.email);
+                                    print(userD.displayName);
+                                    print(userD.uid);
+
+
+                                    FirebaseDatabase database = new FirebaseDatabase();
+                                    DatabaseReference _userRef=database.reference().child('users').child(userD.uid);
+
+                                    _userRef.set(<String, String>{
+                                      "name": "" + userD.displayName.toString(),
+                                      "email": "" + userD.email.toString(),
+                                      "image": "" + userD.photoUrl.toString(),
+                                      "mobile": "" + userD.phoneNumber.toString(),
+                                    }).then((_) {
+                                      print('User Created.');
+                                    });
+
+                                  Navigator.of(context).pushReplacement(
+                                        MaterialPageRoute(
+                                            builder: (context) => Home()));
+                                  }else{
+                                    ToastUtils.showCustomToast(context, "Sign up Failed", false);
+                                  }
+                                });
+
+                                //  phoneAuth(phoneNo);
+                              },
+                              child: Text( "SIGN UP with Google",style: TextStyle(color: Colors.white),),
+                            ),
+                          ),
+                        ),
+
+
                         RawMaterialButton(
                             onPressed: (){
 
@@ -781,6 +516,77 @@ class _SignUpState extends State<SignUp> {
       ),
     );
 
+
+
+
+  }
+
+  FirebaseUser userD;
+  final FirebaseAuth _auth = FirebaseAuth.instance;
+  final GoogleSignIn googleSignIn = GoogleSignIn();
+
+  Future<String> signInWithGoogle() async {
+    final GoogleSignInAccount googleSignInAccount = await googleSignIn.signIn();
+    final GoogleSignInAuthentication googleSignInAuthentication =
+    await googleSignInAccount.authentication;
+
+    final AuthCredential credential = GoogleAuthProvider.getCredential(
+      accessToken: googleSignInAuthentication.accessToken,
+      idToken: googleSignInAuthentication.idToken,
+    );
+
+    final AuthResult authResult = await _auth.signInWithCredential(credential);
+    final FirebaseUser user = authResult.user;
+
+    assert(!user.isAnonymous);
+    assert(await user.getIdToken() != null);
+
+    final FirebaseUser currentUser = await _auth.currentUser();
+    assert(user.uid == currentUser.uid);
+    userD=user;
+    return 'signInWithGoogle succeeded: $user';
+  }
+
+  Future<void> SignUpUser() async {
+
+    final FormState form = _formKey.currentState;
+    form.save();
+
+    if (!form.validate()) {
+      return;
+    }
+    if(password!=password2){
+      ToastUtils.showCustomToast(context, "Password Mismatch", false);
+      return;
+    }
+
+    //  print(password);
+
+     await _auth.createUserWithEmailAndPassword(
+      email: email,
+      password: password,
+    ).then((value) {
+
+
+
+         FirebaseDatabase database = new FirebaseDatabase();
+         DatabaseReference _userRef=database.reference().child('users').child(value.user.uid);
+
+         _userRef.set(<String, String>{
+           "name": "" + username,
+           "email": "" + email,
+           "image": "" + userD.photoUrl.toString(),
+           "mobile": "" + userD.phoneNumber.toString(),
+         }).then((_) {
+           print('User Created.');
+           DataStream.UserId=userD.uid;
+
+           Navigator.of(context).pushReplacement(
+               MaterialPageRoute(
+                   builder: (context) => Home()));
+         });
+
+     });
 
 
 

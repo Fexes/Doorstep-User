@@ -1,8 +1,14 @@
 import 'dart:io';
 
+import 'package:Doorstep/models/Cart.dart';
 import 'package:Doorstep/models/Shops.dart';
+import 'package:Doorstep/screens/auth/sign-in.dart';
 import 'package:Doorstep/screens/home/shops_screen.dart';
+import 'package:Doorstep/utilts/UI/DataStream.dart';
+import 'package:badges/badges.dart';
 import 'package:carousel_slider/carousel_options.dart';
+import 'package:firebase_auth/firebase_auth.dart';
+import 'package:firebase_database/firebase_database.dart';
 import 'package:flutter_spinkit/flutter_spinkit.dart';
 import 'package:Doorstep/utilts/UI/toast_utility.dart';
 import 'package:flutter/material.dart';
@@ -17,6 +23,8 @@ import 'package:carousel_slider/carousel_slider.dart';
 
 
 import 'package:http/http.dart' as http;
+
+import 'cart_screen.dart';
 
 class Home extends StatefulWidget {
   @override
@@ -86,14 +94,31 @@ class HomePage extends State<Home> {
     super.dispose();
 
   }
+  List<Cart> carts;
+
   Dialog loadingdialog;
   @override
   Future<void> initState()  {
     super.initState();
 
-
+    setupCart();
   }
-  static String catagory = "";
+
+  void setupCart(){
+
+    carts = new List();
+
+    DatabaseReference volunteerRef;
+
+    final FirebaseDatabase database = FirebaseDatabase.instance;
+    volunteerRef = database.reference().child("cart").child(DataStream.UserId);
+    volunteerRef.onChildAdded.listen(_onEntryAdded);
+  }
+  _onEntryAdded(Event event) {
+    setState(() {
+       carts.add(Cart.fromSnapshot(event.snapshot));
+    });
+  }
 
 
   int _selectedIndex = 0;
@@ -195,31 +220,159 @@ class HomePage extends State<Home> {
             ),
             Flexible(
               flex: 1,
-              child: ListView(
+              child: Stack(
                 children: [
-
-                  Row(
+                  ListView(
                     children: [
 
+                      Row(
+                        children: [
 
+
+                          GestureDetector(
+                            onTap: (){
+                              DataStream.ShopCatagory="Supermarkets";
+                              Navigator.push( context, MaterialPageRoute( builder: (BuildContext context) => ShopsScreen(),),).then((value) {setupCart();});
+
+                            },
+                            child: Padding(
+                              padding: EdgeInsets.all(5),
+                              child: Container(
+                                height: 170,
+                                width: ((screenWidth(context)/2))-15,
+
+                                decoration: BoxDecoration(
+
+                                  shape: BoxShape.rectangle,
+                                  borderRadius: BorderRadius.all(Radius.circular(15.0)),
+                                  image: DecorationImage(
+                                    image: AssetImage("assets/imgs/super_market.jpg"),
+                                    fit: BoxFit.cover,
+                                  ),
+                                ),
+                                child:  Padding(
+                                  padding: EdgeInsets.all(0),
+                                  child: Container(
+
+                                    height: 100,
+                                    decoration: BoxDecoration(
+                                      shape: BoxShape.rectangle,
+                                      borderRadius: BorderRadius.all(Radius.circular(15.0)),
+                                      gradient: new LinearGradient(
+                                          colors: [
+                                            Colors.black,
+                                            const Color(0x10000000),
+                                          ],
+                                          begin: const FractionalOffset(0.0, 0.0),
+                                          end: const FractionalOffset(0.0, 1.0),
+                                          stops: [0.0, 1.0],
+                                          tileMode: TileMode.clamp),
+                                    ),
+                                    child: Padding(
+                                      padding: EdgeInsets.all(5),
+                                      child: Column(
+                                        crossAxisAlignment: CrossAxisAlignment.start,
+                                        mainAxisAlignment: MainAxisAlignment.start,
+                                        children: [
+                                          Text(
+                                            'Supermarkets',
+                                            style: TextStyle( fontSize: 22, fontWeight: FontWeight.w500,color: Colors.white),
+                                          ),
+                                          Text(
+                                            'Groceries made easy',
+                                            style: TextStyle( fontSize: 16, fontWeight: FontWeight.w200,color: Colors.white),
+                                          ),
+                                        ],
+                                      ),
+                                    ),
+                                  ),
+                                ), /* add child content here */
+                              ),
+                            ),
+                          ),
+                          GestureDetector(
+                            onTap: (){
+                              DataStream.ShopCatagory="Butchery & BBQ";
+                              Navigator.push( context, MaterialPageRoute( builder: (BuildContext context) => ShopsScreen(),),).then((value) {setupCart();});
+
+                            },
+                            child: Padding(
+                              padding: EdgeInsets.all(5),
+                              child: Container(
+                                height: 170,
+                                width: ((screenWidth(context)/2))-15,
+
+
+                                decoration: BoxDecoration(
+
+                                  shape: BoxShape.rectangle,
+                                  borderRadius: BorderRadius.all(Radius.circular(15.0)),
+                                  image: DecorationImage(
+                                    image: AssetImage("assets/imgs/bbq.jpg"),
+                                    fit: BoxFit.cover,
+                                  ),
+                                ),
+                                child:  Padding(
+                                  padding: EdgeInsets.all(0),
+                                  child: Container(
+
+                                    height: 100,
+                                    decoration: BoxDecoration(
+                                      shape: BoxShape.rectangle,
+                                      borderRadius: BorderRadius.all(Radius.circular(15.0)),
+                                      gradient: new LinearGradient(
+                                          colors: [
+                                            Colors.black,
+                                            const Color(0x10000000),
+                                          ],
+                                          begin: const FractionalOffset(0.0, 0.0),
+                                          end: const FractionalOffset(0.0, 1.0),
+                                          stops: [0.0, 1.0],
+                                          tileMode: TileMode.clamp),
+                                    ),
+                                    child: Padding(
+                                      padding: EdgeInsets.all(5),
+                                      child: Column(
+                                        crossAxisAlignment: CrossAxisAlignment.start,
+                                        mainAxisAlignment: MainAxisAlignment.start,
+                                        children: [
+                                          Text(
+                                            'Butchery & BBQ',
+                                            style: TextStyle( fontSize: 22, fontWeight: FontWeight.w500,color: Colors.white),
+                                          ),
+                                          Text(
+                                            'The place to meet',
+                                            style: TextStyle( fontSize: 16, fontWeight: FontWeight.w200,color: Colors.white),
+                                          ),
+                                        ],
+                                      ),
+                                    ),
+                                  ),
+                                ), /* add child content here */
+                              ),
+                            ),
+                          ),
+
+                        ],
+                      ),
                       GestureDetector(
                         onTap: (){
-                          catagory="Supermarkets";
-                          Navigator.push( context, MaterialPageRoute( builder: (BuildContext context) => ShopsScreen(),),);
+                          DataStream.ShopCatagory="Fruits & Vegetables";
+                          Navigator.push( context, MaterialPageRoute( builder: (BuildContext context) => ShopsScreen(),),).then((value) {setupCart();});
 
                         },
                         child: Padding(
                           padding: EdgeInsets.all(5),
                           child: Container(
                             height: 170,
-                            width: ((screenWidth(context)/2))-15,
+
 
                             decoration: BoxDecoration(
 
                               shape: BoxShape.rectangle,
                               borderRadius: BorderRadius.all(Radius.circular(15.0)),
                               image: DecorationImage(
-                                image: AssetImage("assets/imgs/super_market.jpg"),
+                                image: AssetImage("assets/imgs/grocery_store.jpg"),
                                 fit: BoxFit.cover,
                               ),
                             ),
@@ -248,12 +401,12 @@ class HomePage extends State<Home> {
                                     mainAxisAlignment: MainAxisAlignment.start,
                                     children: [
                                       Text(
-                                        'Supermarkets',
+                                        'Fruits & Vegetables',
                                         style: TextStyle( fontSize: 22, fontWeight: FontWeight.w500,color: Colors.white),
                                       ),
                                       Text(
-                                        'Groceries made easy',
-                                        style: TextStyle( fontSize: 16, fontWeight: FontWeight.w200,color: Colors.white),
+                                        'Fresher and better',
+                                        style: TextStyle( fontSize: 16, fontWeight: FontWeight.w300,color: Colors.white),
                                       ),
                                     ],
                                   ),
@@ -263,264 +416,167 @@ class HomePage extends State<Home> {
                           ),
                         ),
                       ),
-                      GestureDetector(
-                        onTap: (){
-                          catagory="Butchery & BBQ";
-                          Navigator.push( context, MaterialPageRoute( builder: (BuildContext context) => ShopsScreen(),),);
 
-                        },
-                        child: Padding(
-                          padding: EdgeInsets.all(5),
-                          child: Container(
-                            height: 170,
-                            width: ((screenWidth(context)/2))-15,
+                      Row(
 
+                        children: [
+                          GestureDetector(
+                            onTap: (){
+                              DataStream.ShopCatagory="Tandoor";
+                              Navigator.push( context, MaterialPageRoute( builder: (BuildContext context) => ShopsScreen(),),).then((value) {setupCart();});
 
-                            decoration: BoxDecoration(
-
-                              shape: BoxShape.rectangle,
-                              borderRadius: BorderRadius.all(Radius.circular(15.0)),
-                              image: DecorationImage(
-                                image: AssetImage("assets/imgs/bbq.jpg"),
-                                fit: BoxFit.cover,
-                              ),
-                            ),
-                            child:  Padding(
-                              padding: EdgeInsets.all(0),
+                            },
+                            child: Padding(
+                              padding: EdgeInsets.all(5),
                               child: Container(
+                                height: 170,
+                                width: ((screenWidth(context)/2))-15,
 
-                                height: 100,
+
+
                                 decoration: BoxDecoration(
+
                                   shape: BoxShape.rectangle,
                                   borderRadius: BorderRadius.all(Radius.circular(15.0)),
-                                  gradient: new LinearGradient(
-                                      colors: [
-                                        Colors.black,
-                                        const Color(0x10000000),
-                                      ],
-                                      begin: const FractionalOffset(0.0, 0.0),
-                                      end: const FractionalOffset(0.0, 1.0),
-                                      stops: [0.0, 1.0],
-                                      tileMode: TileMode.clamp),
-                                ),
-                                child: Padding(
-                                  padding: EdgeInsets.all(5),
-                                  child: Column(
-                                    crossAxisAlignment: CrossAxisAlignment.start,
-                                    mainAxisAlignment: MainAxisAlignment.start,
-                                    children: [
-                                      Text(
-                                        'Butchery & BBQ',
-                                        style: TextStyle( fontSize: 22, fontWeight: FontWeight.w500,color: Colors.white),
-                                      ),
-                                      Text(
-                                        'The place to meet',
-                                        style: TextStyle( fontSize: 16, fontWeight: FontWeight.w200,color: Colors.white),
-                                      ),
-                                    ],
+                                  image: DecorationImage(
+                                    image: AssetImage("assets/imgs/naan.jpg"),
+                                    fit: BoxFit.cover,
                                   ),
                                 ),
+                                child:  Padding(
+                                  padding: EdgeInsets.all(0),
+                                  child: Container(
+
+                                    height: 100,
+                                    decoration: BoxDecoration(
+                                      shape: BoxShape.rectangle,
+                                      borderRadius: BorderRadius.all(Radius.circular(15.0)),
+                                      gradient: new LinearGradient(
+                                          colors: [
+                                            Colors.black,
+                                            const Color(0x10000000),
+                                          ],
+                                          begin: const FractionalOffset(0.0, 0.0),
+                                          end: const FractionalOffset(0.0, 1.0),
+                                          stops: [0.0, 1.0],
+                                          tileMode: TileMode.clamp),
+                                    ),
+                                    child: Padding(
+                                      padding: EdgeInsets.all(5),
+                                      child: Column(
+                                        crossAxisAlignment: CrossAxisAlignment.start,
+                                        mainAxisAlignment: MainAxisAlignment.start,
+                                        children: [
+                                          Text(
+                                            'Tandoor',
+                                            style: TextStyle( fontSize: 22, fontWeight: FontWeight.w500,color: Colors.white),
+                                          ),
+                                          Text(
+                                            'Fresh Naan',
+                                            style: TextStyle( fontSize: 16, fontWeight: FontWeight.w200,color: Colors.white),
+                                          ),
+                                        ],
+                                      ),
+                                    ),
+                                  ),
+                                ), /* add child content here */
                               ),
-                            ), /* add child content here */
+                            ),
                           ),
-                        ),
+                          GestureDetector(
+                            onTap: (){
+                              DataStream.ShopCatagory="Dairy";
+                              Navigator.push( context, MaterialPageRoute( builder: (BuildContext context) => ShopsScreen(),),).then((value) {setupCart();});
+
+                            },
+                            child: Padding(
+                              padding: EdgeInsets.all(5),
+                              child: Container(
+                                height: 170,
+                                width: ((screenWidth(context)/2))-15,
+
+
+                                decoration: BoxDecoration(
+
+                                  shape: BoxShape.rectangle,
+                                  borderRadius: BorderRadius.all(Radius.circular(15.0)),
+                                  image: DecorationImage(
+                                    image: AssetImage("assets/imgs/dairy.jpg"),
+                                    fit: BoxFit.cover,
+                                  ),
+                                ),
+                                child:  Padding(
+                                  padding: EdgeInsets.all(0),
+                                  child: Container(
+
+                                    height: 100,
+                                    decoration: BoxDecoration(
+                                      shape: BoxShape.rectangle,
+                                      borderRadius: BorderRadius.all(Radius.circular(15.0)),
+                                      gradient: new LinearGradient(
+                                          colors: [
+                                            Colors.black,
+                                            const Color(0x10000000),
+                                          ],
+                                          begin: const FractionalOffset(0.0, 0.0),
+                                          end: const FractionalOffset(0.0, 1.0),
+                                          stops: [0.0, 1.0],
+                                          tileMode: TileMode.clamp),
+                                    ),
+                                    child: Padding(
+                                      padding: EdgeInsets.all(5),
+                                      child: Column(
+                                        crossAxisAlignment: CrossAxisAlignment.start,
+                                        mainAxisAlignment: MainAxisAlignment.start,
+                                        children: [
+                                          Text(
+                                            'Dairy',
+                                            style: TextStyle( fontSize: 22, fontWeight: FontWeight.w500,color: Colors.white),
+                                          ),
+                                          Text(
+                                            'Fresh Dairy Products',
+                                            style: TextStyle( fontSize: 16, fontWeight: FontWeight.w200,color: Colors.white),
+                                          ),
+                                        ],
+                                      ),
+                                    ),
+                                  ),
+                                ), /* add child content here */
+                              ),
+                            ),
+                          ),
+                        ],
                       ),
 
                     ],
                   ),
-                  GestureDetector(
-                    onTap: (){
-                      catagory="Fruits & Vegetables";
-                      Navigator.push( context, MaterialPageRoute( builder: (BuildContext context) => ShopsScreen(),),);
+                  Positioned(
+                    right: 15,
+                    bottom: 15,
+                    child: Badge(
+                      badgeColor: Colors.redAccent,
+                      badgeContent: Container(
+                        height: 20,
+                        width: 20,
+                        child: Column(
+                          mainAxisAlignment: MainAxisAlignment.center,
+                          crossAxisAlignment: CrossAxisAlignment.center,
+                          children: [
 
-                    },
-                    child: Padding(
-                      padding: EdgeInsets.all(5),
-                      child: Container(
-                        height: 170,
-
-
-                        decoration: BoxDecoration(
-
-                          shape: BoxShape.rectangle,
-                          borderRadius: BorderRadius.all(Radius.circular(15.0)),
-                          image: DecorationImage(
-                            image: AssetImage("assets/imgs/grocery_store.jpg"),
-                            fit: BoxFit.cover,
-                          ),
+                            Text(carts.length.toString(),style: TextStyle(color: Colors.white),),
+                          ],
                         ),
-                        child:  Padding(
-                          padding: EdgeInsets.all(0),
-                          child: Container(
+                      ),
+                      child: FloatingActionButton(
+                        onPressed: (){
+                           Navigator.push( context, MaterialPageRoute( builder: (BuildContext context) => CartScreen(),),).then((value) {setupCart();});
 
-                            height: 100,
-                            decoration: BoxDecoration(
-                              shape: BoxShape.rectangle,
-                              borderRadius: BorderRadius.all(Radius.circular(15.0)),
-                              gradient: new LinearGradient(
-                                  colors: [
-                                    Colors.black,
-                                    const Color(0x10000000),
-                                  ],
-                                  begin: const FractionalOffset(0.0, 0.0),
-                                  end: const FractionalOffset(0.0, 1.0),
-                                  stops: [0.0, 1.0],
-                                  tileMode: TileMode.clamp),
-                            ),
-                            child: Padding(
-                              padding: EdgeInsets.all(5),
-                              child: Column(
-                                crossAxisAlignment: CrossAxisAlignment.start,
-                                mainAxisAlignment: MainAxisAlignment.start,
-                                children: [
-                                  Text(
-                                    'Fruits & Vegetables',
-                                    style: TextStyle( fontSize: 22, fontWeight: FontWeight.w500,color: Colors.white),
-                                  ),
-                                  Text(
-                                    'Fresher and better',
-                                    style: TextStyle( fontSize: 16, fontWeight: FontWeight.w300,color: Colors.white),
-                                  ),
-                                ],
-                              ),
-                            ),
-                          ),
-                        ), /* add child content here */
+                        },
+
+                        child: Icon(Icons.shopping_cart),
                       ),
                     ),
                   ),
-
-                  Row(
-
-                    children: [
-                      GestureDetector(
-                        onTap: (){
-                          catagory="Tandoor";
-                          Navigator.push( context, MaterialPageRoute( builder: (BuildContext context) => ShopsScreen(),),);
-
-                        },
-                        child: Padding(
-                          padding: EdgeInsets.all(5),
-                          child: Container(
-                            height: 170,
-                            width: ((screenWidth(context)/2))-15,
-
-
-
-                            decoration: BoxDecoration(
-
-                              shape: BoxShape.rectangle,
-                              borderRadius: BorderRadius.all(Radius.circular(15.0)),
-                              image: DecorationImage(
-                                image: AssetImage("assets/imgs/naan.jpg"),
-                                fit: BoxFit.cover,
-                              ),
-                            ),
-                            child:  Padding(
-                              padding: EdgeInsets.all(0),
-                              child: Container(
-
-                                height: 100,
-                                decoration: BoxDecoration(
-                                  shape: BoxShape.rectangle,
-                                  borderRadius: BorderRadius.all(Radius.circular(15.0)),
-                                  gradient: new LinearGradient(
-                                      colors: [
-                                        Colors.black,
-                                        const Color(0x10000000),
-                                      ],
-                                      begin: const FractionalOffset(0.0, 0.0),
-                                      end: const FractionalOffset(0.0, 1.0),
-                                      stops: [0.0, 1.0],
-                                      tileMode: TileMode.clamp),
-                                ),
-                                child: Padding(
-                                  padding: EdgeInsets.all(5),
-                                  child: Column(
-                                    crossAxisAlignment: CrossAxisAlignment.start,
-                                    mainAxisAlignment: MainAxisAlignment.start,
-                                    children: [
-                                      Text(
-                                        'Tandoor',
-                                        style: TextStyle( fontSize: 22, fontWeight: FontWeight.w500,color: Colors.white),
-                                      ),
-                                      Text(
-                                        'Fresh Naan',
-                                        style: TextStyle( fontSize: 16, fontWeight: FontWeight.w200,color: Colors.white),
-                                      ),
-                                    ],
-                                  ),
-                                ),
-                              ),
-                            ), /* add child content here */
-                          ),
-                        ),
-                      ),
-                      GestureDetector(
-                        onTap: (){
-                          catagory="Dairy";
-                          Navigator.push( context, MaterialPageRoute( builder: (BuildContext context) => ShopsScreen(),),);
-
-                        },
-                        child: Padding(
-                          padding: EdgeInsets.all(5),
-                          child: Container(
-                            height: 170,
-                            width: ((screenWidth(context)/2))-15,
-
-
-                            decoration: BoxDecoration(
-
-                              shape: BoxShape.rectangle,
-                              borderRadius: BorderRadius.all(Radius.circular(15.0)),
-                              image: DecorationImage(
-                                image: AssetImage("assets/imgs/dairy.jpg"),
-                                fit: BoxFit.cover,
-                              ),
-                            ),
-                            child:  Padding(
-                              padding: EdgeInsets.all(0),
-                              child: Container(
-
-                                height: 100,
-                                decoration: BoxDecoration(
-                                  shape: BoxShape.rectangle,
-                                  borderRadius: BorderRadius.all(Radius.circular(15.0)),
-                                  gradient: new LinearGradient(
-                                      colors: [
-                                        Colors.black,
-                                        const Color(0x10000000),
-                                      ],
-                                      begin: const FractionalOffset(0.0, 0.0),
-                                      end: const FractionalOffset(0.0, 1.0),
-                                      stops: [0.0, 1.0],
-                                      tileMode: TileMode.clamp),
-                                ),
-                                child: Padding(
-                                  padding: EdgeInsets.all(5),
-                                  child: Column(
-                                    crossAxisAlignment: CrossAxisAlignment.start,
-                                    mainAxisAlignment: MainAxisAlignment.start,
-                                    children: [
-                                      Text(
-                                        'Dairy',
-                                        style: TextStyle( fontSize: 22, fontWeight: FontWeight.w500,color: Colors.white),
-                                      ),
-                                      Text(
-                                        'Fresh Dairy Products',
-                                        style: TextStyle( fontSize: 16, fontWeight: FontWeight.w200,color: Colors.white),
-                                      ),
-                                    ],
-                                  ),
-                                ),
-                              ),
-                            ), /* add child content here */
-                          ),
-                        ),
-                      ),
-                    ],
-                  ),
-
                 ],
               ),
             ),
@@ -541,9 +597,23 @@ class HomePage extends State<Home> {
     );
      Widget ProfileScreen  =Center(
       child: Container(
-        child:  Text(
-          'Index 1: ProfileScreen',
-          style: TextStyle( fontSize: 22, fontWeight: FontWeight.bold),
+        child:  GestureDetector(
+          onTap: () async {
+
+            FirebaseAuth.instance.currentUser().then((firebaseUser) async {
+              if(firebaseUser != null){
+                await FirebaseAuth.instance.signOut();
+
+                 Navigator.of(context).pushReplacement(MaterialPageRoute(builder: (context) => SignIn()));
+
+              }
+
+            });
+          },
+          child: Text(
+            'Index 1: ProfileScreen',
+            style: TextStyle( fontSize: 22, fontWeight: FontWeight.bold),
+          ),
         ),
       ),
     );
