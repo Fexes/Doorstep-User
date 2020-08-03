@@ -399,7 +399,7 @@ class _SingleProductState extends State<SingleProduct> {
                           ToastUtils.showCustomToast(context, "Select Quantity", null);
                         }
                       },
-                      child: Text('Add to Cart',style: TextStyle(color: Colors.black,fontWeight: FontWeight.w500, fontSize: 20),),
+                      child: Text('Add to Cart',style: TextStyle(color: Colors.black,fontWeight: FontWeight.w500, fontSize: 16),),
                     ),
                   ),
                   SizedBox(width: 20,),
@@ -447,7 +447,7 @@ class _SingleProductState extends State<SingleProduct> {
                           Navigator.of(context).pushReplacement(MaterialPageRoute(builder: (context) => CartScreen()));
 
                         },
-                        child: Text('Buy Now',style: TextStyle(color: Colors.white,fontWeight: FontWeight.w500, fontSize: 20),),
+                        child: Text('Buy Now',style: TextStyle(color: Colors.white,fontWeight: FontWeight.w500, fontSize: 16),),
                       ),
                     ),
                   ),

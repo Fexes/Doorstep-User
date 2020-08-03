@@ -1,4 +1,5 @@
 import 'dart:io';
+import 'dart:math';
 
  import 'package:Doorstep/models/Cart.dart';
 import 'package:Doorstep/models/Shops.dart';
@@ -14,8 +15,11 @@ import 'package:Doorstep/utilts/UI/toast_utility.dart';
 import 'package:flutter/material.dart';
 import 'package:Doorstep/styles/styles.dart';
 import 'package:Doorstep/screens/auth/sign-up.dart';
+import 'package:geolocator/geolocator.dart';
 import 'package:google_map_location_picker/google_map_location_picker.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
+import 'package:intl/intl.dart';
+import 'package:permission_handler/permission_handler.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'dart:async';
 import 'dart:convert' show jsonDecode, utf8;
@@ -239,14 +243,14 @@ class _CheckOutScreenState extends State<CheckOutScreen> {
                                       ),
                                        Text(
                                         'Items',
-                                        style: TextStyle(fontSize: 16, fontWeight: FontWeight.w400,color: Colors.black),
+                                        style: TextStyle(fontSize: 16, fontWeight: FontWeight.w500,color: Colors.black),
                                       ),
                                     ],
                                   ),
 
                                   Text(
                                     'Price  ',
-                                    style: TextStyle(fontSize: 16, fontWeight: FontWeight.w400,color: Colors.redAccent),
+                                    style: TextStyle(fontSize: 16, fontWeight: FontWeight.w500,color: Colors.redAccent),
                                   ),
 
 
@@ -269,20 +273,20 @@ class _CheckOutScreenState extends State<CheckOutScreen> {
                                         width:30,
                                         child: Text(
                                           '${carts[index].no_of_items} x ',
-                                          style: TextStyle(fontSize: 14, fontWeight: FontWeight.w200,color: Colors.black),
+                                          style: TextStyle(fontSize: 14, fontWeight: FontWeight.w300,color: Colors.black),
                                         ),
                                       ),
                                       SizedBox(width: 10,),
                                       Text(
                                         '${carts[index].cardname}',
-                                        style: TextStyle(fontSize: 14, fontWeight: FontWeight.w200,color: Colors.black),
+                                        style: TextStyle(fontSize: 14, fontWeight: FontWeight.w300,color: Colors.black),
                                       ),
                                     ],
                                   ),
 
                                   Text(
                                     'Rs. ${carts[index].no_of_items*carts[index].cardprice}',
-                                    style: TextStyle(fontSize: 16, fontWeight: FontWeight.w200,color: Colors.redAccent),
+                                    style: TextStyle(fontSize: 16, fontWeight: FontWeight.w300,color: Colors.redAccent),
                                   ),
                                 ],
                               ),
@@ -306,20 +310,20 @@ class _CheckOutScreenState extends State<CheckOutScreen> {
                                   width:30,
                                   child: Text(
                                     '${carts[index].no_of_items} x ',
-                                    style: TextStyle(fontSize: 14, fontWeight: FontWeight.w200,color: Colors.black),
+                                    style: TextStyle(fontSize: 14, fontWeight: FontWeight.w300,color: Colors.black),
                                   ),
                                 ),
                                 SizedBox(width: 10,),
                                 Text(
                                   '${carts[index].cardname}',
-                                  style: TextStyle(fontSize: 14, fontWeight: FontWeight.w200,color: Colors.black),
+                                  style: TextStyle(fontSize: 14, fontWeight: FontWeight.w300,color: Colors.black),
                                 ),
                               ],
                             ),
 
                             Text(
                               'Rs. ${carts[index].no_of_items*carts[index].cardprice}',
-                              style: TextStyle(fontSize: 16, fontWeight: FontWeight.w200,color: Colors.redAccent),
+                              style: TextStyle(fontSize: 16, fontWeight: FontWeight.w300,color: Colors.redAccent),
                             ),
                           ],
                         ),
@@ -350,11 +354,11 @@ class _CheckOutScreenState extends State<CheckOutScreen> {
                                       children: [
                                         Text(
                                           'Subtotal ',
-                                          style: TextStyle(fontSize: 16, fontWeight: FontWeight.w200,color: Colors.black),
+                                          style: TextStyle(fontSize: 16, fontWeight: FontWeight.w300,color: Colors.black),
                                         ),
                                         Text(
                                           'Rs. ${calSubtotal()}',
-                                          style: TextStyle(fontSize: 16, fontWeight: FontWeight.w200,color: Colors.black),
+                                          style: TextStyle(fontSize: 16, fontWeight: FontWeight.w300,color: Colors.black),
                                         ),
                                       ],
                                     ),
@@ -365,11 +369,11 @@ class _CheckOutScreenState extends State<CheckOutScreen> {
                                       children: [
                                         Text(
                                           'Delivery Charges ',
-                                          style: TextStyle(fontSize: 16, fontWeight: FontWeight.w200,color: Colors.black),
+                                          style: TextStyle(fontSize: 16, fontWeight: FontWeight.w300,color: Colors.black),
                                         ),
                                         Text(
                                           'Rs. ${DataStream.DeliverCharges}',
-                                          style: TextStyle(fontSize: 16, fontWeight: FontWeight.w200,color: Colors.black),
+                                          style: TextStyle(fontSize: 16, fontWeight: FontWeight.w300,color: Colors.black),
                                         ),
                                       ],
                                     ),
@@ -388,17 +392,17 @@ class _CheckOutScreenState extends State<CheckOutScreen> {
                                           children: [
                                             Text(
                                               'Total ',
-                                              style: TextStyle(fontSize: 16, fontWeight: FontWeight.w400,color: Colors.black),
+                                              style: TextStyle(fontSize: 16, fontWeight: FontWeight.w500,color: Colors.black),
                                             ),
                                             Text(
                                               '(incl. VAT)',
-                                              style: TextStyle(fontSize: 12, fontWeight: FontWeight.w200,color: Colors.black),
+                                              style: TextStyle(fontSize: 12, fontWeight: FontWeight.w300,color: Colors.black),
                                             ),
                                           ],
                                         ),
                                         Text(
                                           'Rs. ${caltotal()}',
-                                          style: TextStyle(fontSize: 16, fontWeight: FontWeight.w400,color: Colors.black),
+                                          style: TextStyle(fontSize: 16, fontWeight: FontWeight.w500,color: Colors.black),
                                         ),
                                       ],
                                     ),
@@ -446,8 +450,8 @@ class _CheckOutScreenState extends State<CheckOutScreen> {
                                           style: TextStyle(fontSize: 16, fontWeight: FontWeight.w300,color: Colors.black),
                                         ),
                                         Text(
-                                          '03350581041',
-                                          style: TextStyle(fontSize: 16, fontWeight: FontWeight.w200,color: Colors.black),
+                                          DataStream.PhoneNumber,
+                                          style: TextStyle(fontSize: 16, fontWeight: FontWeight.w300,color: Colors.black),
                                         ),
 
                                       ],
@@ -479,11 +483,11 @@ class _CheckOutScreenState extends State<CheckOutScreen> {
                                               SizedBox(height: 5,),
 
                                               Container(
-                                                width:screenWidth(context)/2,
+                                                width:screenWidth(context)/1.5,
                                                 child: Text(
                                                   '${Useraddress}',
-                                                  maxLines:3,
-                                                  style: TextStyle(fontSize: 16, fontWeight: FontWeight.w200,color: Colors.black),
+                                                  maxLines:5,
+                                                  style: TextStyle(fontSize: 16, fontWeight: FontWeight.w300,color: Colors.black),
                                                 ),
                                               ),
 
@@ -546,7 +550,7 @@ class _CheckOutScreenState extends State<CheckOutScreen> {
                               child: Padding(
                                 padding: EdgeInsets.all(10),
                                 child: Column(
-                                  crossAxisAlignment:CrossAxisAlignment.start,
+                                  crossAxisAlignment:CrossAxisAlignment.center,
                                   children: [
                                     Text(
                                       'By completing this order, I agree to all terms & conditions.',
@@ -580,7 +584,7 @@ class _CheckOutScreenState extends State<CheckOutScreen> {
             child: Padding(
               padding: const EdgeInsets.fromLTRB(20.0, 30.0, 20.0, 20),
               child: Container(
-                    height: 50,
+                    height: 60,
                     decoration: BoxDecoration(
                       color: isaddressaded?Colors.green:Colors.grey,
                       borderRadius: BorderRadius.only(
@@ -608,35 +612,141 @@ class _CheckOutScreenState extends State<CheckOutScreen> {
 
                         if(isaddressaded){
 
+                          String orderID=getRandomString(4)+"-"+getRandomString(3);
                           FirebaseDatabase database = new FirebaseDatabase();
                           DatabaseReference _userRef = database.reference()
-                              .child('order').child(DataStream.UserId);
+                              .child('User Orders').child(DataStream.UserId).child("active").child(orderID);
+
+                          DatabaseReference shoporder = database.reference()
+                              .child('Shops');
+
+                          DatabaseReference adminorder = database.reference()
+                              .child('Admin');
+
+                          var now = new DateTime.now();
+                          var date = new DateFormat('yyyy-MM-dd');
+                          var time = new DateFormat('hh:mm');
+
+                          _userRef.set(<dynamic, dynamic>{
+                            'no_of_items': '${carts.length}',
+                            'userID':DataStream.UserId,
+                            'bill': '${caltotal()}',
+                            'status': 'pending',
+                            'orderDate': date.format(now),
+                            'orderTime': time.format(now),
+                            'phonenumber':DataStream.PhoneNumber,
+                            'orderID': orderID,
+                            'address': Useraddress,
+                            'location':"${deliverylocation.latitude},${deliverylocation.longitude}",
+
+                          }).then((value) {
 
 
-                          for(int i=0;i<=carts.length-1;i++){
+                            for(int i=0;i<=carts.length-1;i++){
 
-                            _userRef.push().set(<dynamic, dynamic>{
-                              'no_of_items': carts[i].no_of_items,
-                              'cardid': carts[i].cardid.toString(),
-                              'cardname': carts[i].cardname.toString(),
-                              'cardimage': carts[i].cardimage.toString(),
-                              'cardprice': carts[i].cardprice,
-                              'town':"Bahria Town Phase 4",
-                              'shopcatagory': DataStream.ShopCatagory,
-                              'shopid': DataStream.ShopId,
+                              adminorder
+                                  .child("active")
+                                  .child(DataStream.UserId)
+                                  .child(orderID)
+                                  .set(<dynamic, dynamic>{
+                                'no_of_items': '${carts.length}',
+                                'userID':DataStream.UserId,
+                                'bill': '${caltotal()}',
+                                'status': 'pending',
+                                'orderDate': date.format(now),
+                                'orderTime': time.format(now),
+                                'phonenumber': DataStream.PhoneNumber,
+                                'orderID': orderID,
+                                'address': Useraddress,
+                                'location': "${deliverylocation
+                                    .latitude},${deliverylocation.longitude}",
+
+                              }).then((value) {
+
+                                adminorder
+                                .child("active")
+                                .child(DataStream.UserId)
+                                    .child(orderID).child("items").push().set(
+                                    <dynamic, dynamic>{
+                                      'no_of_items': carts[i].no_of_items,
+                                      'cardid': carts[i].cardid.toString(),
+                                      'cardname': carts[i].cardname.toString(),
+                                      'cardimage': carts[i].cardimage.toString(),
+                                      'cardprice': carts[i].cardprice,
+                                      'town':"Bahria Town Phase 4",
+                                      'shopcatagory': DataStream.ShopCatagory,
+                                      'shopid': DataStream.ShopId,
+
+                                    }
+                                );
+
+                              });
 
 
 
-                            }).then((value) {
-                              FirebaseDatabase database = new FirebaseDatabase();
-                              DatabaseReference _userRef = database.reference()
-                                  .child('cart').child(DataStream.UserId);
-                              _userRef.remove();
-                             });
+                                shoporder.child(carts[i].town).child(
+                                    carts[i].shopcatagory).child(
+                                    carts[i].shopid).child("orders")
+                                    .child("active")
+                                    .child(orderID)
+                                    .set(<dynamic, dynamic>{
+                                  'no_of_items': '${carts.length}',
+                                  'userID':DataStream.UserId,
+                                  'bill': '${caltotal()}',
+                                  'status': 'pending',
+                                  'orderDate': date.format(now),
+                                  'orderTime': time.format(now),
+                                  'phonenumber': DataStream.PhoneNumber,
+                                  'orderID': orderID,
+                                  'address': Useraddress,
+                                  'location': "${deliverylocation
+                                      .latitude},${deliverylocation.longitude}",
 
-                          }
+                                }).then((value) {
+
+                                  shoporder.child(carts[i].town).child(carts[i].shopcatagory).child(carts[i].shopid).child("orders")
+                                      .child("active").child(orderID).child("items").push().set(
+                                      <dynamic, dynamic>{
+                                        'no_of_items': carts[i].no_of_items,
+                                        'cardid': carts[i].cardid.toString(),
+                                        'cardname': carts[i].cardname.toString(),
+                                        'cardimage': carts[i].cardimage.toString(),
+                                        'cardprice': carts[i].cardprice,
+                                        'town':"Bahria Town Phase 4",
+                                        'shopcatagory': DataStream.ShopCatagory,
+                                        'shopid': DataStream.ShopId,
+
+                                      }
+                                  );
+
+                                });
 
 
+
+
+                              _userRef.child("items").push().set(<dynamic, dynamic>{
+                                'no_of_items': carts[i].no_of_items,
+                                'cardid': carts[i].cardid.toString(),
+                                'cardname': carts[i].cardname.toString(),
+                                'cardimage': carts[i].cardimage.toString(),
+                                'cardprice': carts[i].cardprice,
+                                'town':"Bahria Town Phase 4",
+                                'shopcatagory': DataStream.ShopCatagory,
+                                'shopid': DataStream.ShopId,
+
+
+                              }).then((value) {
+                                FirebaseDatabase database = new FirebaseDatabase();
+                                DatabaseReference _userRef = database.reference()
+                                    .child('cart').child(DataStream.UserId);
+                                _userRef.remove();
+                              });
+                            }
+
+                            ToastUtils.showCustomToast(context, "Order Placed", true);
+                            Navigator.of(context).pop();
+
+                          });
 
 
                         }else{
@@ -683,31 +793,93 @@ class _CheckOutScreenState extends State<CheckOutScreen> {
     );
 
   }
+  var _chars = 'AaBbCcDdEeFfGgHhIiJjKkLlMmNnOoPpQqRrSsTtUuVvWwXxYyZz1234567890';
+  Random _rnd = Random();
+
+  String getRandomString(int length) => String.fromCharCodes(Iterable.generate(
+      length, (_) => _chars.codeUnitAt(_rnd.nextInt(_chars.length))));
   String googleAPIKey = "AIzaSyD_U_2NzdPIL7TWb8ECBHWO1eROR2yrebI";
 
   String Useraddress="Add Location";
   bool isaddressaded=false;
   LatLng deliverylocation;
   Future<void> addLocation() async {
+    showLoadingDialogue("Getting Location");
 
-    LocationResult result = await showLocationPicker(
-      context,
-      googleAPIKey,
-    //  initialCenter: userPosition,
-      myLocationButtonEnabled: true,
-      layersButtonEnabled: true,
 
-    );
-    print("result = $result");
-    if(result!=null){
-      isaddressaded=true;
-      print(result.address);
-      Useraddress=result.address;
-      deliverylocation=result.latLng;
-      setState(() {
+    getLocation().then((value) async {
+      hideLoadingDialogue();
 
-      });
-    }
+      LocationResult result = await showLocationPicker(
+          context,
+          googleAPIKey,
+
+          // appBarColor: Colors.green,
+          initialCenter: value,
+          myLocationButtonEnabled: true,
+          automaticallyAnimateToCurrentLocation: true
+
+      );
+      print("result = $result");
+      if(result!=null){
+        isaddressaded=true;
+        print(result.address);
+        Useraddress=result.address;
+        deliverylocation=result.latLng;
+        setState(() {
+
+        });
+      }
+
+    });
+
+
   }
 
+  Future<LatLng> getLocation() async {
+    LatLng userPosition;
+    // print(userPosition.toString());
+    Map<Permission, PermissionStatus> statuses = await [
+      Permission.location,
+    ].request();
+
+
+
+    var geolocator = Geolocator();
+    GeolocationStatus geolocationStatus =
+    await geolocator.checkGeolocationPermissionStatus();
+    switch (geolocationStatus) {
+      case GeolocationStatus.denied:
+        print('denied');
+        break;
+      case GeolocationStatus.disabled:
+        print('disabled');break;
+      case GeolocationStatus.restricted:
+        print('restricted');
+        break;
+      case GeolocationStatus.unknown:
+        print('unknown');
+        break;
+      case GeolocationStatus.granted:
+        print('granted');
+
+
+
+        await Geolocator()
+            .getCurrentPosition(desiredAccuracy: LocationAccuracy.high)
+            .then((Position _position) async {
+          if (_position != null) {
+
+            userPosition = LatLng(_position.latitude, _position.longitude);
+
+            setState((){
+            });
+          }
+        });
+        break;
+    }
+
+    return userPosition;
+
+  }
 }

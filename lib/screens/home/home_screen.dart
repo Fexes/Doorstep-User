@@ -1,6 +1,7 @@
 import 'dart:io';
 
 import 'package:Doorstep/models/Cart.dart';
+import 'package:Doorstep/models/Order.dart';
 import 'package:Doorstep/models/Shops.dart';
 import 'package:Doorstep/screens/auth/sign-in.dart';
 import 'package:Doorstep/screens/home/shops_screen.dart';
@@ -9,11 +10,13 @@ import 'package:badges/badges.dart';
 import 'package:carousel_slider/carousel_options.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_database/firebase_database.dart';
+import 'package:flutter/cupertino.dart';
 import 'package:flutter_spinkit/flutter_spinkit.dart';
 import 'package:Doorstep/utilts/UI/toast_utility.dart';
 import 'package:flutter/material.dart';
 import 'package:Doorstep/styles/styles.dart';
 import 'package:Doorstep/screens/auth/sign-up.dart';
+import 'package:rate_my_app/rate_my_app.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'dart:async';
 import 'dart:convert' show jsonDecode, utf8;
@@ -25,6 +28,7 @@ import 'package:carousel_slider/carousel_slider.dart';
 import 'package:http/http.dart' as http;
 
 import 'cart_screen.dart';
+import 'order_items_screen.dart';
 
 class Home extends StatefulWidget {
   @override
@@ -101,10 +105,18 @@ class HomePage extends State<Home> {
   Future<void> initState()  {
     super.initState();
 
+
     setupCart();
   }
 
+
+  List<Order> orders;
+  DatabaseReference volunteerRef;
+
+
   void setupCart(){
+
+    orders = new List();
 
     carts = new List();
 
@@ -113,6 +125,16 @@ class HomePage extends State<Home> {
     final FirebaseDatabase database = FirebaseDatabase.instance;
     volunteerRef = database.reference().child("cart").child(DataStream.UserId);
     volunteerRef.onChildAdded.listen(_onEntryAdded);
+    volunteerRef.onChildChanged.listen(_onEntryChanged);
+
+  }
+  _onEntryChanged(Event event) {
+    var old = carts.singleWhere((entry) {
+      return entry.key == event.snapshot.key;
+    });
+    setState(() {
+      carts[carts.indexOf(old)] = Cart.fromSnapshot(event.snapshot);
+    });
   }
   _onEntryAdded(Event event) {
     setState(() {
@@ -136,6 +158,10 @@ class HomePage extends State<Home> {
 
   @override
   Widget build(BuildContext context) {
+
+
+
+
     final List<Widget> imageSliders = imgList.map((item) => Container(
       child: Container(
       //  margin: EdgeInsets.all(5.0),
@@ -176,13 +202,16 @@ class HomePage extends State<Home> {
         ),
       ),
     )).toList();
-     Widget HomeScreen  = Center(
 
-      child:
-      Padding(
-        padding: EdgeInsets.all(5),
-        child: Column(
+     Widget HomeScreen  = Scaffold(
+       appBar: AppBar(
+         title: const Text('Doorstep'),
+         automaticallyImplyLeading: false,
+       ),
+        body: Center(
+         child: Column(
           children: [
+            SizedBox(height: 5,),
             Column(
                 children: [
                   CarouselSlider(
@@ -280,7 +309,7 @@ class HomePage extends State<Home> {
                                           ),
                                           Text(
                                             'Groceries made easy',
-                                            style: TextStyle( fontSize: 16, fontWeight: FontWeight.w200,color: Colors.white),
+                                            style: TextStyle( fontSize: 16, fontWeight: FontWeight.w300,color: Colors.white),
                                           ),
                                         ],
                                       ),
@@ -342,7 +371,7 @@ class HomePage extends State<Home> {
                                           ),
                                           Text(
                                             'The place to meet',
-                                            style: TextStyle( fontSize: 16, fontWeight: FontWeight.w200,color: Colors.white),
+                                            style: TextStyle( fontSize: 16, fontWeight: FontWeight.w300,color: Colors.white),
                                           ),
                                         ],
                                       ),
@@ -365,10 +394,7 @@ class HomePage extends State<Home> {
                           padding: EdgeInsets.all(5),
                           child: Container(
                             height: 170,
-
-
                             decoration: BoxDecoration(
-
                               shape: BoxShape.rectangle,
                               borderRadius: BorderRadius.all(Radius.circular(15.0)),
                               image: DecorationImage(
@@ -473,7 +499,7 @@ class HomePage extends State<Home> {
                                           ),
                                           Text(
                                             'Fresh Naan',
-                                            style: TextStyle( fontSize: 16, fontWeight: FontWeight.w200,color: Colors.white),
+                                            style: TextStyle( fontSize: 16, fontWeight: FontWeight.w300,color: Colors.white),
                                           ),
                                         ],
                                       ),
@@ -535,7 +561,7 @@ class HomePage extends State<Home> {
                                           ),
                                           Text(
                                             'Fresh Dairy Products',
-                                            style: TextStyle( fontSize: 16, fontWeight: FontWeight.w200,color: Colors.white),
+                                            style: TextStyle( fontSize: 16, fontWeight: FontWeight.w300,color: Colors.white),
                                           ),
                                         ],
                                       ),
@@ -582,72 +608,740 @@ class HomePage extends State<Home> {
             ),
           ],
         ),
-      ),
+       ),
+     );
+
+    Widget OngoingOrders  =Center(
+      child: StreamBuilder(
+          stream: FirebaseDatabase.instance
+              .reference()
+              .child("User Orders").child(DataStream.UserId).child("active")
+              .onValue,
+          builder: (BuildContext context, AsyncSnapshot<Event> snapshot) {
+            Map<dynamic, dynamic> map ;
+            try {
+              map = snapshot.data.snapshot.value;
+            }catch(e){
+
+            }
+            if (map!=null) {
+
+              orders.clear();
+              map.forEach((dynamic, v) =>
+                  orders.add( new Order(v["key"],v['no_of_items'],v['bill'] , v["location"],v["orderDate"] ,v["address"] , v["orderTime"], v["phonenumber"], v["orderID"],v["status"],v["userID"]))
+              );
+
+              orders.sort((a, b){
+
+                final birthday =DateTime.parse(a.orderDate+" "+a.orderTime+":00");
+                final date2 =DateTime.parse(b.orderDate+" "+b.orderTime+":00");
+                final difference = date2.difference(birthday).inMinutes;
+                return difference;
+              });
+
+              //   orders= orders.sort()
+
+              return ListView.builder(
+
+
+                itemCount: orders.length,
+                padding: EdgeInsets.all(2.0),
+                itemBuilder: (BuildContext context, int index) {
+                  return  Padding(
+                    padding: const EdgeInsets.all(12.0),
+
+                    child: GestureDetector(
+                      onTap: (){
+                        //OrderItemsScreen
+                        Navigator.push( context, MaterialPageRoute( builder: (BuildContext context) => OrderItemsScreen("active",orders[index].orderID,orders[index].address,"${orders[index].orderDate}   ${orders[index].orderTime}"),),);
+
+                      },
+                      child: Container(
+                         width: screenWidth(context)-60,
+                        decoration: BoxDecoration(
+                          color: Colors.white,
+                          borderRadius: BorderRadius.only(
+                              topLeft: Radius.circular(10),
+                              topRight: Radius.circular(10),
+                              bottomLeft: Radius.circular(10),
+                              bottomRight: Radius.circular(10)
+                          ),
+                          boxShadow: [
+                            BoxShadow(
+                              color: Colors.grey.withOpacity(0.5),
+                              spreadRadius: 5,
+                              blurRadius: 7,
+                              offset: Offset(0, 3), // changes position of shadow
+                            ),
+                          ],
+                        ),
+
+                        child: Padding(
+                          padding: EdgeInsets.all(20),
+                          child: Column(
+                            children: [
+                              Text(
+                                '# ${orders[index].orderID}',
+                                style: TextStyle(fontSize: 18, fontWeight: FontWeight.w500,color: Colors.black),
+                              ),
+                              SizedBox(height: 10,),
+
+                              Row(
+                                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                                children: [
+                                  Text(
+                                    'Items ',
+                                    style: TextStyle(fontSize: 16, fontWeight: FontWeight.w400,color: Colors.black),
+                                  ),
+                                  Container(
+                                    width: screenWidth(context)/1.9,
+                                    child: Text(
+                                      '${orders[index].no_of_items}',
+                                      textAlign: TextAlign.end,
+                                      style: TextStyle(fontSize: 16, fontWeight: FontWeight.w300,color: Colors.black),
+                                    ),
+                                  ),
+
+                                ],
+                              ),
+                              SizedBox(height: 5,),
+
+                               Row(
+                                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                                children: [
+                                  Text(
+                                    'Order Date ',
+                                    style: TextStyle(fontSize: 16, fontWeight: FontWeight.w400,color: Colors.black),
+                                  ),
+                                  Container(
+                                    width: screenWidth(context)/2,
+                                    child: Text(
+                                      '${orders[index].orderDate}   ${orders[index].orderTime}',
+                                      textAlign: TextAlign.end,
+                                      style: TextStyle(fontSize: 16, fontWeight: FontWeight.w300,color: Colors.black),
+                                    ),
+                                  ),
+
+                                ],
+                              ),
+                              SizedBox(height: 5,),
+                              Row(
+                                crossAxisAlignment: CrossAxisAlignment.start,
+                                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                                children: [
+                                  Text(
+                                    'Address ',
+                                    style: TextStyle(fontSize: 16, fontWeight: FontWeight.w400,color: Colors.black),
+                                  ),
+                                  Container(
+                                    width: screenWidth(context)/1.7,
+                                    child: Text(
+                                      '${orders[index].address}',
+                                      textAlign: TextAlign.end,
+                                      style: TextStyle(fontSize: 16, fontWeight: FontWeight.w300,color: Colors.black),
+                                    ),
+                                  ),
+                                ],
+                              ),
+                              SizedBox(height: 10,),
+                              Container(
+                                height: 1,
+                                color: Colors.grey[400],
+                              ),
+                              SizedBox(height: 10,),
+                              Row(
+                                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                                children: [
+                                  Row(
+                                    mainAxisAlignment: MainAxisAlignment.end,
+                                    crossAxisAlignment: CrossAxisAlignment.end,
+                                    children: [
+                                      Text(
+                                        'Total ',
+                                        style: TextStyle(fontSize: 16, fontWeight: FontWeight.w500,color: Colors.black),
+                                      ),
+                                      Text(
+                                        '(incl. VAT)',
+                                        style: TextStyle(fontSize: 12, fontWeight: FontWeight.w300,color: Colors.black),
+                                      ),
+                                    ],
+                                  ),
+                                  Text(
+                                    'Rs. ${orders[index].bill}',
+                                    style: TextStyle(fontSize: 16, fontWeight: FontWeight.w500,color: Colors.black),
+                                  ),
+                                ],
+                              ),
+                              SizedBox(height: 20,),
+                              orders[index].status=="pending"?
+                              Column(
+                                children: [
+
+                                  Text(
+                                    'Your order is being prepared',
+                                    style: TextStyle(fontSize: 18, fontWeight: FontWeight.w600,color: Colors.yellow[800]),
+                                  ),
+                                  SizedBox(height: 10,),
+                                  Container(
+                                    height: 40,
+                                    decoration: BoxDecoration(
+                                      color: Colors.redAccent,
+                                      borderRadius: BorderRadius.only(
+                                          topLeft: Radius.circular(10),
+                                          topRight: Radius.circular(10),
+                                          bottomLeft: Radius.circular(10),
+                                          bottomRight: Radius.circular(10)
+                                      ),
+                                      boxShadow: [
+                                        BoxShadow(
+                                          color: Colors.redAccent[100],
+                                          spreadRadius: 3,
+                                          blurRadius: 4,
+                                          offset: Offset(0, 3),
+                                        ),
+                                      ],
+                                    ),
+                                    width: screenWidth(context)-40,
+                                    child: FlatButton(
+                                      shape: RoundedRectangleBorder(
+                                        borderRadius: BorderRadius.circular(8.0),
+                                      ),
+                                      color: Colors.redAccent,
+                                      onPressed: (){
+
+                                        List ordereditems = new List();
+                                        FirebaseDatabase database = new FirebaseDatabase();
+                                        DatabaseReference _userRef = database.reference()
+                                            .child("User Orders").child(DataStream.UserId).child("history").child(orders[index].orderID);
+
+
+                                        _userRef.set(<dynamic, dynamic>{
+                                          'no_of_items': orders[index].no_of_items,
+                                          'userID':orders[index].userID,
+                                          'bill': orders[index].bill,
+                                          'status': 'cancelled',
+                                          'orderDate':orders[index].orderDate,
+                                          'orderTime': orders[index].orderTime,
+                                          'phonenumber' :orders[index].phonenumber,
+                                          'orderID': orders[index].orderID,
+                                          'address': orders[index].address,
+                                          'location':orders[index].location,
+
+                                        }).then((value) {
+
+                                          FirebaseDatabase database = new FirebaseDatabase();
+                                          DatabaseReference _userRef = database.reference()
+                                              .child("User Orders").child(DataStream.UserId).child("history").child(orders[index].orderID);
 
 
 
+                                          volunteerRef = database.reference().child("User Orders").child(DataStream.UserId).child("active").child(orders[index].orderID).child("items");
+                                          volunteerRef.onChildAdded.listen((event) {
+
+                                            ordereditems.add(Cart.fromSnapshot(event.snapshot));
+
+                                            _userRef.child("items").push().set(<dynamic, dynamic>{
+                                              'no_of_items': Cart.fromSnapshot(event.snapshot).no_of_items,
+                                              'cardid': Cart.fromSnapshot(event.snapshot).cardid.toString(),
+                                              'cardname': Cart.fromSnapshot(event.snapshot).cardname.toString(),
+                                              'cardimage': Cart.fromSnapshot(event.snapshot).cardimage.toString(),
+                                              'cardprice': Cart.fromSnapshot(event.snapshot).cardprice,
+                                              'town':"Bahria Town Phase 4",
+                                              'shopcatagory': DataStream.ShopCatagory,
+                                              'shopid': DataStream.ShopId,
+
+                                            });
+
+
+
+                                          });
+
+
+
+
+                                        }).then((value) {
+
+                                          DatabaseReference del = database.reference();
+
+                                          for(int i=0;i<= ordereditems.length-1;i++){
+
+                                             print("Shops."+ordereditems[i].town+"."+ordereditems[i].shopcatagory+"."+ordereditems[i].shopid+" orders."+"active."+ordereditems[index].orderID);
+
+
+//                                            try {
+//                                              del = database.reference()
+//                                                  .child("Shops").child(ordereditems[i].town)
+//                                                  .child(ordereditems[i].shopcatagory)
+//                                                  .child(ordereditems[i].shopid)
+//                                                  .child("orders").child(
+//                                                  "active")
+//                                                  .child(ordereditems[index].orderID);
+//                                              del.remove();
+//                                            }catch(e){
+//                                              print(e);
+//
+//                                              print("err");
+//                                            }
+                                          }
+
+                                          del = database.reference()
+                                              .child("User Orders").child(DataStream.UserId).child("active").child(orders[index].orderID);
+                                          del.remove();
+
+                                            del = database.reference()
+                                              .child("Admin").child("active").child(DataStream.UserId).child(orders[index].orderID);
+                                          del.remove();
+
+
+                                        });
+
+
+
+                                      },
+                                      child: Row(
+                                        mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+
+                                        children: [
+
+                                          Text('Cancel Order',style: TextStyle(color: Colors.white,fontWeight: FontWeight.w500, fontSize: 18),),
+
+                                        ],
+                                      ),
+                                    ),
+                                  ),
+                                ],
+                              ):
+                              SizedBox(height: 1,),
+
+                              orders[index].status=="ready"?
+
+                              Text(
+                                'Your order ready and is on the way',
+                                style: TextStyle(fontSize: 18, fontWeight: FontWeight.w600,color: Colors.green),
+                              ):SizedBox(height: 1,),
+
+                            ],
+                          ),
+                        ),
+                      ),
+                    ),
+                  );
+                },
+              );
+            } else {
+              return Text("Empty");
+            }
+          }),
     );
-     Widget OrdersScreen  =Center(
-      child: Container(
-        child:  Text(
-          'Index 1: OrdersScreen',
-          style: TextStyle( fontSize: 22, fontWeight: FontWeight.bold),
-        ),
-      ),
+
+    int startat=1;
+    Widget HistoryOrders  =Center(
+      child: StreamBuilder(
+          stream: FirebaseDatabase.instance
+              .reference()
+              .child("User Orders").child(DataStream.UserId).child("history")
+            //  .limitToFirst(3)
+              .onValue,
+          builder: (BuildContext context, AsyncSnapshot<Event> snapshot) {
+            Map<dynamic, dynamic> map ;
+            try {
+              map = snapshot.data.snapshot.value;
+            }catch(e){
+
+            }
+            if (map!=null) {
+
+              orders.clear();
+              map.forEach((dynamic, v) =>
+                  orders.add( new Order(v["key"],v['no_of_items'],v['bill'] , v["location"],v["orderDate"] ,v["address"] , v["orderTime"], v["phonenumber"], v["orderID"],v["status"],v["userID"]))
+              );
+
+              orders.sort((a, b){
+
+                final birthday =DateTime.parse(a.orderDate+" "+a.orderTime+":00");
+                final date2 =DateTime.parse(b.orderDate+" "+b.orderTime+":00");
+                final difference = date2.difference(birthday).inMinutes;
+                return difference;
+              });
+
+              //   orders= orders.sort()
+
+              return ListView.builder(
+
+
+                itemCount: orders.length,
+                padding: EdgeInsets.all(2.0),
+                itemBuilder: (BuildContext context, int index) {
+                  return
+
+                  Padding(
+                    padding: const EdgeInsets.all(12.0),
+
+                    child: GestureDetector(
+                      onTap: (){
+                        //OrderItemsScreen
+                        Navigator.push( context, MaterialPageRoute( builder: (BuildContext context) => OrderItemsScreen("history",orders[index].orderID,orders[index].address,"${orders[index].orderDate}   ${orders[index].orderTime}"),),);
+
+                      },
+                      child: Container(
+                        width: screenWidth(context)-60,
+                        decoration: BoxDecoration(
+                          color: Colors.white,
+                          borderRadius: BorderRadius.only(
+                              topLeft: Radius.circular(10),
+                              topRight: Radius.circular(10),
+                              bottomLeft: Radius.circular(10),
+                              bottomRight: Radius.circular(10)
+                          ),
+                          boxShadow: [
+                            BoxShadow(
+                              color: Colors.grey.withOpacity(0.5),
+                              spreadRadius: 5,
+                              blurRadius: 7,
+                              offset: Offset(0, 3), // changes position of shadow
+                            ),
+                          ],
+                        ),
+
+                        child: Padding(
+                          padding: EdgeInsets.all(20),
+                          child: Column(
+                            children: [
+                              Text(
+                                '# ${orders[index].orderID}',
+                                style: TextStyle(fontSize: 18, fontWeight: FontWeight.w400,color: Colors.black),
+                              ),
+                              SizedBox(height: 10,),
+
+                              Row(
+                                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                                children: [
+                                  Text(
+                                    'Items ',
+                                    style: TextStyle(fontSize: 16, fontWeight: FontWeight.w300,color: Colors.black),
+                                  ),
+                                  Container(
+                                    width: screenWidth(context)/1.9,
+                                    child: Text(
+                                      '${orders[index].no_of_items}',
+                                      textAlign: TextAlign.end,
+                                      style: TextStyle(fontSize: 16, fontWeight: FontWeight.w300,color: Colors.black),
+                                    ),
+                                  ),
+
+                                ],
+                              ),
+                              SizedBox(height: 5,),
+
+                              Row(
+                                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                                children: [
+                                  Text(
+                                    'Order Date ',
+                                    style: TextStyle(fontSize: 16, fontWeight: FontWeight.w300,color: Colors.black),
+                                  ),
+                                  Container(
+                                    width: screenWidth(context)/2,
+                                    child: Text(
+                                      '${orders[index].orderDate}   ${orders[index].orderTime}',
+                                      textAlign: TextAlign.end,
+                                      style: TextStyle(fontSize: 16, fontWeight: FontWeight.w300,color: Colors.black),
+                                    ),
+                                  ),
+
+                                ],
+                              ),
+                              SizedBox(height: 5,),
+                              Row(
+                                crossAxisAlignment: CrossAxisAlignment.start,
+                                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                                children: [
+                                  Text(
+                                    'Address ',
+                                    style: TextStyle(fontSize: 16, fontWeight: FontWeight.w300,color: Colors.black),
+                                  ),
+                                  Container(
+                                    width: screenWidth(context)/1.7,
+                                    child: Text(
+                                      '${orders[index].address}',
+                                      textAlign: TextAlign.end,
+                                      style: TextStyle(fontSize: 16, fontWeight: FontWeight.w300,color: Colors.black),
+                                    ),
+                                  ),
+                                ],
+                              ),
+                              SizedBox(height: 10,),
+                              Container(
+                                height: 1,
+                                color: Colors.grey[400],
+                              ),
+                              SizedBox(height: 10,),
+                              Row(
+                                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                                children: [
+                                  Row(
+                                    mainAxisAlignment: MainAxisAlignment.end,
+                                    crossAxisAlignment: CrossAxisAlignment.end,
+                                    children: [
+                                      Text(
+                                        'Total ',
+                                        style: TextStyle(fontSize: 16, fontWeight: FontWeight.w400,color: Colors.black),
+                                      ),
+                                      Text(
+                                        '(incl. VAT)',
+                                        style: TextStyle(fontSize: 12, fontWeight: FontWeight.w300,color: Colors.black),
+                                      ),
+                                    ],
+                                  ),
+                                  Text(
+                                    'Rs. ${orders[index].bill}',
+                                    style: TextStyle(fontSize: 16, fontWeight: FontWeight.w400,color: Colors.black),
+                                  ),
+                                ],
+                              ),
+                              SizedBox(height: 20,),
+
+
+                              orders[index].status=="cancelled"?
+                              Row(
+                                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                                children: [
+                                  SizedBox(width: 30,),
+                                  Text(
+                                    'Cancelled',
+                                    style: TextStyle(fontSize: 20, fontWeight: FontWeight.w700,color: Colors.redAccent),
+                                  ),
+
+                                  Icon(Icons.clear,color: Colors.redAccent,size: 30,)
+                                ],
+                              ):
+                              Row(
+                                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                                children: [
+                                  SizedBox(width: 30,),
+                                  Text(
+                                    'Completed',
+                                    style: TextStyle(fontSize: 20, fontWeight: FontWeight.w700,color: Colors.green),
+                                  ),
+
+                                  Icon(Icons.done,color: Colors.green,size: 30,)
+                                ],
+                              ),
+
+                            ],
+                          ),
+                        ),
+                      ),
+                    ),
+                  );
+
+                },
+              );
+            } else {
+              return Text("Empty");
+            }
+          }),
     );
-     Widget ProfileScreen  =Center(
-      child: Container(
-        child:  GestureDetector(
-          onTap: () async {
 
-            FirebaseAuth.instance.currentUser().then((firebaseUser) async {
-              if(firebaseUser != null){
-                await FirebaseAuth.instance.signOut();
-
-                 Navigator.of(context).pushReplacement(MaterialPageRoute(builder: (context) => SignIn()));
-
-              }
-
-            });
-          },
-          child: Text(
-            'Index 1: ProfileScreen',
-            style: TextStyle( fontSize: 22, fontWeight: FontWeight.bold),
+    Widget OrdersScreen  =Center(
+      child: DefaultTabController(
+        length: 2,
+        child: Scaffold(
+          appBar: AppBar(
+            title: const Text('Orders'),
+            bottom: TabBar(
+              tabs: [
+                Padding(
+                    padding: EdgeInsets.all(10),
+                    child: Text('Active')),
+                Padding(
+                    padding: EdgeInsets.all(10),
+                    child: Text('History')),
+              ],
+            ),
+          ),
+          body: TabBarView(
+            children: [
+              OngoingOrders,
+              HistoryOrders,
+            ],
           ),
         ),
       ),
     );
 
+    RateMyApp _rateMyApp = RateMyApp (
+        preferencesPrefix: 'rateMyApp_pro',
+        minDays: 1,
+        minLaunches: 1,
+        remindDays: 1,
+        remindLaunches: 1
+    );
+    _rateMyApp.init().then((_){
+      if(_rateMyApp.shouldOpenDialog){ //conditions check if user already rated the app
+        _rateMyApp.showStarRateDialog(
+          context,
+          title: 'What do you think about Our App?',
+          message: 'Please leave a rating',
+          actionsBuilder: (_, stars){
+            return [ // Returns a list of actions (that will be shown at the bottom of the dialog).
+              FlatButton(
+                child: Text('OK'),
+                onPressed: () async {
+                  print('Thanks for the ' + (stars == null ? '0' : stars.round().toString()) + ' star(s) !');
+                  if(stars != null && (stars == 4 || stars == 5)){
+                    //if the user stars is equal to 4 or five
+                    // you can redirect the use to playstore or                         appstore to enter their reviews
+
+
+                  } else {
+// else you can redirect the user to a page in your app to tell you how you can make the app better
+
+                  }
+                  // You can handle the result as you want (for instance if the user puts 1 star then open your contact page, if he puts more then open the store page, etc...).
+                  // This allows to mimic the behavior of the default "Rate" button. See "Advanced > Broadcasting events" for more information :
+                  await _rateMyApp.callEvent(RateMyAppEventType.rateButtonPressed);
+                  Navigator.pop<RateMyAppDialogButton>(context, RateMyAppDialogButton.rate);
+                },
+              ),
+            ];
+          },
+          dialogStyle: DialogStyle(
+            titleAlign: TextAlign.center,
+            messageAlign: TextAlign.center,
+            messagePadding: EdgeInsets.only(bottom: 20.0),
+          ),
+          starRatingOptions: StarRatingOptions(),
+          onDismissed: () => _rateMyApp.callEvent(RateMyAppEventType.laterButtonPressed),
+        );
+      }
+    });
+
+     Widget ProfileScreen  =Center(
+      child: Scaffold(
+        appBar: AppBar(
+          title: const Text('Profile'),
+
+        ),
+        body: Center(
+          child: Column(
+            mainAxisAlignment: MainAxisAlignment.end,
+             children: [
+               Padding(
+                 padding: const EdgeInsets.fromLTRB(0, 10, 0, 0),
+                 child: Text('Privacy Policy',
+                   style: TextStyle(fontSize: 16, fontWeight: FontWeight.w300,color: Colors.black,),),
+               ),
+            Padding(
+              padding: const EdgeInsets.fromLTRB(0, 5, 0, 20),
+              child: Text('Terms and Conditions',
+              style: TextStyle(fontSize: 16, fontWeight: FontWeight.w300,color: Colors.black,),),
+            ),
+              Container(
+                height: 40,
+                decoration: BoxDecoration(
+                  color: Colors.redAccent,
+                  borderRadius: BorderRadius.only(
+                      topLeft: Radius.circular(10),
+                      topRight: Radius.circular(10),
+                      bottomLeft: Radius.circular(10),
+                      bottomRight: Radius.circular(10)
+                  ),
+                  boxShadow: [
+                    BoxShadow(
+                      color: Colors.redAccent[100],
+                      spreadRadius: 3,
+                      blurRadius: 4,
+                      offset: Offset(0, 3),
+                    ),
+                  ],
+                ),
+                width: screenWidth(context)-40,
+                child: FlatButton(
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(8.0),
+                  ),
+                  color: Colors.redAccent,
+                  onPressed: (){
+
+
+                    FirebaseAuth.instance.currentUser().then((firebaseUser) async {
+                      if(firebaseUser != null){
+                        await FirebaseAuth.instance.signOut();
+
+                        Navigator.of(context).pushReplacement(MaterialPageRoute(builder: (context) => SignIn()));
+
+                      }
+
+                    });
+
+                  },
+                  child: Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+
+                    children: [
+
+                      Text('Logout',style: TextStyle(color: Colors.white,fontWeight: FontWeight.w500, fontSize: 18),),
+
+                    ],
+                  ),
+                ),
+              ),
+
+               SizedBox(height: 30,)
+            ],
+          ),
+        ),
+      ),
+
+
+    );
 
     return Scaffold(
-      appBar: AppBar(
-        title: const Text('Doorstep'),
-        automaticallyImplyLeading: false,
-      ),
-      body:
 
+
+      body:
 
       _selectedIndex==0? HomeScreen:
       _selectedIndex==1?OrdersScreen:ProfileScreen,
 
-      bottomNavigationBar: BottomNavigationBar(
-        items: const <BottomNavigationBarItem>[
-          BottomNavigationBarItem(
-            icon: Icon(Icons.home),
-            title: Text('Home'),
+      bottomNavigationBar: Container(
+        decoration: BoxDecoration(
+          color: Colors.white,
+          borderRadius: BorderRadius.only(
+              topLeft: Radius.circular(10),
+              topRight: Radius.circular(10),
+              bottomLeft: Radius.circular(10),
+              bottomRight: Radius.circular(10)
           ),
-          BottomNavigationBarItem(
-            icon: Icon(Icons.airport_shuttle),
-            title: Text('Orders'),
-          ),
-          BottomNavigationBarItem(
-            icon: Icon(Icons.account_circle),
-            title: Text('Profile'),
-          ),
-        ],
-        currentIndex: _selectedIndex,
-        selectedItemColor: Colors.amber[800],
-        onTap: onItemTapped,
+          boxShadow: [
+            BoxShadow(
+              color: Colors.grey.withOpacity(0.5),
+              spreadRadius: 5,
+              blurRadius: 7,
+              offset: Offset(0, 3), // changes position of shadow
+            ),
+          ],
+        ),
+        child: BottomNavigationBar(
+          items: const <BottomNavigationBarItem>[
+            BottomNavigationBarItem(
+              icon: Icon(Icons.home),
+              title: Text('Home'),
+            ),
+            BottomNavigationBarItem(
+              icon: Icon(Icons.airport_shuttle),
+              title: Text('Orders'),
+            ),
+            BottomNavigationBarItem(
+              icon: Icon(Icons.account_circle),
+              title: Text('Profile'),
+            ),
+          ],
+          currentIndex: _selectedIndex,
+          selectedItemColor: Colors.amber[800],
+          onTap: onItemTapped,
+        ),
       ),
     );
   }

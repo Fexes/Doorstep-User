@@ -142,7 +142,7 @@ class _SignUpState extends State<SignUp> {
     });
   }
   String username;
-  String email;
+  String mobilenumber;
   String password;
   String password2;
 
@@ -197,48 +197,41 @@ class _SignUpState extends State<SignUp> {
       ),
     );
 
-    Widget emailForm = Container(
+    Widget mobile  = Container(
       margin: EdgeInsets.only(bottom: 18.0),
       child: Row(
         children: <Widget>[
-          Icon(Icons.mail),
-           Container(
+          Icon(Icons.phone_android),
+          Container(
             width: screenWidth(context)*0.7,
             child: TextFormField(
               cursorColor: Colors.black, cursorRadius: Radius.circular(1.0), cursorWidth: 1.0,
-              keyboardType: TextInputType.emailAddress,
+              keyboardType: TextInputType.number,
               onSaved: (String value) {
-                 email = value;
+                mobilenumber = value;
               },
               validator: (String value) {
-                bool emailValid = RegExp(r"^[a-zA-Z0-9.a-zA-Z0-9.!#$%&'*+-/=?^_`{|}~]+@[a-zA-Z0-9]+\.[a-zA-Z]+").hasMatch(value);
-
-                if(value.isEmpty)
-                  return 'Please Enter Email Id';
-
-
-                else if(!emailValid){
-                  return "Please enter a valid Email";
-                }else{
+                if(value.length > 13 || value.length < 10)
+                  return 'Phone Number should be 10 or more digits and less than 13';
+                else
                   return null;
-                  }
               },
               decoration: InputDecoration(
                 contentPadding: EdgeInsets.only(left: 10.0, right: 0.0, top: 10.0, bottom: 12.0),
                 border: OutlineInputBorder(
                     borderSide: BorderSide.none
                 ),
-                labelText: "Email Id",
+                labelText: "Phone Number",
               ),
-              focusNode: _focusNodeEmail,
+              focusNode: _focusNodeMobile,
             ),
           ),
         ],
       ),
       decoration: new BoxDecoration(
         border: new Border(
-          bottom: _focusNodeEmail.hasFocus ? BorderSide(color: Colors.black, style: BorderStyle.solid, width: 2.0) :
-              BorderSide(color: Colors.black.withOpacity(0.7), style: BorderStyle.solid, width: 1.0),
+          bottom: _focusNodeMobile.hasFocus ? BorderSide(color: Colors.black, style: BorderStyle.solid, width: 2.0) :
+          BorderSide(color: Colors.black.withOpacity(0.7), style: BorderStyle.solid, width: 1.0),
         ),
       ),
     );
@@ -373,8 +366,8 @@ class _SignUpState extends State<SignUp> {
                               userForm,
 
 
-                              Text("Email", ),
-                              emailForm,
+                              Text("Phone Number", ),
+                              mobile,
 
                               Text("Password",),
 
@@ -439,56 +432,56 @@ class _SignUpState extends State<SignUp> {
                             ),
                           ),
                         ),
-                        Text( "OR",style: TextStyle(color: Colors.black),),
-                        Padding(
-                          padding: const EdgeInsets.only(top: 10.0, bottom: 12.0),
-                          child: SizedBox(
-                            width: 200,
-                            child: RaisedButton(
-                              shape: RoundedRectangleBorder(
-                                borderRadius: new BorderRadius.circular(18.0),
-
-                              ),
-
-                              color: primaryDark,
-                              onPressed: () async {
-                                //     await registerUser();
-                                signInWithGoogle().whenComplete(() {
-
-
-                                  if(userD!=null) {
-
-                                    print(userD.email);
-                                    print(userD.displayName);
-                                    print(userD.uid);
-
-
-                                    FirebaseDatabase database = new FirebaseDatabase();
-                                    DatabaseReference _userRef=database.reference().child('users').child(userD.uid);
-
-                                    _userRef.set(<String, String>{
-                                      "name": "" + userD.displayName.toString(),
-                                      "email": "" + userD.email.toString(),
-                                      "image": "" + userD.photoUrl.toString(),
-                                      "mobile": "" + userD.phoneNumber.toString(),
-                                    }).then((_) {
-                                      print('User Created.');
-                                    });
-
-                                  Navigator.of(context).pushReplacement(
-                                        MaterialPageRoute(
-                                            builder: (context) => Home()));
-                                  }else{
-                                    ToastUtils.showCustomToast(context, "Sign up Failed", false);
-                                  }
-                                });
-
-                                //  phoneAuth(phoneNo);
-                              },
-                              child: Text( "SIGN UP with Google",style: TextStyle(color: Colors.white),),
-                            ),
-                          ),
-                        ),
+//                        Text( "OR",style: TextStyle(color: Colors.black),),
+//                        Padding(
+//                          padding: const EdgeInsets.only(top: 10.0, bottom: 12.0),
+//                          child: SizedBox(
+//                            width: 200,
+//                            child: RaisedButton(
+//                              shape: RoundedRectangleBorder(
+//                                borderRadius: new BorderRadius.circular(18.0),
+//
+//                              ),
+//
+//                              color: primaryDark,
+//                              onPressed: () async {
+//                                //     await registerUser();
+//                                signInWithGoogle().whenComplete(() {
+//
+//
+//                                  if(userD!=null) {
+//
+//                                    print(userD.email);
+//                                    print(userD.displayName);
+//                                    print(userD.uid);
+//
+//
+//                                    FirebaseDatabase database = new FirebaseDatabase();
+//                                    DatabaseReference _userRef=database.reference().child('users').child(userD.uid);
+//
+//                                    _userRef.set(<String, String>{
+//                                      "name": "" + userD.displayName.toString(),
+//                                      "email": "" + userD.email.toString(),
+//                                      "image": "" + userD.photoUrl.toString(),
+//                                      "mobile": "" + userD.phoneNumber.toString(),
+//                                    }).then((_) {
+//                                      print('User Created.');
+//                                    });
+//
+//                                  Navigator.of(context).pushReplacement(
+//                                        MaterialPageRoute(
+//                                            builder: (context) => Home()));
+//                                  }else{
+//                                    ToastUtils.showCustomToast(context, "Sign up Failed", false);
+//                                  }
+//                                });
+//
+//                                //  phoneAuth(phoneNo);
+//                              },
+//                              child: Text( "SIGN UP with Google",style: TextStyle(color: Colors.white),),
+//                            ),
+//                          ),
+//                        ),
 
 
                         RawMaterialButton(
@@ -562,33 +555,123 @@ class _SignUpState extends State<SignUp> {
 
     //  print(password);
 
-     await _auth.createUserWithEmailAndPassword(
-      email: email,
-      password: password,
-    ).then((value) {
+    phoneAuth(mobilenumber);
+
+//    await _auth.createUserWithEmailAndPassword(
+//      email: mobilenumber,
+//      password: password,
+//    ).then((value) {
+//
+//
+//
+//         FirebaseDatabase database = new FirebaseDatabase();
+//         DatabaseReference _userRef=database.reference().child('users').child(value.user.uid);
+//
+//         _userRef.set(<String, String>{
+//           "name": "" + username,
+//           "email": "" + mobilenumber,
+//           "image": "" + userD.photoUrl.toString(),
+//           "mobile": "" + userD.phoneNumber.toString(),
+//         }).then((_) {
+//           print('User Created.');
+//           DataStream.UserId=userD.uid;
+//
+//           Navigator.of(context).pushReplacement(
+//               MaterialPageRoute(
+//                   builder: (context) => Home()));
+//         });
+//
+//     });
 
 
 
-         FirebaseDatabase database = new FirebaseDatabase();
-         DatabaseReference _userRef=database.reference().child('users').child(value.user.uid);
+  }
 
-         _userRef.set(<String, String>{
-           "name": "" + username,
-           "email": "" + email,
-           "image": "" + userD.photoUrl.toString(),
-           "mobile": "" + userD.phoneNumber.toString(),
-         }).then((_) {
-           print('User Created.');
-           DataStream.UserId=userD.uid;
+  TextEditingController _controllerCode = TextEditingController();
 
-           Navigator.of(context).pushReplacement(
-               MaterialPageRoute(
-                   builder: (context) => Home()));
-         });
+  phoneAuth(String phone) async {
+    FirebaseAuth _auth = FirebaseAuth.instance;
 
-     });
+    _auth.verifyPhoneNumber(
+        phoneNumber: phone,
+        timeout: Duration(seconds: 60),
+        verificationCompleted: (AuthCredential credential) async {
+
+          ToastUtils.showCustomToast(context, "Phone Verified",true);
 
 
+        },
+        verificationFailed: (AuthException exception) {
 
+
+          ToastUtils.showCustomToast(context, "Error! Try Again Later",false);
+
+        },
+        codeSent: (String verification, [int forceResendingToken]) {
+          showDialog(
+              context: context,
+              barrierDismissible: false,
+              builder: (context) {
+                return AlertDialog(
+                  shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(12)),
+                  title: Text('Enter 6-Digit Code sent to ${mobilenumber}'),
+                  content: Column(
+                    mainAxisSize: MainAxisSize.min,
+                    children: <Widget>[
+                      TextField(
+                        controller: _controllerCode,
+                        keyboardType: TextInputType.number,
+                        maxLength: 6,
+                        decoration: InputDecoration(
+                          //   errorText: validateCode(_controllerCode.text),
+                          hintText: 'Enter Code',
+                          enabledBorder: OutlineInputBorder(
+                              borderRadius: BorderRadius.circular(12.0)),
+                          focusedBorder: OutlineInputBorder(
+                              borderRadius: BorderRadius.circular(12.0)),
+                          errorBorder: OutlineInputBorder(
+                              borderRadius: BorderRadius.circular(12.0),
+                              borderSide: BorderSide(color: Colors.red)),
+                          focusedErrorBorder: OutlineInputBorder(
+                              borderRadius: BorderRadius.circular(12.0),
+                              borderSide: BorderSide(color: Colors.red)),
+                        ),
+                      )
+                    ],
+                  ),
+                  actions: <Widget>[
+
+                    FlatButton(
+                      shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(12)),
+                      child: Text("Confirm"),
+                      textColor: Colors.white,
+                      color: Colors.lightBlue,
+                      onPressed: () async {
+
+                        final code = _controllerCode.text.trim();
+                        AuthCredential credential =
+                        PhoneAuthProvider.getCredential(
+                            verificationId: verification, smsCode: code);
+                        AuthResult result =
+                        await _auth.signInWithCredential(credential);
+                        FirebaseUser user = result.user;
+                        if (user != null) {
+                          ToastUtils.showCustomToast(context, "Code Confirmed",true);
+                          Navigator.of(context).pop();
+                        } else {
+                          _controllerCode.clear();
+
+                          ToastUtils.showCustomToast(context, "Code Mismatched",false);
+
+                        }
+                      },
+                    )
+                  ],
+                );
+              });
+        },
+        codeAutoRetrievalTimeout: null);
   }
 }

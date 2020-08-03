@@ -102,11 +102,13 @@ class _ProductCatalogState extends State<ProductCatalog> {
 
 
   }
-
+  FocusNode _focusNode;
 
   @override
   void dispose() {
     super.dispose();
+    _focusNode.dispose();
+
   }
   Dialog loadingdialog;
 
@@ -115,18 +117,29 @@ class _ProductCatalogState extends State<ProductCatalog> {
    @override
   initState()   {
     super.initState();
-
+    _focusNode = new FocusNode();
+    _focusNode.addListener(_onOnFocusNodeEvent);
     products = new List();
 
   }
+  _onOnFocusNodeEvent() {
+    setState(() {
+      // Re-renders
+    });
+  }
 
   List<Product> products;
-   DatabaseReference volunteerRef;
+  List<Product> Searchproducts;
+
+  DatabaseReference volunteerRef;
 
 
 
+  final TextEditingController _searchTextController =
+  TextEditingController();
 
-
+   String search="";
+   bool searchVisiblity=false;
 
   @override
   Widget build(BuildContext context) {
@@ -151,7 +164,7 @@ class _ProductCatalogState extends State<ProductCatalog> {
           Padding(
             padding: EdgeInsets.all(0),
             child: Container(
-              height: 250,
+              height: 200,
               width: double.infinity,
 
               decoration: BoxDecoration(
@@ -204,13 +217,101 @@ class _ProductCatalogState extends State<ProductCatalog> {
               ), /* add child content here */
             ),
           ),
+          Padding(
+            padding: const EdgeInsets.fromLTRB(20, 15, 20, 15),
+            child: Container(
+
+              child: Padding(
+                padding: const EdgeInsets.fromLTRB(20, 5, 20, 5),
+                child: Row(
+
+                  mainAxisAlignment: MainAxisAlignment.start,
+                  children: <Widget>[
+                    Flexible(
+                        flex: 1,
+                        child: Icon(Icons.search)),
+                     SizedBox(width: 10,),
+                     Flexible(
+                       flex: 18,
+                       child: Container(
+                         child: TextFormField(
+                          cursorColor: Colors.black, cursorRadius: Radius.circular(1.0), cursorWidth: 1.0,
+                          keyboardType: TextInputType.text,
+
+                          controller: _searchTextController,
+                          onChanged: (String value){
+                            search = value;
+                             setState(() {
+
+                            });
+                           // final FormState form = _formKey.currentState;
+                         //   form.save();
+                          },
+                          validator: (String value) {
+                            if(value.length != 10)
+                              return 'Please enter correct Phone Number';
+                            else
+                              return null;
+                          },
+                          decoration: InputDecoration(
+                            contentPadding: EdgeInsets.only(left: 10.0, right: 0.0, top: 10.0, bottom: 12.0),
+                            border: OutlineInputBorder(
+                                borderSide: BorderSide.none
+                            ),
+                            hintText: "Search",
+                          ),
+                          focusNode: _focusNode,
+                        ),
+                    ),
+                     ),
+
+                    Flexible(
+                      flex: 1,
+                      child: Visibility(
+             //         visible: true,
+                        visible: search.length>0?true:false,
+                          child: GestureDetector(
+                              onTap: (){
+                                search="";
+                                _searchTextController.clear();
+                                setState(() {
+
+                                });
+                              },
+                              child: Icon(Icons.cancel,color: Colors.redAccent,))),
+                    ),
+                    SizedBox(width: 5,),
+
+                  ],
+                ),
+              ),
+              decoration: BoxDecoration(
+                color: Colors.white,
+                borderRadius: BorderRadius.only(
+                    topLeft: Radius.circular(10),
+                    topRight: Radius.circular(10),
+                    bottomLeft: Radius.circular(10),
+                    bottomRight: Radius.circular(10)
+                ),
+                boxShadow: [
+                  BoxShadow(
+                    color:  Colors.grey.withOpacity(0.5),
+                    spreadRadius: 5,
+                    blurRadius: 7,
+                    offset: Offset(0, 3),
+                  ),
+                ],
+              ),
+            ),
+          ),
           Flexible(
             flex: 1,
             child: StreamBuilder(
                 stream: FirebaseDatabase.instance
                     .reference()
-                    .child("Shops").child("Bahria Town Phase 4").child("Super Market").child(SHOP_KEY).child("Products")
-                    .onValue,
+                    .child("Shops").child("Bahria Town Phase 4").child(DataStream.ShopCatagory).child(SHOP_KEY).child("Products")
+                    .onValue
+                ,
                 builder: (BuildContext context, AsyncSnapshot<Event> snapshot) {
                   if (snapshot.hasData) {
                     Map<dynamic, dynamic> map = snapshot.data.snapshot.value;
@@ -218,9 +319,17 @@ class _ProductCatalogState extends State<ProductCatalog> {
 
                     products.clear();
 
-                   map.forEach((dynamic, v) =>
-                       products.add( new Product(v["key"],v["cardid"] , v["cardname"],v["cardimage"] ,v["cardprice"] , v["carddiscription"]))
+                   map.forEach((dynamic, v) {
+                     if(v["cardname"].toString().toLowerCase().contains(search.toLowerCase())|| v["cardname"].toString().toLowerCase()==search.toLowerCase()) {
+                       products.add(new Product(
+                           v["key"], v["cardid"], v["cardname"], v["cardimage"],
+                           v["cardprice"], v["carddiscription"]));
+                     }
+                   }
                    );
+
+
+
 
                     return GridView.builder(
                       gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
@@ -277,7 +386,7 @@ class _ProductCatalogState extends State<ProductCatalog> {
                                         ),
                                         Text('Rs. ${products[index].cardprice}'
                                           ,
-                                          style: TextStyle(fontSize: 20, fontWeight: FontWeight.w200,color: Colors.white),
+                                          style: TextStyle(fontSize: 20, fontWeight: FontWeight.w300,color: Colors.white),
                                         ),
                                       ],
                                     ),
@@ -289,14 +398,7 @@ class _ProductCatalogState extends State<ProductCatalog> {
                         );
 
 
-//
-//                    Container(
-//                    child: Image.network(
-//                      map.values.toList()[index]["cardimage"],
-//                      fit: BoxFit.cover,
-//                    ),
-//                    padding: EdgeInsets.all(2.0),
-//                  );
+
                       },
                     );
                   } else {
@@ -307,138 +409,6 @@ class _ProductCatalogState extends State<ProductCatalog> {
         ],
       ),
 
-//      FirebaseAnimatedList(
-//        query: volunteerRef,
-//
-//        itemBuilder: (BuildContext context, DataSnapshot snapshot,
-//            Animation<double> animation, int index ) {
-//
-//          return Padding(
-//            padding: const EdgeInsets.all(5.0),
-//            child: Row(
-//              children: [
-//                GestureDetector(
-//                  onTap: (){
-//
-//                  },
-//                  child: Padding(
-//                    padding: EdgeInsets.all(5),
-//                    child: Container(
-//
-//                      width: (screenWidth(context)/2)-15,
-//                      height: 150,
-//                      decoration: BoxDecoration(
-//
-//                        shape: BoxShape.rectangle,
-//                        borderRadius: BorderRadius.all(Radius.circular(15.0)),
-//                        image: DecorationImage(
-//                          image: NetworkImage(products[index].cardimage),
-//                          fit: BoxFit.cover,
-//                        ),
-//                      ),
-//                      child:  Padding(
-//                        padding: EdgeInsets.all(0),
-//                        child: Container(
-//
-//                          decoration: BoxDecoration(
-//                            shape: BoxShape.rectangle,
-//                            borderRadius: BorderRadius.all(Radius.circular(15.0)),
-//                            gradient: new LinearGradient(
-//                                colors: [
-//                                  Colors.black,
-//                                  const Color(0x19000000),
-//                                ],
-//                                begin: const FractionalOffset(0.0, 1.0),
-//                                end: const FractionalOffset(0.0, 0.0),
-//                                stops: [0.0, 1.0],
-//                                tileMode: TileMode.clamp),
-//                          ),
-//                          child: Padding(
-//                            padding: EdgeInsets.all(10),
-//                            child: Column(
-//                              crossAxisAlignment: CrossAxisAlignment.start,
-//                              mainAxisAlignment: MainAxisAlignment.end,
-//                              children: [
-//                                Text(
-//                                  products[index].cardname,
-//                                  style: TextStyle(fontSize: 20, fontWeight: FontWeight.w500,color: Colors.white),
-//                                ),
-//                                Text('Rs. ${products[index].cardprice}'
-//                                  ,
-//                                  style: TextStyle(fontSize: 20, fontWeight: FontWeight.w200,color: Colors.white),
-//                                ),
-//                              ],
-//                            ),
-//                          ),
-//                        ),
-//                      ), /* add child content here */
-//                    ),
-//                  ),
-//                ),
-//                GestureDetector(
-//                  onTap: (){
-//
-//                  },
-//                  child: Padding(
-//                    padding: EdgeInsets.all(5),
-//                    child: Container(
-//                      width: (screenWidth(context)/2)-15,
-//
-//                      height: 150,
-//                      decoration: BoxDecoration(
-//
-//                        shape: BoxShape.rectangle,
-//                        borderRadius: BorderRadius.all(Radius.circular(15.0)),
-//                        image: DecorationImage(
-//                          image: NetworkImage(products[index].cardimage),
-//                          fit: BoxFit.cover,
-//                        ),
-//                      ),
-//                      child:  Padding(
-//                        padding: EdgeInsets.all(0),
-//                        child: Container(
-//
-//                          decoration: BoxDecoration(
-//                            shape: BoxShape.rectangle,
-//                            borderRadius: BorderRadius.all(Radius.circular(15.0)),
-//                            gradient: new LinearGradient(
-//                                colors: [
-//                                  Colors.black,
-//                                  const Color(0x19000000),
-//                                ],
-//                                begin: const FractionalOffset(0.0, 1.0),
-//                                end: const FractionalOffset(0.0, 0.0),
-//                                stops: [0.0, 1.0],
-//                                tileMode: TileMode.clamp),
-//                          ),
-//                          child: Padding(
-//                            padding: EdgeInsets.all(10),
-//                            child: Column(
-//                              crossAxisAlignment: CrossAxisAlignment.start,
-//                              mainAxisAlignment: MainAxisAlignment.end,
-//                              children: [
-//                                Text(
-//                                  products[index].cardname,
-//                                  style: TextStyle(fontSize: 20, fontWeight: FontWeight.w500,color: Colors.white),
-//                                ),
-//                                Text('Rs. ${products[index].cardprice}'
-//                                  ,
-//                                  style: TextStyle(fontSize: 20, fontWeight: FontWeight.w200,color: Colors.white),
-//                                ),
-//                              ],
-//                            ),
-//                          ),
-//                        ),
-//                      ), /* add child content here */
-//                    ),
-//                  ),
-//                ),
-//              ],
-//            ),
-//          );
-//
-//        },
-//      ),
 
 
 

@@ -130,6 +130,7 @@ class _SignInState extends State<SignIn> {
 
   String email;
   String password;
+  String mobilenumber;
 
 
 
@@ -138,21 +139,25 @@ class _SignInState extends State<SignIn> {
 
   @override
   Widget build(BuildContext context) {
-    Widget emailForm = Container(
+
+    Widget mobile  = Container(
       margin: EdgeInsets.only(bottom: 18.0),
       child: Row(
         children: <Widget>[
-          Icon(Icons.account_circle),
-       //   Image.asset("assets/icons/user-grey.png", height: 16.0, width: 16.0,),
+          Icon(Icons.phone_android),
+          Text(" +92",style: TextStyle(fontSize: 15),),
           Container(
-            width: screenWidth(context)*0.7,
+            width: screenWidth(context)*0.5,
             child: TextFormField(
-              cursorColor: primaryDark, cursorRadius: Radius.circular(1.0), cursorWidth: 1.0,
-              keyboardType: TextInputType.emailAddress,
-              onSaved: (String value) => email = value,
+              cursorColor: Colors.black, cursorRadius: Radius.circular(1.0), cursorWidth: 1.0,
+              keyboardType: TextInputType.number,
+              onSaved: (String value) {
+                mobilenumber = value;
+                mobilenumber = "+92"+ mobilenumber;
+              },
               validator: (String value) {
-                if(value.isEmpty)
-                  return 'Please Enter Your Username or Phone Number';
+                if(value.length != 10)
+                  return 'Please enter correct Phone Number';
                 else
                   return null;
               },
@@ -161,7 +166,7 @@ class _SignInState extends State<SignIn> {
                 border: OutlineInputBorder(
                     borderSide: BorderSide.none
                 ),
-                labelText: "Username or Phone Number",
+                labelText: "Phone Number",
               ),
               focusNode: _focusNode,
             ),
@@ -170,54 +175,11 @@ class _SignInState extends State<SignIn> {
       ),
       decoration: new BoxDecoration(
         border: new Border(
-          bottom: BorderSide(color: _getBorderColor(), style: BorderStyle.solid, width: 2.0),
+          bottom: _focusNode.hasFocus ? BorderSide(color: Colors.black, style: BorderStyle.solid, width: 2.0) :
+          BorderSide(color: Colors.black.withOpacity(0.7), style: BorderStyle.solid, width: 1.0),
         ),
       ),
     );
-
-    Widget passwordForm = Container(
-      margin: EdgeInsets.only(bottom: 18.0),
-      child: Row(
-        children: <Widget>[
-          Icon(Icons.lock),
-
-         // Image.asset("assets/icons/lock-grey.png", height: 16.0, width: 16.0,),
-          Container(
-            width: screenWidth(context)*0.72,
-            child: TextFormField(
-              cursorColor: primaryDark, cursorRadius: Radius.circular(1.0), cursorWidth: 1.0,
-                onSaved: (String value) => password = value,
-              validator: (String value) {
-                if(value.isEmpty)
-                  return 'Please Enter Your Password';
-                else
-                  return null;
-              },
-              decoration: InputDecoration(
-                contentPadding: EdgeInsets.only(left: 10.0, right: 0.0, top: 10.0, bottom: 12.0),
-                border: OutlineInputBorder(
-                    borderSide: BorderSide.none
-                ),
-                labelText: "Password",
-              ),
-              focusNode: _focusNode2,
-              obscureText: showText,
-            ),
-          ),
-          InkWell(
-            onTap: showPassword,
-            child: showText ?  Icon(Icons.visibility_off,color: Colors.grey[500],) :
-            Icon(Icons.visibility,color: primaryDark,)
-          ),
-        ],
-      ),
-      decoration: new BoxDecoration(
-        border: new Border(
-          bottom: BorderSide(color: _getBorderColor2(), style: BorderStyle.solid, width: 2.0),
-        ),
-      ),
-    );
-
     return Scaffold(
       backgroundColor: Colors.white,
 
@@ -242,15 +204,17 @@ class _SignInState extends State<SignIn> {
                   Container(
                     alignment: AlignmentDirectional.center,
                     padding: const EdgeInsets.only(top: 20.0, bottom: 12.0),
-                    child: Text("Sign In", style: TextStyle(fontSize: 32),),
+                    child: Text("Welcome", style: TextStyle(fontSize: 32),),
                   ),
                   Container(
                     alignment: AlignmentDirectional.center,
                     padding: EdgeInsets.symmetric(horizontal: 24.0),
-                    child: Text("Sign In to your Doorstep Account",
+                    child: Text("Lets get started with your Doorstep Account",
                       textAlign: TextAlign.center,
                     ),
                   ),
+                  SizedBox(height: 50,),
+
                   Container(
                     alignment: AlignmentDirectional.topStart,
                     padding: EdgeInsets.only(left: 16.0, top: 28.0, bottom: 4.0, right: 16.0),
@@ -258,44 +222,45 @@ class _SignInState extends State<SignIn> {
                       mainAxisAlignment: MainAxisAlignment.start,
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: <Widget>[
-                        Text("Email"),
-                        SizedBox(height: 10,),
-                        emailForm,
-                        Text("Password", ),
-                        SizedBox(height: 10,),
-                        passwordForm,
+                        SizedBox(height: 20,),
+                        mobile,
+//                        Text("Password", ),
+//                        SizedBox(height: 10,),
+//                        passwordForm,
                       ],
                     ),
                   ),
 
-                  Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                    crossAxisAlignment: CrossAxisAlignment.center,
-                    children: <Widget>[
-                      Row(
-                        children: <Widget>[
-                          Checkbox(
-                            activeColor: primaryDark,
-                            value: checkRemember,
-                            onChanged: (bool value) {
-                              setState(() {
-                                checkRemember = value;
-                              });
-                            },
-                          ),
-                          Text("Remember me",),
-                        ],
-                      ),
-                      FlatButton(
-                        onPressed: (){
-                          ToastUtils.showCustomToast(context, "Under Development \n Use existing account to login", null);
+//                  Row(
+//                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+//                    crossAxisAlignment: CrossAxisAlignment.center,
+//                    children: <Widget>[
+//                      Row(
+//                        children: <Widget>[
+//                          Checkbox(
+//                            activeColor: primaryDark,
+//                            value: checkRemember,
+//                            onChanged: (bool value) {
+//                              setState(() {
+//                                checkRemember = value;
+//                              });
+//                            },
+//                          ),
+//                          Text("Remember me",),
+//                        ],
+//                      ),
+//                      FlatButton(
+//                        onPressed: (){
+//                          ToastUtils.showCustomToast(context, "Under Development \n Use existing account to login", null);
+//
+//                       //   Navigator.push( context, MaterialPageRoute( builder: (BuildContext context) => ForgotPassword(), ),);
+//                        },
+//                        child: Text("Forgot password?"),
+//                      )
+//                    ],
+//                  ),
+                  SizedBox(height: 50,),
 
-                       //   Navigator.push( context, MaterialPageRoute( builder: (BuildContext context) => ForgotPassword(), ),);
-                        },
-                        child: Text("Forgot password?"),
-                      )
-                    ],
-                  ),
                   SizedBox(
                     width:200,
                     child: RaisedButton(
@@ -313,64 +278,7 @@ class _SignInState extends State<SignIn> {
                     ),
                   ),
 
-                  Text( "OR",style: TextStyle(color: Colors.black),),
-                  Padding(
-                    padding: const EdgeInsets.only(top: 10.0, bottom: 12.0),
-                    child: SizedBox(
-                      width: 200,
-                      child: RaisedButton(
-                        shape: RoundedRectangleBorder(
-                          borderRadius: new BorderRadius.circular(18.0),
 
-                        ),
-
-                        color: primaryDark,
-                        onPressed: () async {
-                          //     await registerUser();
-                          signInWithGoogle().whenComplete(() {
-
-
-                            if(userD!=null) {
-
-                              print(userD.email);
-                              print(userD.displayName);
-                              print(userD.uid);
-
-                          //    Navigator.of(context).pop();
-
-                              Navigator.of(context).pushReplacement(
-                                  MaterialPageRoute(
-                                      builder: (context) => Home()));
-                            }else{
-                              ToastUtils.showCustomToast(context, "Sign In Failed", false);
-                            }
-                          });
-
-                          //  phoneAuth(phoneNo);
-                        },
-                        child: Text( "SIGN IN with Google",style: TextStyle(color: Colors.white),),
-                      ),
-                    ),
-                  ),
-
-
-                  RawMaterialButton(
-                    padding: EdgeInsets.symmetric(vertical: 16.0),
-                    onPressed: (){
-
-                     //  ToastUtils.showCustomToast(context, "Under Development \n Use existing account to login", null);
-
-                     Navigator.of(context).pushReplacement(MaterialPageRoute(builder: (context) => SignUp()));
-
-                    },
-                    child: Row(
-                      mainAxisAlignment: MainAxisAlignment.center,
-                      children: <Widget>[
-                        Text("Dont't have an Account? ",),
-                        Text("Sign up here",style: TextStyle(decoration: TextDecoration.underline,),)
-                      ],
-                    ),
-                  ),
                 ],
               ),
             ),
@@ -383,22 +291,12 @@ class _SignInState extends State<SignIn> {
   Future<void> signin() async {
     final FormState form = _formKey.currentState;
     form.save();
-   // showLoadingDialogue("Signing In");
+     if (!form.validate()) {
+      return;
+    }
 
-  //  print(password);
-    final firebaseUser = await FirebaseAuth.instance
-        .signInWithEmailAndPassword(email: email, password: password).then((value){
+    phoneAuth(mobilenumber);
 
-         if(value.user.uid!=null) {
-           DataStream.UserId=value.user.uid;
-            print(value.user.uid);
-            Navigator.of(context).pop();
-
-         //   Navigator.push( context, MaterialPageRoute( builder: (BuildContext context) => Home(), ),);
-           Navigator.of(context).pushReplacement(MaterialPageRoute(builder: (context) => Home()));
-
-         }
-    });
 
   }
 
@@ -428,6 +326,123 @@ class _SignInState extends State<SignIn> {
     userD=user;
     return 'signInWithGoogle succeeded: $user';
   }
+
+  TextEditingController _controllerCode = TextEditingController();
+
+  bool ids=false;
+  phoneAuth(String phone) async {
+
+    showLoadingDialogue("Loading");
+    FirebaseAuth _auth = FirebaseAuth.instance;
+
+    _auth.verifyPhoneNumber(
+        phoneNumber: phone,
+        timeout: Duration(seconds: 60),
+        verificationCompleted: (AuthCredential credential) async {
+          hideLoadingDialogue();
+
+          if(ids) {
+            Navigator.of(context).pop();
+
+          }
+          final AuthResult authResult = await _auth.signInWithCredential(credential);
+          final FirebaseUser user = authResult.user;
+
+          DataStream.user=user;
+
+          ToastUtils.showCustomToast(context, "Phone Verified",true);
+
+
+          Navigator.of(context).pushReplacement(MaterialPageRoute(builder: (context) => Home()));
+
+
+        },
+        verificationFailed: (AuthException exception) {
+
+          print(exception.message);
+
+          ToastUtils.showCustomToast(context, "Error! Try Again Later",false);
+
+          hideLoadingDialogue();
+        },
+        codeSent: (String verification, [int forceResendingToken]) {
+          ids=true;
+          showDialog(
+              context: context,
+              barrierDismissible: false,
+              builder: (context) {
+                return AlertDialog(
+                  shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(12)),
+                  title: Text(
+
+                    'We have sent an SMS to \n ${mobilenumber} \n\n To complete the phone verification, please enter the 6-digit activation code',
+                    textAlign: TextAlign.center,
+                    style: TextStyle(fontSize: 16,fontWeight: FontWeight.w300 ),
+                  ),
+
+                  content: Column(
+                    mainAxisSize: MainAxisSize.min,
+                    children: <Widget>[
+                      TextField(
+                        controller: _controllerCode,
+                        keyboardType: TextInputType.number,
+                        maxLength: 6,
+                        decoration: InputDecoration(
+                          //   errorText: validateCode(_controllerCode.text),
+                          hintText: 'Enter Code',
+                          enabledBorder: OutlineInputBorder(
+                              borderRadius: BorderRadius.circular(5.0)),
+                          focusedBorder: OutlineInputBorder(
+                              borderRadius: BorderRadius.circular(5.0)),
+                          errorBorder: OutlineInputBorder(
+                              borderRadius: BorderRadius.circular(5.0),
+                              borderSide: BorderSide(color: Colors.red)),
+                          focusedErrorBorder: OutlineInputBorder(
+                              borderRadius: BorderRadius.circular(5.0),
+                              borderSide: BorderSide(color: Colors.red)),
+                        ),
+                      )
+                    ],
+                  ),
+                  actions: <Widget>[
+
+                    FlatButton(
+                      shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(8)),
+                      child: Padding(
+                          padding: EdgeInsets.fromLTRB(15, 7, 15, 7),
+                          child: Text("Confirm")),
+                      textColor: Colors.white,
+                      color: Colors.green,
+                      onPressed: () async {
+
+                        final code = _controllerCode.text.trim();
+                        AuthCredential credential =
+                        PhoneAuthProvider.getCredential(
+                            verificationId: verification, smsCode: code);
+                        AuthResult result =
+                        await _auth.signInWithCredential(credential);
+                        FirebaseUser user = result.user;
+                        if (user != null) {
+                          ToastUtils.showCustomToast(context, "Code Confirmed",true);
+                          Navigator.of(context).pop();
+                        } else {
+                          _controllerCode.clear();
+
+                          ToastUtils.showCustomToast(context, "Code Mismatched",false);
+
+                        }
+                      },
+                    )
+                  ],
+                );
+              });
+        },
+        codeAutoRetrievalTimeout: null);
+  }
+
+
 
 
 }

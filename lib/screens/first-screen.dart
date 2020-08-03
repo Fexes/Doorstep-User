@@ -110,6 +110,9 @@ class SplashScreenState extends State<SplashScreen> {
       else{
 
         DataStream.UserId=firebaseUser.uid;
+        DataStream.PhoneNumber=firebaseUser.phoneNumber;
+
+       // print(DataStream.PhoneNumber);
         Navigator.of(context).pushReplacement(
             MaterialPageRoute(
                 builder: (context) => Home()));

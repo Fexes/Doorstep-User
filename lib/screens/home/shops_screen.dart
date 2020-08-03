@@ -115,7 +115,7 @@ class _ShopsScreenState extends State<ShopsScreen> {
 
     shops = new List();
     final FirebaseDatabase database = FirebaseDatabase.instance;
-    volunteerRef = database.reference().child("Shops").child("Bahria Town Phase 4").child("Super Market");
+    volunteerRef = database.reference().child("Shops").child("Bahria Town Phase 4").child(DataStream.ShopCatagory);
     volunteerRef.onChildAdded.listen(_onEntryAdded);
     volunteerRef.onChildChanged.listen(_onEntryChanged);
 
@@ -227,7 +227,7 @@ class _ShopsScreenState extends State<ShopsScreen> {
                                 ),
                                 Text(
                                   shops[index].shopdiscription,
-                                  style: TextStyle(fontSize: 20, fontWeight: FontWeight.w200,color: Colors.white),
+                                  style: TextStyle(fontSize: 20, fontWeight: FontWeight.w300,color: Colors.white),
                                 ),
                               ],
                             ),

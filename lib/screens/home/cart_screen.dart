@@ -237,7 +237,7 @@ class _CartScreenState extends State<CartScreen> {
 
 
                              //   ToastUtils.showCustomToast(context, "Removed", true);
-                             setuplist();
+                            // setuplist();
                               },
                               child: Padding(
                                   padding:EdgeInsets.fromLTRB(10, 0, 20, 0),
@@ -274,19 +274,19 @@ class _CartScreenState extends State<CartScreen> {
                                 children: [
                                   Text(
                                     '${carts[index].cardname}',
-                                    style: TextStyle(fontSize: 14, fontWeight: FontWeight.w200,color: Colors.black),
+                                    style: TextStyle(fontSize: 14, fontWeight: FontWeight.w300,color: Colors.black),
                                   ),
                                   Text(
                                     'Rs. ${carts[index].cardprice} each',
-                                    style: TextStyle(fontSize: 14, fontWeight: FontWeight.w200,color: Colors.black),
+                                    style: TextStyle(fontSize: 14, fontWeight: FontWeight.w300,color: Colors.black),
                                   ),
                                   Text(
                                     'Items: ${carts[index].no_of_items}',
-                                    style: TextStyle(fontSize: 14, fontWeight: FontWeight.w200,color: Colors.black),
+                                    style: TextStyle(fontSize: 14, fontWeight: FontWeight.w300,color: Colors.black),
                                   ),
                                   Text(
                                     'Rs. ${carts[index].no_of_items*carts[index].cardprice}',
-                                    style: TextStyle(fontSize: 16, fontWeight: FontWeight.w200,color: Colors.redAccent),
+                                    style: TextStyle(fontSize: 16, fontWeight: FontWeight.w300,color: Colors.redAccent),
                                   ),
                                 ],
                               ),
@@ -344,11 +344,11 @@ class _CartScreenState extends State<CartScreen> {
                             children: [
                               Text(
                                 'Subtotal ',
-                                style: TextStyle(fontSize: 16, fontWeight: FontWeight.w200,color: Colors.black),
+                                style: TextStyle(fontSize: 16, fontWeight: FontWeight.w300,color: Colors.black),
                               ),
                               Text(
                                 'Rs. ${calSubtotal()}',
-                                style: TextStyle(fontSize: 16, fontWeight: FontWeight.w200,color: Colors.black),
+                                style: TextStyle(fontSize: 16, fontWeight: FontWeight.w300,color: Colors.black),
                               ),
                             ],
                           ),
@@ -358,11 +358,11 @@ class _CartScreenState extends State<CartScreen> {
                             children: [
                               Text(
                                 'Delivery Charges ',
-                                style: TextStyle(fontSize: 16, fontWeight: FontWeight.w200,color: Colors.black),
+                                style: TextStyle(fontSize: 16, fontWeight: FontWeight.w300,color: Colors.black),
                               ),
                               Text(
                                 'Rs. ${DataStream.DeliverCharges}',
-                                style: TextStyle(fontSize: 16, fontWeight: FontWeight.w200,color: Colors.black),
+                                style: TextStyle(fontSize: 16, fontWeight: FontWeight.w300,color: Colors.black),
                               ),
                             ],
                           ),
@@ -381,17 +381,17 @@ class _CartScreenState extends State<CartScreen> {
                                 children: [
                                   Text(
                                     'Total ',
-                                    style: TextStyle(fontSize: 16, fontWeight: FontWeight.w400,color: Colors.black),
+                                    style: TextStyle(fontSize: 16, fontWeight: FontWeight.w500,color: Colors.black),
                                   ),
                                   Text(
                                     '(incl. VAT)',
-                                    style: TextStyle(fontSize: 12, fontWeight: FontWeight.w200,color: Colors.black),
+                                    style: TextStyle(fontSize: 12, fontWeight: FontWeight.w300,color: Colors.black),
                                   ),
                                 ],
                               ),
                               Text(
                                 'Rs. ${caltotal()}',
-                                style: TextStyle(fontSize: 16, fontWeight: FontWeight.w400,color: Colors.black),
+                                style: TextStyle(fontSize: 16, fontWeight: FontWeight.w500,color: Colors.black),
                               ),
                             ],
                           ),
@@ -402,7 +402,7 @@ class _CartScreenState extends State<CartScreen> {
                   ),
                   SizedBox(height: 10,),
                   Container(
-                    height: 50,
+                    height: 60,
                     decoration: BoxDecoration(
                       color: Colors.green,
                       borderRadius: BorderRadius.only(
@@ -427,7 +427,8 @@ class _CartScreenState extends State<CartScreen> {
                       ),
                       color: Colors.green,
                       onPressed: (){
-                        Navigator.push( context, MaterialPageRoute( builder: (BuildContext context) => CheckOutScreen()),);
+                        Navigator.of(context).pushReplacement(MaterialPageRoute(builder: (context) => CheckOutScreen()));
+
 
                       },
                       child: Text('Checkout',style: TextStyle(color: Colors.white,fontWeight: FontWeight.w500, fontSize: 18),),
