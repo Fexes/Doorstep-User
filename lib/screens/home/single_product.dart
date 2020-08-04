@@ -121,7 +121,7 @@ class _SingleProductState extends State<SingleProduct> {
         DatabaseReference volunteerRef;
 
         final FirebaseDatabase database = FirebaseDatabase.instance;
-        volunteerRef = database.reference().child("cart").child(DataStream.UserId);
+        volunteerRef = database.reference().child("Cart").child(DataStream.UserId);
         volunteerRef.onChildAdded.listen(_onEntryAdded);
     volunteerRef.onChildChanged.listen(_onEntryChanged);
 
@@ -373,7 +373,7 @@ class _SingleProductState extends State<SingleProduct> {
 
                           FirebaseDatabase database = new FirebaseDatabase();
                           DatabaseReference _userRef = database.reference()
-                              .child('cart').child(DataStream.UserId)
+                              .child('Cart').child(DataStream.UserId)
                               .push();
 
                           _userRef.set(<dynamic, dynamic>{

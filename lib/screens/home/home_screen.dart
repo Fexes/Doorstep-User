@@ -123,7 +123,7 @@ class HomePage extends State<Home> {
     DatabaseReference volunteerRef;
 
     final FirebaseDatabase database = FirebaseDatabase.instance;
-    volunteerRef = database.reference().child("cart").child(DataStream.UserId);
+    volunteerRef = database.reference().child("Cart").child(DataStream.UserId);
     volunteerRef.onChildAdded.listen(_onEntryAdded);
     volunteerRef.onChildChanged.listen(_onEntryChanged);
 
@@ -615,7 +615,7 @@ class HomePage extends State<Home> {
       child: StreamBuilder(
           stream: FirebaseDatabase.instance
               .reference()
-              .child("User Orders").child(DataStream.UserId).child("active")
+              .child("User Orders").child(DataStream.UserId).child("Active")
               .onValue,
           builder: (BuildContext context, AsyncSnapshot<Event> snapshot) {
             Map<dynamic, dynamic> map ;
@@ -653,7 +653,7 @@ class HomePage extends State<Home> {
                     child: GestureDetector(
                       onTap: (){
                         //OrderItemsScreen
-                        Navigator.push( context, MaterialPageRoute( builder: (BuildContext context) => OrderItemsScreen("active",orders[index].orderID,orders[index].address,"${orders[index].orderDate}   ${orders[index].orderTime}"),),);
+                        Navigator.push( context, MaterialPageRoute( builder: (BuildContext context) => OrderItemsScreen("Active",orders[index]),),);
 
                       },
                       child: Container(
@@ -809,10 +809,9 @@ class HomePage extends State<Home> {
                                       color: Colors.redAccent,
                                       onPressed: (){
 
-                                        List ordereditems = new List();
-                                        FirebaseDatabase database = new FirebaseDatabase();
+                                         FirebaseDatabase database = new FirebaseDatabase();
                                         DatabaseReference _userRef = database.reference()
-                                            .child("User Orders").child(DataStream.UserId).child("history").child(orders[index].orderID);
+                                            .child("User Orders").child(DataStream.UserId).child("History").child(orders[index].orderID);
 
 
                                         _userRef.set(<dynamic, dynamic>{
@@ -831,14 +830,16 @@ class HomePage extends State<Home> {
 
                                           FirebaseDatabase database = new FirebaseDatabase();
                                           DatabaseReference _userRef = database.reference()
-                                              .child("User Orders").child(DataStream.UserId).child("history").child(orders[index].orderID);
+                                              .child("User Orders").child(DataStream.UserId).child("History").child(orders[index].orderID);
 
 
 
-                                          volunteerRef = database.reference().child("User Orders").child(DataStream.UserId).child("active").child(orders[index].orderID).child("items");
+                                          volunteerRef = database.reference().child("User Orders").child(DataStream.UserId).child("Active").child(orders[index].orderID).child("items");
                                           volunteerRef.onChildAdded.listen((event) {
 
-                                            ordereditems.add(Cart.fromSnapshot(event.snapshot));
+                                           // ordereditems.add(Cart.fromSnapshot(event.snapshot));
+
+                                            print("Shops."+Cart.fromSnapshot(event.snapshot).town+"."+Cart.fromSnapshot(event.snapshot).shopcatagory+"."+Cart.fromSnapshot(event.snapshot).shopid+" orders."+"active."+orders[index].orderID);
 
                                             _userRef.child("items").push().set(<dynamic, dynamic>{
                                               'no_of_items': Cart.fromSnapshot(event.snapshot).no_of_items,
@@ -846,13 +847,29 @@ class HomePage extends State<Home> {
                                               'cardname': Cart.fromSnapshot(event.snapshot).cardname.toString(),
                                               'cardimage': Cart.fromSnapshot(event.snapshot).cardimage.toString(),
                                               'cardprice': Cart.fromSnapshot(event.snapshot).cardprice,
-                                              'town':"Bahria Town Phase 4",
-                                              'shopcatagory': DataStream.ShopCatagory,
-                                              'shopid': DataStream.ShopId,
+                                              'town':Cart.fromSnapshot(event.snapshot).town,
+                                              'shopcatagory': Cart.fromSnapshot(event.snapshot).shopcatagory,
+                                              'shopid': Cart.fromSnapshot(event.snapshot).shopid,
 
                                             });
 
+                                            try{
+                                            DatabaseReference del = database.reference();
+                                            del = database.reference()
+                                                  .child("Shops").child(Cart.fromSnapshot(event.snapshot).town)
+                                                  .child(Cart.fromSnapshot(event.snapshot).shopcatagory)
+                                                  .child(Cart.fromSnapshot(event.snapshot).shopid)
+                                                  .child("Orders").child(
+                                                  "Active")
+                                                  .child(orders[index].orderID);
+                                              del.remove();
+                                            print("removed");
 
+                                            }catch(e){
+                                              print(e);
+
+                                              print("err");
+                                            }
 
                                           });
 
@@ -863,33 +880,34 @@ class HomePage extends State<Home> {
 
                                           DatabaseReference del = database.reference();
 
-                                          for(int i=0;i<= ordereditems.length-1;i++){
-
-                                             print("Shops."+ordereditems[i].town+"."+ordereditems[i].shopcatagory+"."+ordereditems[i].shopid+" orders."+"active."+ordereditems[index].orderID);
-
-
-//                                            try {
-//                                              del = database.reference()
-//                                                  .child("Shops").child(ordereditems[i].town)
-//                                                  .child(ordereditems[i].shopcatagory)
-//                                                  .child(ordereditems[i].shopid)
-//                                                  .child("orders").child(
-//                                                  "active")
-//                                                  .child(ordereditems[index].orderID);
-//                                              del.remove();
-//                                            }catch(e){
-//                                              print(e);
+//                                          print(ordereditems.length.toString());
+//                                          for(int i=0;i<= ordereditems.length-1;i++){
 //
-//                                              print("err");
-//                                            }
-                                          }
+//                                             print("Shops."+ordereditems[i].town+"."+ordereditems[i].shopcatagory+"."+ordereditems[i].shopid+" orders."+"active."+ordereditems[index].orderID);
+//
+//
+////                                            try {
+////                                              del = database.reference()
+////                                                  .child("Shops").child(ordereditems[i].town)
+////                                                  .child(ordereditems[i].shopcatagory)
+////                                                  .child(ordereditems[i].shopid)
+////                                                  .child("Orders").child(
+////                                                  "Active")
+////                                                  .child(ordereditems[index].orderID);
+////                                              del.remove();
+////                                            }catch(e){
+////                                              print(e);
+////
+////                                              print("err");
+////                                            }
+//                                          }
 
                                           del = database.reference()
-                                              .child("User Orders").child(DataStream.UserId).child("active").child(orders[index].orderID);
+                                              .child("User Orders").child(DataStream.UserId).child("Active").child(orders[index].orderID);
                                           del.remove();
 
                                             del = database.reference()
-                                              .child("Admin").child("active").child(DataStream.UserId).child(orders[index].orderID);
+                                              .child("Admin").child("Active").child(DataStream.UserId).child(orders[index].orderID);
                                           del.remove();
 
 
@@ -929,17 +947,16 @@ class HomePage extends State<Home> {
                 },
               );
             } else {
-              return Text("Empty");
+              return Text("No Orders");
             }
           }),
     );
 
-    int startat=1;
-    Widget HistoryOrders  =Center(
+     Widget HistoryOrders  =Center(
       child: StreamBuilder(
           stream: FirebaseDatabase.instance
               .reference()
-              .child("User Orders").child(DataStream.UserId).child("history")
+              .child("User Orders").child(DataStream.UserId).child("History")
             //  .limitToFirst(3)
               .onValue,
           builder: (BuildContext context, AsyncSnapshot<Event> snapshot) {
@@ -980,7 +997,7 @@ class HomePage extends State<Home> {
                     child: GestureDetector(
                       onTap: (){
                         //OrderItemsScreen
-                        Navigator.push( context, MaterialPageRoute( builder: (BuildContext context) => OrderItemsScreen("history",orders[index].orderID,orders[index].address,"${orders[index].orderDate}   ${orders[index].orderTime}"),),);
+                        Navigator.push( context, MaterialPageRoute( builder: (BuildContext context) => OrderItemsScreen("History",orders[index]),),);
 
                       },
                       child: Container(
@@ -1138,7 +1155,7 @@ class HomePage extends State<Home> {
                 },
               );
             } else {
-              return Text("Empty");
+              return Text("No Orders");
             }
           }),
     );

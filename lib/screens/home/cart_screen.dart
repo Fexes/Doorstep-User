@@ -125,7 +125,7 @@ class _CartScreenState extends State<CartScreen> {
 
         userid=firebaseUser.uid;
         final FirebaseDatabase database = FirebaseDatabase.instance;
-        volunteerRef = database.reference().child("cart").child(firebaseUser.uid);
+        volunteerRef = database.reference().child("Cart").child(firebaseUser.uid);
         volunteerRef.onChildAdded.listen(_onEntryAdded);
         volunteerRef.onChildChanged.listen(_onEntryChanged);
         volunteerRef.onChildRemoved.listen(_onEntryRemoved);
@@ -140,10 +140,6 @@ class _CartScreenState extends State<CartScreen> {
       return entry.key == event.snapshot.key;
     });
 
-
-//    for(int i=0;i<=carts.length-1;i++){
-//      Subtotal=Subtotal+carts[i].cardprice;
-//    }
 
 
     setState(() {
@@ -203,11 +199,13 @@ class _CartScreenState extends State<CartScreen> {
         automaticallyImplyLeading: false,
       ),
 
-      body: Stack(
+      body:
+      carts.length>0?
+      Stack(
         children: [
           Column(
             children: <Widget>[
-              carts.length>0?
+
               Flexible(
                 flex: 10,
                 child: FirebaseAnimatedList(
@@ -231,9 +229,15 @@ class _CartScreenState extends State<CartScreen> {
 
 
 
+
                                 print(userid);
                                 final FirebaseDatabase _databaseCustom = FirebaseDatabase.instance;
-                                _databaseCustom.reference().child("cart").child(userid).child(snapshot.key).remove();
+                                _databaseCustom.reference().child("Cart").child(userid).child(snapshot.key).remove().then((value) {
+                                  setuplist();
+                                  setState(() {
+
+                                  });
+                                 });
 
 
                              //   ToastUtils.showCustomToast(context, "Removed", true);
@@ -277,7 +281,7 @@ class _CartScreenState extends State<CartScreen> {
                                     style: TextStyle(fontSize: 14, fontWeight: FontWeight.w300,color: Colors.black),
                                   ),
                                   Text(
-                                    'Rs. ${carts[index].cardprice} each',
+                                    'Rs. ${carts[index].cardprice}  each',
                                     style: TextStyle(fontSize: 14, fontWeight: FontWeight.w300,color: Colors.black),
                                   ),
                                   Text(
@@ -286,7 +290,7 @@ class _CartScreenState extends State<CartScreen> {
                                   ),
                                   Text(
                                     'Rs. ${carts[index].no_of_items*carts[index].cardprice}',
-                                    style: TextStyle(fontSize: 16, fontWeight: FontWeight.w300,color: Colors.redAccent),
+                                    style: TextStyle(fontSize: 14, fontWeight: FontWeight.w300,color: Colors.redAccent),
                                   ),
                                 ],
                               ),
@@ -299,8 +303,8 @@ class _CartScreenState extends State<CartScreen> {
 
                   },
                 )
-              ):
-              SizedBox(),
+              ),
+
               Flexible(
                 flex: 4,
                 child: SizedBox(height: 90,),
@@ -401,45 +405,97 @@ class _CartScreenState extends State<CartScreen> {
 
                   ),
                   SizedBox(height: 10,),
-                  Container(
-                    height: 60,
-                    decoration: BoxDecoration(
-                      color: Colors.green,
-                      borderRadius: BorderRadius.only(
-                          topLeft: Radius.circular(10),
-                          topRight: Radius.circular(10),
-                          bottomLeft: Radius.circular(10),
-                          bottomRight: Radius.circular(10)
-                      ),
-                      boxShadow: [
-                        BoxShadow(
-                          color: Colors.green.withOpacity(0.5),
-                          spreadRadius: 5,
-                          blurRadius: 7,
-                          offset: Offset(0, 3),
+                  Row(
+                    children: [
+                      Container(
+                        height: 60,
+                        width: 60,
+                        decoration: BoxDecoration(
+                          color: Colors.redAccent,
+                          borderRadius: BorderRadius.only(
+                              topLeft: Radius.circular(10),
+                              topRight: Radius.circular(10),
+                              bottomLeft: Radius.circular(10),
+                              bottomRight: Radius.circular(10)
+                          ),
+                          boxShadow: [
+                            BoxShadow(
+                              color: Colors.redAccent.withOpacity(0.5),
+                              spreadRadius: 5,
+                              blurRadius: 7,
+                              offset: Offset(0, 3),
+                            ),
+                          ],
                         ),
-                      ],
-                    ),
-                    width: screenWidth(context)-100,
-                    child: FlatButton(
-                      shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(18.0),
+                         child: FlatButton(
+                          shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(18.0),
+                          ),
+                          color: Colors.redAccent,
+                          onPressed: (){
+                            FirebaseDatabase database = new FirebaseDatabase();
+
+                            DatabaseReference del = database.reference();
+
+
+                            del = database.reference()
+                                .child("Cart").child(DataStream.UserId);
+                            del.remove().then((value) {
+                              carts.clear();
+                              setState(() {
+
+                              });
+                            });
+
+
+                          },
+                          child: Icon(Icons.delete,color: Colors.white,size: 30,)
+                        ),
                       ),
-                      color: Colors.green,
-                      onPressed: (){
-                        Navigator.of(context).pushReplacement(MaterialPageRoute(builder: (context) => CheckOutScreen()));
+                      SizedBox(width: 10,),
+                      Container(
+                        height: 60,
+                        width: screenWidth(context)-130,
+                        decoration: BoxDecoration(
+                          color: Colors.green,
+                          borderRadius: BorderRadius.only(
+                              topLeft: Radius.circular(10),
+                              topRight: Radius.circular(10),
+                              bottomLeft: Radius.circular(10),
+                              bottomRight: Radius.circular(10)
+                          ),
+                          boxShadow: [
+                            BoxShadow(
+                              color: Colors.green.withOpacity(0.5),
+                              spreadRadius: 5,
+                              blurRadius: 7,
+                              offset: Offset(0, 3),
+                            ),
+                          ],
+                        ),
+                         child: FlatButton(
+                          shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(18.0),
+                          ),
+                          color: Colors.green,
+                          onPressed: (){
+
+                            Navigator.of(context).pushReplacement(MaterialPageRoute(builder: (context) => CheckOutScreen()));
 
 
-                      },
-                      child: Text('Checkout',style: TextStyle(color: Colors.white,fontWeight: FontWeight.w500, fontSize: 18),),
-                    ),
+                          },
+                          child: Text('Checkout',style: TextStyle(color: Colors.white,fontWeight: FontWeight.w500, fontSize: 18),),
+                        ),
+                      ),
+                    ],
                   ),
                 ],
               ),
             ),
           ),
         ],
-      ),
+      ):
+      Center(child: Text("Empty")),
     );
 
   }

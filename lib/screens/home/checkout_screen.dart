@@ -128,7 +128,7 @@ class _CheckOutScreenState extends State<CheckOutScreen> {
 
         userid=firebaseUser.uid;
         final FirebaseDatabase database = FirebaseDatabase.instance;
-        volunteerRef = database.reference().child("cart").child(firebaseUser.uid);
+        volunteerRef = database.reference().child("Cart").child(firebaseUser.uid);
         volunteerRef.onChildAdded.listen(_onEntryAdded);
         volunteerRef.onChildChanged.listen(_onEntryChanged);
         volunteerRef.onChildRemoved.listen(_onEntryRemoved);
@@ -615,7 +615,7 @@ class _CheckOutScreenState extends State<CheckOutScreen> {
                           String orderID=getRandomString(4)+"-"+getRandomString(3);
                           FirebaseDatabase database = new FirebaseDatabase();
                           DatabaseReference _userRef = database.reference()
-                              .child('User Orders').child(DataStream.UserId).child("active").child(orderID);
+                              .child('User Orders').child(DataStream.UserId).child("Active").child(orderID);
 
                           DatabaseReference shoporder = database.reference()
                               .child('Shops');
@@ -645,7 +645,7 @@ class _CheckOutScreenState extends State<CheckOutScreen> {
                             for(int i=0;i<=carts.length-1;i++){
 
                               adminorder
-                                  .child("active")
+                                  .child("Active")
                                   .child(DataStream.UserId)
                                   .child(orderID)
                                   .set(<dynamic, dynamic>{
@@ -664,7 +664,7 @@ class _CheckOutScreenState extends State<CheckOutScreen> {
                               }).then((value) {
 
                                 adminorder
-                                .child("active")
+                                .child("Active")
                                 .child(DataStream.UserId)
                                     .child(orderID).child("items").push().set(
                                     <dynamic, dynamic>{
@@ -673,9 +673,9 @@ class _CheckOutScreenState extends State<CheckOutScreen> {
                                       'cardname': carts[i].cardname.toString(),
                                       'cardimage': carts[i].cardimage.toString(),
                                       'cardprice': carts[i].cardprice,
-                                      'town':"Bahria Town Phase 4",
-                                      'shopcatagory': DataStream.ShopCatagory,
-                                      'shopid': DataStream.ShopId,
+                                      'town':carts[i].town,
+                                      'shopcatagory':carts[i].shopcatagory,
+                                      'shopid': carts[i].shopid,
 
                                     }
                                 );
@@ -686,8 +686,8 @@ class _CheckOutScreenState extends State<CheckOutScreen> {
 
                                 shoporder.child(carts[i].town).child(
                                     carts[i].shopcatagory).child(
-                                    carts[i].shopid).child("orders")
-                                    .child("active")
+                                    carts[i].shopid).child("Orders")
+                                    .child("Active")
                                     .child(orderID)
                                     .set(<dynamic, dynamic>{
                                   'no_of_items': '${carts.length}',
@@ -704,17 +704,17 @@ class _CheckOutScreenState extends State<CheckOutScreen> {
 
                                 }).then((value) {
 
-                                  shoporder.child(carts[i].town).child(carts[i].shopcatagory).child(carts[i].shopid).child("orders")
-                                      .child("active").child(orderID).child("items").push().set(
+                                  shoporder.child(carts[i].town).child(carts[i].shopcatagory).child(carts[i].shopid).child("Orders")
+                                      .child("Active").child(orderID).child("items").push().set(
                                       <dynamic, dynamic>{
                                         'no_of_items': carts[i].no_of_items,
                                         'cardid': carts[i].cardid.toString(),
                                         'cardname': carts[i].cardname.toString(),
                                         'cardimage': carts[i].cardimage.toString(),
                                         'cardprice': carts[i].cardprice,
-                                        'town':"Bahria Town Phase 4",
-                                        'shopcatagory': DataStream.ShopCatagory,
-                                        'shopid': DataStream.ShopId,
+                                        'town':carts[i].town,
+                                        'shopcatagory':carts[i].shopcatagory,
+                                        'shopid': carts[i].shopid,
 
                                       }
                                   );
@@ -730,15 +730,15 @@ class _CheckOutScreenState extends State<CheckOutScreen> {
                                 'cardname': carts[i].cardname.toString(),
                                 'cardimage': carts[i].cardimage.toString(),
                                 'cardprice': carts[i].cardprice,
-                                'town':"Bahria Town Phase 4",
-                                'shopcatagory': DataStream.ShopCatagory,
-                                'shopid': DataStream.ShopId,
+                                'town':carts[i].town,
+                                'shopcatagory':carts[i].shopcatagory,
+                                'shopid': carts[i].shopid,
 
 
                               }).then((value) {
                                 FirebaseDatabase database = new FirebaseDatabase();
                                 DatabaseReference _userRef = database.reference()
-                                    .child('cart').child(DataStream.UserId);
+                                    .child('Cart').child(DataStream.UserId);
                                 _userRef.remove();
                               });
                             }

@@ -2,6 +2,7 @@ import 'dart:io';
 import 'dart:math';
 
 import 'package:Doorstep/models/Cart.dart';
+import 'package:Doorstep/models/Order.dart';
 import 'package:Doorstep/models/Shops.dart';
 import 'package:Doorstep/screens/auth/sign-in.dart';
 import 'package:Doorstep/screens/first-screen.dart';
@@ -27,23 +28,24 @@ import 'package:progress_dialog/progress_dialog.dart';
 
 import 'package:http/http.dart' as http;
 
+import 'cart_screen.dart';
 import 'product_catalog.dart';
 import 'home_screen.dart';
 
 class OrderItemsScreen extends StatefulWidget {
 
 
-  String orderID,address,orderdatetime,status;
-   OrderItemsScreen(String s, String id,String ad,String dt){
+  String status;
+  Order order;
+   OrderItemsScreen(String s, Order o){
      status=s;
-     orderID=id;
-     address=ad;
-     orderdatetime=dt;
+     order=o;
+
   }
 
 
   @override
-  _OrderItemsScreenState createState() => _OrderItemsScreenState(status,orderID,address,orderdatetime);
+  _OrderItemsScreenState createState() => _OrderItemsScreenState(status,order);
 }
 
 class _OrderItemsScreenState extends State<OrderItemsScreen> {
@@ -52,13 +54,14 @@ class _OrderItemsScreenState extends State<OrderItemsScreen> {
 
   bool isLoadingError=false;
 
-  String orderID,address,orderdatetime,status;
-  _OrderItemsScreenState(String s, String id,String ad,String dt){
+  String status;
+  Order order;
+  _OrderItemsScreenState(String s, Order o){
     status=s;
-    orderID=id;
-    address=ad;
-    orderdatetime=dt;
+    order=o;
+
   }
+
 
   hideLoadingDialogue(){
 
@@ -146,7 +149,7 @@ class _OrderItemsScreenState extends State<OrderItemsScreen> {
 
         userid=firebaseUser.uid;
         final FirebaseDatabase database = FirebaseDatabase.instance;
-        volunteerRef = database.reference().child("User Orders").child(DataStream.UserId).child(status).child(orderID).child("items");
+        volunteerRef = database.reference().child("User Orders").child(DataStream.UserId).child(status).child(order.orderID).child("items");
         volunteerRef.onChildAdded.listen(_onEntryAdded);
         volunteerRef.onChildChanged.listen(_onEntryChanged);
         volunteerRef.onChildRemoved.listen(_onEntryRemoved);
@@ -220,7 +223,7 @@ class _OrderItemsScreenState extends State<OrderItemsScreen> {
 
           },
         ),
-        title:  Text("Order   # "+orderID),
+        title:  Text("Order   # "+order.orderID),
         automaticallyImplyLeading: false,
       ),
 
@@ -476,7 +479,7 @@ class _OrderItemsScreenState extends State<OrderItemsScreen> {
                                             Container(
                                               width:screenWidth(context)/1.5,
                                               child: Text(
-                                                orderdatetime,
+                                                order.orderDate +"  "+order.orderTime,
                                                 maxLines:5,
                                                 style: TextStyle(fontSize: 16, fontWeight: FontWeight.w200,color: Colors.black),
                                               ),
@@ -513,7 +516,7 @@ class _OrderItemsScreenState extends State<OrderItemsScreen> {
                                               Container(
                                                 width:screenWidth(context)/1.5,
                                                 child: Text(
-                                                  address,
+                                                  order.address,
                                                   maxLines:5,
                                                   style: TextStyle(fontSize: 16, fontWeight: FontWeight.w200,color: Colors.black),
                                                 ),
@@ -568,6 +571,8 @@ class _OrderItemsScreenState extends State<OrderItemsScreen> {
 
             ],
           ),
+
+          status=="History"?
           Positioned(
             bottom: 10,
             child: Padding(
@@ -599,7 +604,47 @@ class _OrderItemsScreenState extends State<OrderItemsScreen> {
                   color: Colors.green,
                   onPressed: (){
 
+                    int chk=0;
 
+                    FirebaseDatabase database = new FirebaseDatabase();
+                    DatabaseReference _userRef = database.reference()
+                        .child("Cart").child(DataStream.UserId);
+
+
+
+
+
+
+                    volunteerRef = database.reference().child("User Orders").child(DataStream.UserId).child("History").child(order.orderID).child("items");
+                    volunteerRef.onChildAdded.listen((event) {
+
+                      // ordereditems.add(Cart.fromSnapshot(event.snapshot));
+
+                    //  print("Shops."+Cart.fromSnapshot(event.snapshot).town+"."+Cart.fromSnapshot(event.snapshot).shopcatagory+"."+Cart.fromSnapshot(event.snapshot).shopid+" orders."+"active."+orders[index].orderID);
+
+                      _userRef.push().set(<dynamic, dynamic>{
+                        'no_of_items': Cart.fromSnapshot(event.snapshot).no_of_items,
+                        'cardid': Cart.fromSnapshot(event.snapshot).cardid.toString(),
+                        'cardname': Cart.fromSnapshot(event.snapshot).cardname.toString(),
+                        'cardimage': Cart.fromSnapshot(event.snapshot).cardimage.toString(),
+                        'cardprice': Cart.fromSnapshot(event.snapshot).cardprice,
+                        'town':Cart.fromSnapshot(event.snapshot).town,
+                        'shopcatagory': Cart.fromSnapshot(event.snapshot).shopcatagory,
+                        'shopid': Cart.fromSnapshot(event.snapshot).shopid,
+
+                      }).then((value) {
+                   //     Navigator.pop(context);
+                        if(chk==0) {
+                          chk++;
+                          Navigator.push(context, MaterialPageRoute(
+                            builder: (BuildContext context) => CartScreen(),),);
+                          //    Navigator.of(context).pushReplacement(MaterialPageRoute(builder: (context) => CartScreen()));
+                        }
+                      });
+
+
+
+                    });
 
                   },
                   child: Row(
@@ -615,11 +660,19 @@ class _OrderItemsScreenState extends State<OrderItemsScreen> {
               ),
 
             ),
-          ),
-         ],
+          ):
+
+              SizedBox(),
+
+        ],
       ),
     );
 
   }
+  var _chars = 'AaBbCcDdEeFfGgHhIiJjKkLlMmNnOoPpQqRrSsTtUuVvWwXxYyZz1234567890';
+  Random _rnd = Random();
+
+  String getRandomString(int length) => String.fromCharCodes(Iterable.generate(
+      length, (_) => _chars.codeUnitAt(_rnd.nextInt(_chars.length))));
 
 }
