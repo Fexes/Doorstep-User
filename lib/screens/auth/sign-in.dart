@@ -332,14 +332,14 @@ class _SignInState extends State<SignIn> {
   bool ids=false;
   phoneAuth(String phone) async {
 
-    showLoadingDialogue("Loading");
+  //  showLoadingDialogue("Loading");
     FirebaseAuth _auth = FirebaseAuth.instance;
 
     _auth.verifyPhoneNumber(
         phoneNumber: phone,
         timeout: Duration(seconds: 60),
         verificationCompleted: (AuthCredential credential) async {
-          hideLoadingDialogue();
+         // hideLoadingDialogue();
 
           if(ids) {
             Navigator.of(context).pop();
@@ -349,6 +349,9 @@ class _SignInState extends State<SignIn> {
           final FirebaseUser user = authResult.user;
 
           DataStream.user=user;
+          DataStream.UserId=user.uid;
+          DataStream.PhoneNumber=user.phoneNumber;
+         // hideLoadingDialogue();
 
           ToastUtils.showCustomToast(context, "Phone Verified",true);
 
@@ -363,7 +366,7 @@ class _SignInState extends State<SignIn> {
 
           ToastUtils.showCustomToast(context, "Error! Try Again Later",false);
 
-          hideLoadingDialogue();
+        //  hideLoadingDialogue();
         },
         codeSent: (String verification, [int forceResendingToken]) {
           ids=true;
@@ -422,17 +425,38 @@ class _SignInState extends State<SignIn> {
                         PhoneAuthProvider.getCredential(
                             verificationId: verification, smsCode: code);
                         AuthResult result =
-                        await _auth.signInWithCredential(credential);
-                        FirebaseUser user = result.user;
-                        if (user != null) {
-                          ToastUtils.showCustomToast(context, "Code Confirmed",true);
-                          Navigator.of(context).pop();
-                        } else {
-                          _controllerCode.clear();
+                        await _auth.signInWithCredential(credential).then((value)  {
 
-                          ToastUtils.showCustomToast(context, "Code Mismatched",false);
+                          FirebaseUser user = value.user;
+                          if (user != null) {
+                            ToastUtils.showCustomToast(context, "Code Confirmed",true);
+                            Navigator.of(context).pop();
 
-                        }
+//                            FirebaseDatabase database = new FirebaseDatabase();
+//                            DatabaseReference _userRef = database.reference()
+//                                .child('User Orders').child(user.uid);
+//
+//                            _userRef.set(<dynamic, dynamic>{
+//                              'name': '',
+//                              'email': '',
+//                              'phone': '',
+//                              'orders': '',
+//
+//                            });
+
+
+
+                            Navigator.of(context).pushReplacement(MaterialPageRoute(builder: (context) => Home()));
+
+                          } else {
+
+                            _controllerCode.clear();
+                            ToastUtils.showCustomToast(context, "Code Mismatched",false);
+
+                          }
+                          return null;
+                        });
+
                       },
                     )
                   ],

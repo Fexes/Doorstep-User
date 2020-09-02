@@ -309,7 +309,7 @@ class _ProductCatalogState extends State<ProductCatalog> {
             child: StreamBuilder(
                 stream: FirebaseDatabase.instance
                     .reference()
-                    .child("Shops").child("Bahria Town Phase 4").child(DataStream.ShopCatagory).child(SHOP_KEY).child("Products")
+                    .child("Shops").child(DataStream.ShopCatagory).child(SHOP_KEY).child("Products")
                     .onValue
                 ,
                 builder: (BuildContext context, AsyncSnapshot<Event> snapshot) {
@@ -319,15 +319,20 @@ class _ProductCatalogState extends State<ProductCatalog> {
 
                     products.clear();
 
-                   map.forEach((dynamic, v) {
-                     if(v["cardname"].toString().toLowerCase().contains(search.toLowerCase())|| v["cardname"].toString().toLowerCase()==search.toLowerCase()) {
-                       products.add(new Product(
-                           v["key"], v["cardid"], v["cardname"], v["cardimage"],
-                           v["cardprice"], v["carddiscription"]));
-                     }
-                   }
-                   );
-
+                    if(map!=null) {
+                      map.forEach((dynamic, v) {
+                        if (v["cardname"].toString().toLowerCase().contains(
+                            search.toLowerCase()) ||
+                            v["cardname"].toString().toLowerCase() ==
+                                search.toLowerCase()) {
+                          products.add(new Product(
+                              v["key"], v["cardid"], v["cardname"],
+                              v["cardimage"],
+                              v["cardprice"], v["carddiscription"]));
+                        }
+                      }
+                      );
+                    }
 
 
 

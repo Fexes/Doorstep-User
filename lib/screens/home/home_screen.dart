@@ -1,5 +1,6 @@
 import 'dart:io';
 
+import 'package:Doorstep/models/Banners.dart';
 import 'package:Doorstep/models/Cart.dart';
 import 'package:Doorstep/models/Order.dart';
 import 'package:Doorstep/models/Shops.dart';
@@ -101,19 +102,112 @@ class HomePage extends State<Home> {
   List<Cart> carts;
 
   Dialog loadingdialog;
+  FirebaseUser user=null;
   @override
   Future<void> initState()  {
     super.initState();
+    FirebaseAuth.instance.currentUser().then((firebaseUser){
 
 
-    setupCart();
+      user=firebaseUser;
+
+      if(firebaseUser != null){
+        setupCart();
+        setupBanner();
+        getodercount();
+        gerOrderRadius();
+
+      }
+
+
+    });
+
   }
 
+  void gerOrderRadius() {
+    final locationDbRef = FirebaseDatabase.instance.reference().child(
+        "Admin").child("Radius");
 
+    locationDbRef.once().then((value) async {
+      print(value.value["user_order_radius"]);
+
+      DataStream.OrderRadius = value.value['user_order_radius'];
+    }
+    );
+  }
+    void getodercount(){
+    final locationDbRef = FirebaseDatabase.instance.reference().child("User Orders").child(DataStream.UserId).child("Order Count");
+
+    locationDbRef.once().then((value) async {
+      if(value.value!=null){
+
+        print(value.value["no_of_orders"]);
+        order_count = value.value['no_of_orders'];
+
+        if (order_count < 3) {
+          DataStream.DeliverCharges = 0;
+        }
+        else {
+          final locationDbRef = FirebaseDatabase.instance.reference().child(
+              "Admin").child("Delivery");
+
+          locationDbRef.once().then((value) async {
+            print(value.value["delivery_charges"]);
+
+            DataStream.DeliverCharges = value.value['delivery_charges'];
+          }
+          );
+        }
+      }else{
+        if (order_count < 3) {
+          DataStream.DeliverCharges = 0;
+        }
+        else {
+          final locationDbRef = FirebaseDatabase.instance.reference().child(
+              "Admin").child("Delivery");
+
+          locationDbRef.once().then((value) async {
+            print(value.value["delivery_charges"]);
+
+            DataStream.DeliverCharges = value.value['delivery_charges'];
+          }
+          );
+        }
+      }
+
+
+    }
+    );
+  }
+  int order_count=0;
   List<Order> orders;
+  List<Banners> banners;
+
   DatabaseReference volunteerRef;
+  List<String> imgList;
+
+  bool bannerloaded=false;
+  void setupBanner(){
+
+    banners = new List();
+    imgList = new List();
 
 
+    DatabaseReference volunteerRef;
+
+    final FirebaseDatabase database = FirebaseDatabase.instance;
+    volunteerRef = database.reference().child("Admin").child("Banners");
+    volunteerRef.onChildAdded.listen((event) {
+      setState(() {
+        bannerloaded=true;
+        banners.add(Banners.fromSnapshot(event.snapshot));
+        imgList.add(Banners.fromSnapshot(event.snapshot).image);
+
+      });
+
+    });
+
+  }
   void setupCart(){
 
     orders = new List();
@@ -144,123 +238,190 @@ class HomePage extends State<Home> {
 
 
   int _selectedIndex = 0;
-
-  final List<String> imgList = [
-    'https://images.unsplash.com/photo-1520342868574-5fa3804e551c?ixlib=rb-0.3.5&ixid=eyJhcHBfaWQiOjEyMDd9&s=6ff92caffcdd63681a35134a6770ed3b&auto=format&fit=crop&w=1951&q=80',
-    'https://images.unsplash.com/photo-1522205408450-add114ad53fe?ixlib=rb-0.3.5&ixid=eyJhcHBfaWQiOjEyMDd9&s=368f45b0888aeb0b7b08e3a1084d3ede&auto=format&fit=crop&w=1950&q=80',
-    'https://images.unsplash.com/photo-1519125323398-675f0ddb6308?ixlib=rb-0.3.5&ixid=eyJhcHBfaWQiOjEyMDd9&s=94a1e718d89ca60a6337a6008341ca50&auto=format&fit=crop&w=1950&q=80',
-    'https://images.unsplash.com/photo-1523205771623-e0faa4d2813d?ixlib=rb-0.3.5&ixid=eyJhcHBfaWQiOjEyMDd9&s=89719a0d55dd05e2deae4120227e6efc&auto=format&fit=crop&w=1953&q=80',
-    'https://images.unsplash.com/photo-1508704019882-f9cf40e475b4?ixlib=rb-0.3.5&ixid=eyJhcHBfaWQiOjEyMDd9&s=8c6e5e3aba713b17aa1fe71ab4f0ae5b&auto=format&fit=crop&w=1352&q=80',
-    'https://images.unsplash.com/photo-1519985176271-adb1088fa94c?ixlib=rb-0.3.5&ixid=eyJhcHBfaWQiOjEyMDd9&s=a0c8d632e977f94e5d312d9893258f59&auto=format&fit=crop&w=1355&q=80'
-  ];
-
   int _current = 0;
 
   @override
   Widget build(BuildContext context) {
+   // imgList = new List();
+    List<Widget> imageSliders;
 
 
+      if (bannerloaded) {
+        imageSliders = imgList.map((item) =>
+            Container(
+              child: Container(
+                //  margin: EdgeInsets.all(5.0),
+                child: ClipRRect(
+                    borderRadius: BorderRadius.all(Radius.circular(10.0)),
+                    child: Stack(
+                      children: <Widget>[
+                        Image.network(
+                            item, fit: BoxFit.cover, width: 1000.0),
+                        Positioned(
+                          bottom: 0.0,
+                          left: 0.0,
+                          right: 0.0,
+                          child: Container(
+                            decoration: BoxDecoration(
+                              gradient: LinearGradient(
+                                colors: [
+                                  Color.fromARGB(200, 0, 0, 0),
+                                  Color.fromARGB(0, 0, 0, 0)
+                                ],
+                                begin: Alignment.bottomCenter,
+                                end: Alignment.topCenter,
+                              ),
 
-
-    final List<Widget> imageSliders = imgList.map((item) => Container(
-      child: Container(
-      //  margin: EdgeInsets.all(5.0),
-        child: ClipRRect(
-            borderRadius: BorderRadius.all(Radius.circular(10.0)),
-            child: Stack(
-              children: <Widget>[
-                Image.network(item, fit: BoxFit.cover, width: 1000.0),
-                Positioned(
-                  bottom: 0.0,
-                  left: 0.0,
-                  right: 0.0,
-                  child: Container(
-                    decoration: BoxDecoration(
-                      gradient: LinearGradient(
-                        colors: [
-                          Color.fromARGB(200, 0, 0, 0),
-                          Color.fromARGB(0, 0, 0, 0)
-                        ],
-                        begin: Alignment.bottomCenter,
-                        end: Alignment.topCenter,
-                      ),
-
-                    ),
-                    padding: EdgeInsets.symmetric(vertical: 10.0, horizontal: 20.0),
-//                    child: Text(
-//                      'No. ${imgList.indexOf(item)} image',
-//                      style: TextStyle(
-//                        color: Colors.white,
-//                        fontSize: 20.0,
-//                        fontWeight: FontWeight.bold,
-//                      ),
-//                    ),
-                  ),
+                            ),
+                            padding: EdgeInsets.symmetric(
+                                vertical: 10.0, horizontal: 20.0),
+                            //                    child: Text(
+                            //                      'No. ${imgList.indexOf(item)} image',
+                            //                      style: TextStyle(
+                            //                        color: Colors.white,
+                            //                        fontSize: 20.0,
+                            //                        fontWeight: FontWeight.bold,
+                            //                      ),
+                            //                    ),
+                          ),
+                        ),
+                      ],
+                    )
                 ),
-              ],
-            )
-        ),
-      ),
-    )).toList();
+              ),
+            )).toList();
+      }
 
      Widget HomeScreen  = Scaffold(
        appBar: AppBar(
-         title: const Text('Doorstep'),
+         title:  Row(
+           mainAxisAlignment: MainAxisAlignment.center,
+           children: [
+             Text('Doorstep'),
+           //  Image.asset("assets/icons/logo.png",height: 40,width: 40, ),
+
+           ],
+         ),
          automaticallyImplyLeading: false,
        ),
         body: Center(
          child: Column(
           children: [
             SizedBox(height: 5,),
-            Column(
-                children: [
-                  CarouselSlider(
-                    items: imageSliders,
-                    options: CarouselOptions(
-                        autoPlay: true,
-                        enlargeStrategy: CenterPageEnlargeStrategy.scale,
-                        enlargeCenterPage: true,
-                        aspectRatio: 2.0,
-                        onPageChanged: (index, reason) {
-                          setState(() {
-                            _current = index;
-                          });
-                        }
-                    ),
-                  ),
-                  Row(
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    children: imgList.map((url) {
-                      int index = imgList.indexOf(url);
-                      return Container(
-                        width: 8.0,
-                        height: 8.0,
-                        margin: EdgeInsets.symmetric(vertical: 10.0, horizontal: 2.0),
-                        decoration: BoxDecoration(
-                          shape: BoxShape.circle,
-                          color: _current == index
-                              ? Color.fromRGBO(0, 0, 0, 0.9)
-                              : Color.fromRGBO(0, 0, 0, 0.4),
-                        ),
-                      );
-                    }).toList(),
-                  ),
-                ]
-            ),
-            Flexible(
+             Flexible(
               flex: 1,
               child: Stack(
                 children: [
                   ListView(
                     children: [
+                      bannerloaded?
+                      Column(
+                          children: [
 
+
+                            CarouselSlider(
+                              items: imageSliders,
+                              options: CarouselOptions(
+                                  autoPlay: true,
+                                  enlargeStrategy: CenterPageEnlargeStrategy.scale,
+                                  enlargeCenterPage: true,
+                                  aspectRatio: 2.0,
+                                  onPageChanged: (index, reason) {
+                                    setState(() {
+                                      _current = index;
+                                    });
+                                  }
+                              ),
+                            ),
+
+                            Row(
+                              mainAxisAlignment: MainAxisAlignment.center,
+                              children: imgList.map((url) {
+                                int index = imgList.indexOf(url);
+                                return Container(
+                                  width: 8.0,
+                                  height: 8.0,
+                                  margin: EdgeInsets.symmetric(vertical: 10.0, horizontal: 2.0),
+                                  decoration: BoxDecoration(
+                                    shape: BoxShape.circle,
+                                    color: _current == index
+                                        ? Color.fromRGBO(0, 0, 0, 0.9)
+                                        : Color.fromRGBO(0, 0, 0, 0.4),
+                                  ),
+                                );
+                              }).toList(),
+                            ),
+                          ]
+                      ):
+                     SizedBox(height: 5,),
+
+                      GestureDetector(
+                        onTap: (){
+                          DataStream.ShopCatagory="Supermarkets";
+                          Navigator.push( context, MaterialPageRoute( builder: (BuildContext context) => ShopsScreen(),),).then((value) {setupCart();});
+
+                        },
+                        child: Padding(
+                          padding: EdgeInsets.all(5),
+                          child: Container(
+                            height: 170,
+                            decoration: BoxDecoration(
+                              shape: BoxShape.rectangle,
+                              borderRadius: BorderRadius.all(Radius.circular(15.0)),
+                              image: DecorationImage(
+                                image: AssetImage("assets/imgs/super_market.jpg"),
+                                fit: BoxFit.cover,
+                              ),
+                            ),
+                            child:  Padding(
+                              padding: EdgeInsets.all(0),
+                              child: Container(
+
+                                height: 100,
+                                decoration: BoxDecoration(
+                                  shape: BoxShape.rectangle,
+                                  borderRadius: BorderRadius.all(Radius.circular(15.0)),
+                                  gradient: new LinearGradient(
+                                      colors: [
+                                        Colors.black,
+                                        const Color(0x10000000),
+                                      ],
+                                      begin: const FractionalOffset(0.0, 0.0),
+                                      end: const FractionalOffset(0.0, 1.0),
+                                      stops: [0.0, 1.0],
+                                      tileMode: TileMode.clamp),
+                                ),
+                                child: Padding(
+                                  padding: EdgeInsets.all(12),
+                                  child: Column(
+                                    crossAxisAlignment: CrossAxisAlignment.start,
+                                    mainAxisAlignment: MainAxisAlignment.start,
+                                    children: [
+                                      Text(
+                                        'Supermarkets',
+                                        style: TextStyle( fontSize: 22, fontWeight: FontWeight.w500,color: Colors.white),
+                                      ),
+                                      Text(
+                                        'Groceries made easy',
+                                        style: TextStyle( fontSize: 16, fontWeight: FontWeight.w300,color: Colors.white),
+                                      ),
+
+                                    ],
+                                  ),
+                                ),
+                              ),
+                            ), /* add child content here */
+                          ),
+                        ),
+                      ),
                       Row(
                         children: [
 
 
                           GestureDetector(
                             onTap: (){
-                              DataStream.ShopCatagory="Supermarkets";
+                              DataStream.ShopCatagory="Bakery";
+
                               Navigator.push( context, MaterialPageRoute( builder: (BuildContext context) => ShopsScreen(),),).then((value) {setupCart();});
 
                             },
@@ -275,7 +436,8 @@ class HomePage extends State<Home> {
                                   shape: BoxShape.rectangle,
                                   borderRadius: BorderRadius.all(Radius.circular(15.0)),
                                   image: DecorationImage(
-                                    image: AssetImage("assets/imgs/super_market.jpg"),
+                                    image: AssetImage("assets/imgs/bk.jpg"),
+
                                     fit: BoxFit.cover,
                                   ),
                                 ),
@@ -298,17 +460,18 @@ class HomePage extends State<Home> {
                                           tileMode: TileMode.clamp),
                                     ),
                                     child: Padding(
-                                      padding: EdgeInsets.all(5),
+                                      padding: EdgeInsets.all(12),
                                       child: Column(
                                         crossAxisAlignment: CrossAxisAlignment.start,
                                         mainAxisAlignment: MainAxisAlignment.start,
                                         children: [
+
                                           Text(
-                                            'Supermarkets',
+                                            'Bakery',
                                             style: TextStyle( fontSize: 22, fontWeight: FontWeight.w500,color: Colors.white),
                                           ),
                                           Text(
-                                            'Groceries made easy',
+                                            'Freshly Baked',
                                             style: TextStyle( fontSize: 16, fontWeight: FontWeight.w300,color: Colors.white),
                                           ),
                                         ],
@@ -329,7 +492,7 @@ class HomePage extends State<Home> {
                               padding: EdgeInsets.all(5),
                               child: Container(
                                 height: 170,
-                                width: ((screenWidth(context)/2))-15,
+                                width: ((screenWidth(context)/2))-5,
 
 
                                 decoration: BoxDecoration(
@@ -360,7 +523,7 @@ class HomePage extends State<Home> {
                                           tileMode: TileMode.clamp),
                                     ),
                                     child: Padding(
-                                      padding: EdgeInsets.all(5),
+                                      padding: EdgeInsets.all(12),
                                       child: Column(
                                         crossAxisAlignment: CrossAxisAlignment.start,
                                         mainAxisAlignment: MainAxisAlignment.start,
@@ -421,7 +584,7 @@ class HomePage extends State<Home> {
                                       tileMode: TileMode.clamp),
                                 ),
                                 child: Padding(
-                                  padding: EdgeInsets.all(5),
+                                  padding: EdgeInsets.all(12),
                                   child: Column(
                                     crossAxisAlignment: CrossAxisAlignment.start,
                                     mainAxisAlignment: MainAxisAlignment.start,
@@ -488,7 +651,7 @@ class HomePage extends State<Home> {
                                           tileMode: TileMode.clamp),
                                     ),
                                     child: Padding(
-                                      padding: EdgeInsets.all(5),
+                                      padding: EdgeInsets.all(12),
                                       child: Column(
                                         crossAxisAlignment: CrossAxisAlignment.start,
                                         mainAxisAlignment: MainAxisAlignment.start,
@@ -519,7 +682,7 @@ class HomePage extends State<Home> {
                               padding: EdgeInsets.all(5),
                               child: Container(
                                 height: 170,
-                                width: ((screenWidth(context)/2))-15,
+                                width: ((screenWidth(context)/2))-5,
 
 
                                 decoration: BoxDecoration(
@@ -550,7 +713,7 @@ class HomePage extends State<Home> {
                                           tileMode: TileMode.clamp),
                                     ),
                                     child: Padding(
-                                      padding: EdgeInsets.all(5),
+                                      padding: EdgeInsets.all(12),
                                       child: Column(
                                         crossAxisAlignment: CrossAxisAlignment.start,
                                         mainAxisAlignment: MainAxisAlignment.start,
@@ -574,8 +737,11 @@ class HomePage extends State<Home> {
                         ],
                       ),
 
+
+
                     ],
                   ),
+                  user!=null?
                   Positioned(
                     right: 15,
                     bottom: 15,
@@ -602,6 +768,18 @@ class HomePage extends State<Home> {
                         child: Icon(Icons.shopping_cart),
                       ),
                     ),
+                  ):
+                  Positioned(
+                    right: 15,
+                    bottom: 15,
+                    child:FloatingActionButton(
+                      onPressed: (){
+                        Navigator.push( context, MaterialPageRoute( builder: (BuildContext context) => CartScreen(),));
+
+                      },
+
+                      child: Icon(Icons.shopping_cart),
+                    ),
                   ),
                 ],
               ),
@@ -612,7 +790,9 @@ class HomePage extends State<Home> {
      );
 
     Widget OngoingOrders  =Center(
-      child: StreamBuilder(
+      child:
+      user!=null?
+      StreamBuilder(
           stream: FirebaseDatabase.instance
               .reference()
               .child("User Orders").child(DataStream.UserId).child("Active")
@@ -839,7 +1019,7 @@ class HomePage extends State<Home> {
 
                                            // ordereditems.add(Cart.fromSnapshot(event.snapshot));
 
-                                            print("Shops."+Cart.fromSnapshot(event.snapshot).town+"."+Cart.fromSnapshot(event.snapshot).shopcatagory+"."+Cart.fromSnapshot(event.snapshot).shopid+" orders."+"active."+orders[index].orderID);
+                                         //   print("Shops."+Cart.fromSnapshot(event.snapshot).town+"."+Cart.fromSnapshot(event.snapshot).shopcatagory+"."+Cart.fromSnapshot(event.snapshot).shopid+" orders."+"active."+orders[index].orderID);
 
                                             _userRef.child("items").push().set(<dynamic, dynamic>{
                                               'no_of_items': Cart.fromSnapshot(event.snapshot).no_of_items,
@@ -907,7 +1087,9 @@ class HomePage extends State<Home> {
                                           del.remove();
 
                                             del = database.reference()
-                                              .child("Admin").child("Active").child(DataStream.UserId).child(orders[index].orderID);
+                                              .child("Admin").child("Orders").child("Active")
+                                               // .child(DataStream.UserId)
+                                                .child(orders[index].orderID);
                                           del.remove();
 
 
@@ -949,11 +1131,32 @@ class HomePage extends State<Home> {
             } else {
               return Text("No Orders");
             }
-          }),
+          }):
+      SizedBox(
+        width:200,
+        child: RaisedButton(
+          shape: RoundedRectangleBorder(
+            borderRadius: new BorderRadius.circular(18.0),
+
+          ),
+
+          color: primaryDark,
+          onPressed: () async {
+            //   await loginUser();
+            Navigator.of(context).pushReplacement(
+                MaterialPageRoute(
+                    builder: (context) => SignIn()));
+          },
+          child: Text( "SIGN IN",style: TextStyle(color: Colors.white),),
+        ),
+      ),
     );
 
      Widget HistoryOrders  =Center(
-      child: StreamBuilder(
+      child:
+      user!=null?
+
+      StreamBuilder(
           stream: FirebaseDatabase.instance
               .reference()
               .child("User Orders").child(DataStream.UserId).child("History")
@@ -1157,7 +1360,25 @@ class HomePage extends State<Home> {
             } else {
               return Text("No Orders");
             }
-          }),
+          }):
+       SizedBox(
+       width:200,
+       child: RaisedButton(
+         shape: RoundedRectangleBorder(
+           borderRadius: new BorderRadius.circular(18.0),
+
+         ),
+
+         color: primaryDark,
+         onPressed: () async {
+           //   await loginUser();
+           Navigator.of(context).pushReplacement(
+               MaterialPageRoute(
+                   builder: (context) => SignIn()));
+         },
+         child: Text( "SIGN IN",style: TextStyle(color: Colors.white),),
+       ),
+     ),
     );
 
     Widget OrdersScreen  =Center(
@@ -1177,62 +1398,64 @@ class HomePage extends State<Home> {
               ],
             ),
           ),
-          body: TabBarView(
+          body:
+
+          TabBarView(
             children: [
               OngoingOrders,
               HistoryOrders,
             ],
-          ),
+          )
         ),
       ),
     );
 
-    RateMyApp _rateMyApp = RateMyApp (
-        preferencesPrefix: 'rateMyApp_pro',
-        minDays: 1,
-        minLaunches: 1,
-        remindDays: 1,
-        remindLaunches: 1
-    );
-    _rateMyApp.init().then((_){
-      if(_rateMyApp.shouldOpenDialog){ //conditions check if user already rated the app
-        _rateMyApp.showStarRateDialog(
-          context,
-          title: 'What do you think about Our App?',
-          message: 'Please leave a rating',
-          actionsBuilder: (_, stars){
-            return [ // Returns a list of actions (that will be shown at the bottom of the dialog).
-              FlatButton(
-                child: Text('OK'),
-                onPressed: () async {
-                  print('Thanks for the ' + (stars == null ? '0' : stars.round().toString()) + ' star(s) !');
-                  if(stars != null && (stars == 4 || stars == 5)){
-                    //if the user stars is equal to 4 or five
-                    // you can redirect the use to playstore or                         appstore to enter their reviews
-
-
-                  } else {
-// else you can redirect the user to a page in your app to tell you how you can make the app better
-
-                  }
-                  // You can handle the result as you want (for instance if the user puts 1 star then open your contact page, if he puts more then open the store page, etc...).
-                  // This allows to mimic the behavior of the default "Rate" button. See "Advanced > Broadcasting events" for more information :
-                  await _rateMyApp.callEvent(RateMyAppEventType.rateButtonPressed);
-                  Navigator.pop<RateMyAppDialogButton>(context, RateMyAppDialogButton.rate);
-                },
-              ),
-            ];
-          },
-          dialogStyle: DialogStyle(
-            titleAlign: TextAlign.center,
-            messageAlign: TextAlign.center,
-            messagePadding: EdgeInsets.only(bottom: 20.0),
-          ),
-          starRatingOptions: StarRatingOptions(),
-          onDismissed: () => _rateMyApp.callEvent(RateMyAppEventType.laterButtonPressed),
-        );
-      }
-    });
+//    RateMyApp _rateMyApp = RateMyApp (
+//        preferencesPrefix: 'rateMyApp_pro',
+//        minDays: 1,
+//        minLaunches: 1,
+//        remindDays: 1,
+//        remindLaunches: 1
+//    );
+//    _rateMyApp.init().then((_){
+//      if(_rateMyApp.shouldOpenDialog){ //conditions check if user already rated the app
+//        _rateMyApp.showStarRateDialog(
+//          context,
+//          title: 'What do you think about Our App?',
+//          message: 'Please leave a rating',
+//          actionsBuilder: (_, stars){
+//            return [ // Returns a list of actions (that will be shown at the bottom of the dialog).
+//              FlatButton(
+//                child: Text('OK'),
+//                onPressed: () async {
+//                  print('Thanks for the ' + (stars == null ? '0' : stars.round().toString()) + ' star(s) !');
+//                  if(stars != null && (stars == 4 || stars == 5)){
+//                    //if the user stars is equal to 4 or five
+//                    // you can redirect the use to playstore or                         appstore to enter their reviews
+//
+//
+//                  } else {
+//// else you can redirect the user to a page in your app to tell you how you can make the app better
+//
+//                  }
+//                  // You can handle the result as you want (for instance if the user puts 1 star then open your contact page, if he puts more then open the store page, etc...).
+//                  // This allows to mimic the behavior of the default "Rate" button. See "Advanced > Broadcasting events" for more information :
+//                  await _rateMyApp.callEvent(RateMyAppEventType.rateButtonPressed);
+//                  Navigator.pop<RateMyAppDialogButton>(context, RateMyAppDialogButton.rate);
+//                },
+//              ),
+//            ];
+//          },
+//          dialogStyle: DialogStyle(
+//            titleAlign: TextAlign.center,
+//            messageAlign: TextAlign.center,
+//            messagePadding: EdgeInsets.only(bottom: 20.0),
+//          ),
+//          starRatingOptions: StarRatingOptions(),
+//          onDismissed: () => _rateMyApp.callEvent(RateMyAppEventType.laterButtonPressed),
+//        );
+//      }
+//    });
 
      Widget ProfileScreen  =Center(
       child: Scaffold(
@@ -1240,7 +1463,9 @@ class HomePage extends State<Home> {
           title: const Text('Profile'),
 
         ),
-        body: Center(
+        body:
+        user!=null?
+        Center(
           child: Column(
             mainAxisAlignment: MainAxisAlignment.end,
              children: [
@@ -1308,7 +1533,28 @@ class HomePage extends State<Home> {
                SizedBox(height: 30,)
             ],
           ),
+        ):
+        Center(
+          child: SizedBox(
+            width:200,
+            child: RaisedButton(
+              shape: RoundedRectangleBorder(
+                borderRadius: new BorderRadius.circular(18.0),
+
+              ),
+
+              color: primaryDark,
+              onPressed: () async {
+                //   await loginUser();
+                Navigator.of(context).pushReplacement(
+                    MaterialPageRoute(
+                        builder: (context) => SignIn()));
+              },
+              child: Text( "SIGN IN",style: TextStyle(color: Colors.white),),
+            ),
+          ),
         ),
+
       ),
 
 
@@ -1317,10 +1563,21 @@ class HomePage extends State<Home> {
     return Scaffold(
 
 
-      body:
-
-      _selectedIndex==0? HomeScreen:
-      _selectedIndex==1?OrdersScreen:ProfileScreen,
+      body:Stack(
+        children: [
+          Visibility(
+              visible: _selectedIndex==0?true:false,
+              child: HomeScreen),
+          Visibility(
+              visible: _selectedIndex==1?true:false,
+              child: OrdersScreen),
+          Visibility(
+              visible: _selectedIndex==2?true:false,
+              child: ProfileScreen)
+        ],
+      ),
+//      _selectedIndex==0? HomeScreen:
+//      _selectedIndex==1?OrdersScreen:ProfileScreen,
 
       bottomNavigationBar: Container(
         decoration: BoxDecoration(
@@ -1341,6 +1598,7 @@ class HomePage extends State<Home> {
           ],
         ),
         child: BottomNavigationBar(
+
           items: const <BottomNavigationBarItem>[
             BottomNavigationBarItem(
               icon: Icon(Icons.home),

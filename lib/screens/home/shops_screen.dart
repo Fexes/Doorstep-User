@@ -1,4 +1,5 @@
 import 'dart:io';
+import 'dart:math';
 
  import 'package:Doorstep/models/Shops.dart';
 import 'package:Doorstep/utilts/UI/DataStream.dart';
@@ -9,6 +10,7 @@ import 'package:Doorstep/utilts/UI/toast_utility.dart';
 import 'package:flutter/material.dart';
 import 'package:Doorstep/styles/styles.dart';
 import 'package:Doorstep/screens/auth/sign-up.dart';
+import 'package:geolocator/geolocator.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'dart:async';
 import 'dart:convert' show jsonDecode, utf8;
@@ -115,29 +117,37 @@ class _ShopsScreenState extends State<ShopsScreen> {
 
     shops = new List();
     final FirebaseDatabase database = FirebaseDatabase.instance;
-    volunteerRef = database.reference().child("Shops").child("Bahria Town Phase 4").child(DataStream.ShopCatagory);
-    volunteerRef.onChildAdded.listen(_onEntryAdded);
-    volunteerRef.onChildChanged.listen(_onEntryChanged);
+    volunteerRef = database.reference().child("Shops").child(DataStream.ShopCatagory);
+//    volunteerRef.onChildAdded.listen(_onEntryAdded);
+//    volunteerRef.onChildChanged.listen(_onEntryChanged);
 
 
   }
 
 
-  _onEntryAdded(Event event) {
-    setState(() {
-      shops.add(Shops.fromSnapshot(event.snapshot));
-    });
-  }
+//  _onEntryAdded(Event event) {
+//    setState(() {
+//      shops.add(Shops.fromSnapshot(event.snapshot));
+//    });
+//  }
+//
+//  _onEntryChanged(Event event) {
+//    var old = shops.singleWhere((entry) {
+//      return entry.key == event.snapshot.key;
+//    });
+//    setState(() {
+//      shops[shops.indexOf(old)] = Shops.fromSnapshot(event.snapshot);
+//    });
+//  }
 
-  _onEntryChanged(Event event) {
-    var old = shops.singleWhere((entry) {
-      return entry.key == event.snapshot.key;
-    });
-    setState(() {
-      shops[shops.indexOf(old)] = Shops.fromSnapshot(event.snapshot);
-    });
+  double calculateDistance(lat1, lon1, lat2, lon2){
+    var p = 0.017453292519943295;
+    var c = cos;
+    var a = 0.5 - c((lat2 - lat1) * p)/2 +
+        c(lat1 * p) * c(lat2 * p) *
+            (1 - c((lon2 - lon1) * p))/2;
+    return 12742 * asin(sqrt(a));
   }
-
 
   @override
   Widget build(BuildContext context) {
@@ -159,95 +169,144 @@ class _ShopsScreenState extends State<ShopsScreen> {
       body: Column(
         children: <Widget>[
           Flexible(
-            child: FirebaseAnimatedList(
-              query: volunteerRef,
-              itemBuilder: (BuildContext context, DataSnapshot snapshot,
-                  Animation<double> animation, int index) {
+            child:
+//            FirebaseAnimatedList(
+//              query: volunteerRef,
+//              itemBuilder: (BuildContext context, DataSnapshot snapshot,
+//                  Animation<double> animation, int index) {
+//
+//
+//
+//              },
+//            ),
 
-                return GestureDetector(
-                  onTap: (){
-                    DataStream.ShopName=shops[index].shopname;
-                    DataStream.ShopId=shops[index].shopid;
-                    DataStream.ShopCatagory=shops[index].shopcategory;
-                     Navigator.push( context, MaterialPageRoute( builder: (BuildContext context) => ProductCatalog(shops[index],snapshot.key),),);
+//      shops = new List();
+//        final FirebaseDatabase database = FirebaseDatabase.instance;
+//        volunteerRef = database.reference().child("Shops").child(DataStream.ShopCatagory);
+
+            StreamBuilder(
+                stream: FirebaseDatabase.instance
+                    .reference()
+                    .child("Shops").child(DataStream.ShopCatagory)
+                    .onValue
+                ,
+                builder: (BuildContext context, AsyncSnapshot<Event> snapshot) {
+                  if (snapshot.hasData) {
+                    Map<dynamic, dynamic> map = snapshot.data.snapshot.value;
+
+                     if(map!=null) {
+                      shops.clear();
 
 
-                  },
-                  child: Padding(
-                    padding: EdgeInsets.all(10),
-                    child: Container(
-                      height: 200,
-                      width: double.infinity,
+                      map.forEach((dynamic, v)  {
 
-                      decoration: BoxDecoration(
-                        boxShadow: [
-                          BoxShadow(
-                            color: Colors.grey.withOpacity(0.5),
-                            spreadRadius: 5,
-                            blurRadius: 7,
-                            offset: Offset(0, 3), // changes position of shadow
-                          ),
-                        ],
-                        shape: BoxShape.rectangle,
-                        borderRadius: BorderRadius.all(Radius.circular(15.0)),
-                        image: DecorationImage(
-                          image: NetworkImage(shops[index].shopimage),
-                          fit: BoxFit.cover,
-                        ),
-                      ),
-                      child:  Padding(
-                        padding: EdgeInsets.all(0),
-                        child: Container(
+                        //  Shops(this.key,this.shopid,this.shopcategory,this.shopdiscription,this.shopimage,this.shopname,this.location);
 
-                          height: 100,
-                          decoration: BoxDecoration(
 
-                            shape: BoxShape.rectangle,
-                            borderRadius: BorderRadius.all(Radius.circular(15.0)),
-                            gradient: new LinearGradient(
-                                colors: [
-                                  Colors.black,
-                                  const Color(0x10000000),
-                                ],
-                                begin: const FractionalOffset(0.0, 0.0),
-                                end: const FractionalOffset(0.0, 1.0),
-                                stops: [0.0, 1.0],
-                                tileMode: TileMode.clamp),
+                        double distanceInMeters = calculateDistance(DataStream.userlocation.latitude,DataStream.userlocation.longitude,double.parse(v["location"].toString().split(",")[0]),double.parse(v["location"].toString().split(",")[1]));
 
-                          ),
+                       // print(distanceInMeters.toString()+"-"+v["shopname"]);
+
+                        if(distanceInMeters< DataStream.OrderRadius){
+                         // print(distanceInMeters);
+
+                          shops.add(new Shops(
+                              v["key"], v["shopid"], v["shopcategory"],
+                              v["shopdiscription"],
+                              v["shopimage"], v["shopname"], v["location"]));
+                        }
+
+                      }
+                      );
+                    }
+
+
+                    return ListView.builder(
+
+
+                      itemCount: shops.length,
+                      padding: EdgeInsets.all(2.0),
+                      itemBuilder: (BuildContext context, int index) {
+                        return GestureDetector(
+                          onTap: (){
+                            DataStream.ShopName=shops[index].shopname;
+                            DataStream.ShopId=shops[index].shopid;
+                            DataStream.ShopCatagory=shops[index].shopcategory;
+                            Navigator.push( context, MaterialPageRoute( builder: (BuildContext context) => ProductCatalog(shops[index],shops[index].shopid),),);
+
+
+
+                          },
                           child: Padding(
                             padding: EdgeInsets.all(10),
-                            child: Column(
-                              crossAxisAlignment: CrossAxisAlignment.start,
-                              mainAxisAlignment: MainAxisAlignment.start,
-                              children: [
-                                Text(
-                                  shops[index].shopname,
-                                  style: TextStyle(fontSize: 30, fontWeight: FontWeight.w500,color: Colors.white),
+                            child: Container(
+                              height: 200,
+                              width: double.infinity,
+
+                              decoration: BoxDecoration(
+                                boxShadow: [
+                                  BoxShadow(
+                                    color: Colors.grey.withOpacity(0.5),
+                                    spreadRadius: 5,
+                                    blurRadius: 7,
+                                    offset: Offset(0, 3), // changes position of shadow
+                                  ),
+                                ],
+                                shape: BoxShape.rectangle,
+                                borderRadius: BorderRadius.all(Radius.circular(15.0)),
+                                image: DecorationImage(
+                                  image: NetworkImage(shops[index].shopimage),
+                                  fit: BoxFit.cover,
                                 ),
-                                Text(
-                                  shops[index].shopdiscription,
-                                  style: TextStyle(fontSize: 20, fontWeight: FontWeight.w300,color: Colors.white),
+                              ),
+                              child:  Padding(
+                                padding: EdgeInsets.all(0),
+                                child: Container(
+
+                                  height: 100,
+                                  decoration: BoxDecoration(
+
+                                    shape: BoxShape.rectangle,
+                                    borderRadius: BorderRadius.all(Radius.circular(15.0)),
+                                    gradient: new LinearGradient(
+                                        colors: [
+                                          Colors.black,
+                                          const Color(0x10000000),
+                                        ],
+                                        begin: const FractionalOffset(0.0, 0.0),
+                                        end: const FractionalOffset(0.0, 1.0),
+                                        stops: [0.0, 1.0],
+                                        tileMode: TileMode.clamp),
+
+                                  ),
+                                  child: Padding(
+                                    padding: EdgeInsets.all(10),
+                                    child: Column(
+                                      crossAxisAlignment: CrossAxisAlignment.start,
+                                      mainAxisAlignment: MainAxisAlignment.start,
+                                      children: [
+                                        Text(
+                                          shops[index].shopname,
+                                          style: TextStyle(fontSize: 30, fontWeight: FontWeight.w500,color: Colors.white),
+                                        ),
+                                        Text(
+                                          shops[index].shopdiscription,
+                                          style: TextStyle(fontSize: 20, fontWeight: FontWeight.w300,color: Colors.white),
+                                        ),
+                                      ],
+                                    ),
+                                  ),
                                 ),
-                              ],
+                              ), /* add child content here */
                             ),
                           ),
-                        ),
-                      ), /* add child content here */
-                    ),
-                  ),
-                );
-
-//                return new ListTile(
-//                  title: Text(shops[index].shopname),
-//                  subtitle: Text(shops[index].shopdiscription),
-//
-//                );
-              },
-            ),
-
-
-
+                        );
+                      },
+                    );
+                  } else {
+                    return Center(child: CircularProgressIndicator());
+                  }
+                }),
           ),
         ],
       ),

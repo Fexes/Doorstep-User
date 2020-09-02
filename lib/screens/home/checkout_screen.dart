@@ -103,21 +103,46 @@ class _CheckOutScreenState extends State<CheckOutScreen> {
   @override
     initState()   {
     super.initState();
-
-    setuplist();
-
+    carts = new List();
 
 
-
+    getodercount();
   }
 
+  void getodercount(){
+    final locationDbRef = FirebaseDatabase.instance.reference().child("User Orders").child(DataStream.UserId).child("Order Count");
+
+    locationDbRef.once().then((value) async {
+      print(value.value["no_of_orders"]);
+      order_count=value.value['no_of_orders'];
+      if(order_count<3) {
+        DataStream.DeliverCharges = 0;
+      }
+      else{
+        final locationDbRef = FirebaseDatabase.instance.reference().child("Admin").child("Delivery");
+
+        locationDbRef.once().then((value) async {
+          print(value.value["delivery_charges"]);
+
+          DataStream.DeliverCharges = value.value['delivery_charges'];
+
+
+        }
+        );
+      }
+      setuplist();
+
+    }
+    );
+  }
+
+  int order_count=0;
   List<Cart> carts;
   String userid;
    DatabaseReference volunteerRef;
   Future<void> setuplist() async {
 
-    carts = new List();
-    FirebaseAuth.instance.currentUser().then((firebaseUser){
+     FirebaseAuth.instance.currentUser().then((firebaseUser){
       if(firebaseUser == null)
       {
         Navigator.of(context).pushReplacement(MaterialPageRoute(builder: (context) => SignIn()));
@@ -614,6 +639,10 @@ class _CheckOutScreenState extends State<CheckOutScreen> {
 
                           String orderID=getRandomString(4)+"-"+getRandomString(3);
                           FirebaseDatabase database = new FirebaseDatabase();
+
+                          DatabaseReference ordercount = database.reference()
+                              .child('User Orders').child(DataStream.UserId).child("Order Count");
+
                           DatabaseReference _userRef = database.reference()
                               .child('User Orders').child(DataStream.UserId).child("Active").child(orderID);
 
@@ -621,11 +650,17 @@ class _CheckOutScreenState extends State<CheckOutScreen> {
                               .child('Shops');
 
                           DatabaseReference adminorder = database.reference()
-                              .child('Admin');
+                              .child('Admin').child("Orders");
 
                           var now = new DateTime.now();
                           var date = new DateFormat('yyyy-MM-dd');
                           var time = new DateFormat('hh:mm');
+
+
+                          ordercount.set(<dynamic, dynamic>{
+                              'no_of_orders': order_count+1,
+
+                          }).then((value) {
 
                           _userRef.set(<dynamic, dynamic>{
                             'no_of_items': '${carts.length}',
@@ -646,7 +681,7 @@ class _CheckOutScreenState extends State<CheckOutScreen> {
 
                               adminorder
                                   .child("Active")
-                                  .child(DataStream.UserId)
+                                  //.child(DataStream.UserId)
                                   .child(orderID)
                                   .set(<dynamic, dynamic>{
                                 'no_of_items': '${carts.length}',
@@ -665,7 +700,7 @@ class _CheckOutScreenState extends State<CheckOutScreen> {
 
                                 adminorder
                                 .child("Active")
-                                .child(DataStream.UserId)
+                               // .child(DataStream.UserId)
                                     .child(orderID).child("items").push().set(
                                     <dynamic, dynamic>{
                                       'no_of_items': carts[i].no_of_items,
@@ -684,7 +719,7 @@ class _CheckOutScreenState extends State<CheckOutScreen> {
 
 
 
-                                shoporder.child(carts[i].town).child(
+                                shoporder.child(
                                     carts[i].shopcatagory).child(
                                     carts[i].shopid).child("Orders")
                                     .child("Active")
@@ -704,7 +739,7 @@ class _CheckOutScreenState extends State<CheckOutScreen> {
 
                                 }).then((value) {
 
-                                  shoporder.child(carts[i].town).child(carts[i].shopcatagory).child(carts[i].shopid).child("Orders")
+                                  shoporder.child(carts[i].shopcatagory).child(carts[i].shopid).child("Orders")
                                       .child("Active").child(orderID).child("items").push().set(
                                       <dynamic, dynamic>{
                                         'no_of_items': carts[i].no_of_items,
@@ -742,12 +777,21 @@ class _CheckOutScreenState extends State<CheckOutScreen> {
                                 _userRef.remove();
                               });
                             }
+                            final locationDbRef = FirebaseDatabase.instance.reference().child("Admin").child("Delivery");
 
-                            ToastUtils.showCustomToast(context, "Order Placed", true);
-                            Navigator.of(context).pop();
+                            locationDbRef.once().then((value) async {
+                              print(value.value["delivery_charges"]);
+
+                              DataStream.DeliverCharges = value.value['delivery_charges'];
+
+                              ToastUtils.showCustomToast(context, "Order Placed", true);
+                              Navigator.of(context).pop();
+                            }
+                            );
+
 
                           });
-
+                          });
 
                         }else{
                           ToastUtils.showCustomToast(context, "Add Delivery Location", null);
@@ -798,24 +842,18 @@ class _CheckOutScreenState extends State<CheckOutScreen> {
 
   String getRandomString(int length) => String.fromCharCodes(Iterable.generate(
       length, (_) => _chars.codeUnitAt(_rnd.nextInt(_chars.length))));
-  String googleAPIKey = "AIzaSyD_U_2NzdPIL7TWb8ECBHWO1eROR2yrebI";
-
   String Useraddress="Add Location";
   bool isaddressaded=false;
   LatLng deliverylocation;
   Future<void> addLocation() async {
-    showLoadingDialogue("Getting Location");
 
-
-    getLocation().then((value) async {
-      hideLoadingDialogue();
 
       LocationResult result = await showLocationPicker(
           context,
-          googleAPIKey,
+          DataStream.googleAPIKey,
 
           // appBarColor: Colors.green,
-          initialCenter: value,
+          initialCenter: DataStream.userlocation,
           myLocationButtonEnabled: true,
           automaticallyAnimateToCurrentLocation: true
 
@@ -831,55 +869,9 @@ class _CheckOutScreenState extends State<CheckOutScreen> {
         });
       }
 
-    });
+
 
 
   }
 
-  Future<LatLng> getLocation() async {
-    LatLng userPosition;
-    // print(userPosition.toString());
-    Map<Permission, PermissionStatus> statuses = await [
-      Permission.location,
-    ].request();
-
-
-
-    var geolocator = Geolocator();
-    GeolocationStatus geolocationStatus =
-    await geolocator.checkGeolocationPermissionStatus();
-    switch (geolocationStatus) {
-      case GeolocationStatus.denied:
-        print('denied');
-        break;
-      case GeolocationStatus.disabled:
-        print('disabled');break;
-      case GeolocationStatus.restricted:
-        print('restricted');
-        break;
-      case GeolocationStatus.unknown:
-        print('unknown');
-        break;
-      case GeolocationStatus.granted:
-        print('granted');
-
-
-
-        await Geolocator()
-            .getCurrentPosition(desiredAccuracy: LocationAccuracy.high)
-            .then((Position _position) async {
-          if (_position != null) {
-
-            userPosition = LatLng(_position.latitude, _position.longitude);
-
-            setState((){
-            });
-          }
-        });
-        break;
-    }
-
-    return userPosition;
-
-  }
 }

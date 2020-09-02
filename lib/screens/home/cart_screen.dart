@@ -101,19 +101,65 @@ class _CartScreenState extends State<CartScreen> {
     initState()   {
     super.initState();
 
-    setuplist();
+    carts = new List();
 
 
+    getodercount();
 
 
   }
+  void getodercount(){
+    final locationDbRef = FirebaseDatabase.instance.reference().child("User Orders").child(DataStream.UserId).child("Order Count");
 
+    locationDbRef.once().then((value) async {
+      if(value.value!=null){
+
+      print(value.value["no_of_orders"]);
+      order_count = value.value['no_of_orders'];
+
+      if (order_count < 3) {
+        DataStream.DeliverCharges = 0;
+      }
+      else {
+        final locationDbRef = FirebaseDatabase.instance.reference().child(
+            "Admin").child("Delivery");
+
+        locationDbRef.once().then((value) async {
+          print(value.value["delivery_charges"]);
+
+          DataStream.DeliverCharges = value.value['delivery_charges'];
+        }
+        );
+      }
+    }else{
+
+        if (order_count < 3) {
+          DataStream.DeliverCharges = 0;
+        }
+        else {
+          final locationDbRef = FirebaseDatabase.instance.reference().child(
+              "Admin").child("Delivery");
+
+          locationDbRef.once().then((value) async {
+            print(value.value["delivery_charges"]);
+
+            DataStream.DeliverCharges = value.value['delivery_charges'];
+          }
+          );
+        }
+      }
+
+      setuplist();
+
+    }
+    );
+  }
+  int order_count=0;
   List<Cart> carts;
   String userid;
    DatabaseReference volunteerRef;
   Future<void> setuplist() async {
 
-    carts = new List();
     FirebaseAuth.instance.currentUser().then((firebaseUser){
       if(firebaseUser == null)
       {
@@ -155,8 +201,9 @@ class _CartScreenState extends State<CartScreen> {
   }
 
   _onEntryRemoved(Event event) {
+    carts.remove(Cart.fromSnapshot(event.snapshot));
+
     setState(() {
-      carts.remove(Cart.fromSnapshot(event.snapshot));
     });
   }
 

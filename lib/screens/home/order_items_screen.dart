@@ -259,19 +259,19 @@ class _OrderItemsScreenState extends State<OrderItemsScreen> {
                                         width:20,
                                         child: Text(
                                           '',
-                                          style: TextStyle(fontSize: 14, fontWeight: FontWeight.w400,color: Colors.black),
+                                          style: TextStyle(fontSize: 14, fontWeight: FontWeight.w500,color: Colors.black),
                                         ),
                                       ),
                                        Text(
                                         'Items',
-                                        style: TextStyle(fontSize: 16, fontWeight: FontWeight.w400,color: Colors.black),
+                                        style: TextStyle(fontSize: 16, fontWeight: FontWeight.w500,color: Colors.black),
                                       ),
                                     ],
                                   ),
 
                                   Text(
                                     'Price  ',
-                                    style: TextStyle(fontSize: 16, fontWeight: FontWeight.w400,color: Colors.redAccent),
+                                    style: TextStyle(fontSize: 16, fontWeight: FontWeight.w500,color: Colors.redAccent),
                                   ),
 
 
@@ -294,20 +294,20 @@ class _OrderItemsScreenState extends State<OrderItemsScreen> {
                                         width:30,
                                         child: Text(
                                           '${ordereditems[index].no_of_items} x ',
-                                          style: TextStyle(fontSize: 14, fontWeight: FontWeight.w200,color: Colors.black),
+                                          style: TextStyle(fontSize: 14, fontWeight: FontWeight.w300,color: Colors.black),
                                         ),
                                       ),
                                       SizedBox(width: 10,),
                                       Text(
                                         '${ordereditems[index].cardname}',
-                                        style: TextStyle(fontSize: 14, fontWeight: FontWeight.w200,color: Colors.black),
+                                        style: TextStyle(fontSize: 14, fontWeight: FontWeight.w300,color: Colors.black),
                                       ),
                                     ],
                                   ),
 
                                   Text(
                                     'Rs. ${ordereditems[index].no_of_items*ordereditems[index].cardprice}',
-                                    style: TextStyle(fontSize: 16, fontWeight: FontWeight.w200,color: Colors.redAccent),
+                                    style: TextStyle(fontSize: 16, fontWeight: FontWeight.w300,color: Colors.redAccent),
                                   ),
                                 ],
                               ),
@@ -331,20 +331,20 @@ class _OrderItemsScreenState extends State<OrderItemsScreen> {
                                   width:30,
                                   child: Text(
                                     '${ordereditems[index].no_of_items} x ',
-                                    style: TextStyle(fontSize: 14, fontWeight: FontWeight.w200,color: Colors.black),
+                                    style: TextStyle(fontSize: 14, fontWeight: FontWeight.w300,color: Colors.black),
                                   ),
                                 ),
                                 SizedBox(width: 10,),
                                 Text(
                                   '${ordereditems[index].cardname}',
-                                  style: TextStyle(fontSize: 14, fontWeight: FontWeight.w200,color: Colors.black),
+                                  style: TextStyle(fontSize: 14, fontWeight: FontWeight.w300,color: Colors.black),
                                 ),
                               ],
                             ),
 
                             Text(
                               'Rs. ${ordereditems[index].no_of_items*ordereditems[index].cardprice}',
-                              style: TextStyle(fontSize: 16, fontWeight: FontWeight.w200,color: Colors.redAccent),
+                              style: TextStyle(fontSize: 16, fontWeight: FontWeight.w300,color: Colors.redAccent),
                             ),
                           ],
                         ),
@@ -375,11 +375,11 @@ class _OrderItemsScreenState extends State<OrderItemsScreen> {
                                       children: [
                                         Text(
                                           'Subtotal ',
-                                          style: TextStyle(fontSize: 16, fontWeight: FontWeight.w200,color: Colors.black),
+                                          style: TextStyle(fontSize: 16, fontWeight: FontWeight.w300,color: Colors.black),
                                         ),
                                         Text(
                                           'Rs. ${calSubtotal()}',
-                                          style: TextStyle(fontSize: 16, fontWeight: FontWeight.w200,color: Colors.black),
+                                          style: TextStyle(fontSize: 16, fontWeight: FontWeight.w300,color: Colors.black),
                                         ),
                                       ],
                                     ),
@@ -390,11 +390,11 @@ class _OrderItemsScreenState extends State<OrderItemsScreen> {
                                       children: [
                                         Text(
                                           'Delivery Charges ',
-                                          style: TextStyle(fontSize: 16, fontWeight: FontWeight.w200,color: Colors.black),
+                                          style: TextStyle(fontSize: 16, fontWeight: FontWeight.w300,color: Colors.black),
                                         ),
                                         Text(
                                           'Rs. ${DataStream.DeliverCharges}',
-                                          style: TextStyle(fontSize: 16, fontWeight: FontWeight.w200,color: Colors.black),
+                                          style: TextStyle(fontSize: 16, fontWeight: FontWeight.w300,color: Colors.black),
                                         ),
                                       ],
                                     ),
@@ -413,11 +413,11 @@ class _OrderItemsScreenState extends State<OrderItemsScreen> {
                                           children: [
                                             Text(
                                               'Total ',
-                                              style: TextStyle(fontSize: 16, fontWeight: FontWeight.w400,color: Colors.black),
+                                              style: TextStyle(fontSize: 16, fontWeight: FontWeight.w500,color: Colors.black),
                                             ),
                                             Text(
                                               '(incl. VAT)',
-                                              style: TextStyle(fontSize: 12, fontWeight: FontWeight.w200,color: Colors.black),
+                                              style: TextStyle(fontSize: 12, fontWeight: FontWeight.w300,color: Colors.black),
                                             ),
                                           ],
                                         ),
@@ -472,7 +472,7 @@ class _OrderItemsScreenState extends State<OrderItemsScreen> {
                                           children: [
                                             Text(
                                               'Order Date',
-                                              style: TextStyle(fontSize: 16, fontWeight: FontWeight.w300,color: Colors.black),
+                                              style: TextStyle(fontSize: 16, fontWeight: FontWeight.w400,color: Colors.black),
                                             ),
                                             SizedBox(height: 5,),
 
@@ -481,7 +481,7 @@ class _OrderItemsScreenState extends State<OrderItemsScreen> {
                                               child: Text(
                                                 order.orderDate +"  "+order.orderTime,
                                                 maxLines:5,
-                                                style: TextStyle(fontSize: 16, fontWeight: FontWeight.w200,color: Colors.black),
+                                                style: TextStyle(fontSize: 16, fontWeight: FontWeight.w300,color: Colors.black),
                                               ),
                                             ),
 
@@ -509,7 +509,7 @@ class _OrderItemsScreenState extends State<OrderItemsScreen> {
                                             children: [
                                               Text(
                                                 'Delivery Location',
-                                                style: TextStyle(fontSize: 16, fontWeight: FontWeight.w300,color: Colors.black),
+                                                style: TextStyle(fontSize: 16, fontWeight: FontWeight.w400,color: Colors.black),
                                               ),
                                               SizedBox(height: 5,),
 
@@ -518,7 +518,7 @@ class _OrderItemsScreenState extends State<OrderItemsScreen> {
                                                 child: Text(
                                                   order.address,
                                                   maxLines:5,
-                                                  style: TextStyle(fontSize: 16, fontWeight: FontWeight.w200,color: Colors.black),
+                                                  style: TextStyle(fontSize: 16, fontWeight: FontWeight.w300,color: Colors.black),
                                                 ),
                                               ),
 
@@ -541,11 +541,11 @@ class _OrderItemsScreenState extends State<OrderItemsScreen> {
                                       children: [
                                         Text(
                                           'Payment Method ',
-                                          style: TextStyle(fontSize: 16, fontWeight: FontWeight.w300,color: Colors.black),
+                                          style: TextStyle(fontSize: 16, fontWeight: FontWeight.w400,color: Colors.black),
                                         ),
                                         Text(
                                           'Cash on delivery',
-                                          style: TextStyle(fontSize: 16, fontWeight: FontWeight.w200,color: Colors.black),
+                                          style: TextStyle(fontSize: 16, fontWeight: FontWeight.w300,color: Colors.black),
                                         ),
 
                                       ],

@@ -7,10 +7,10 @@ class Shops {
   String shopdiscription;
   String shopimage;
   String shopname;
-  String shoptown;
+  String location;
 
 
-  Shops(this.key,this.shopid,this.shopcategory,this.shopdiscription,this.shopimage,this.shopname,this.shoptown);
+  Shops(this.key,this.shopid,this.shopcategory,this.shopdiscription,this.shopimage,this.shopname,this.location);
 
 
   Shops.fromSnapshot(DataSnapshot snapshot):
@@ -19,8 +19,8 @@ class Shops {
         shopcategory = snapshot.value["shopcategory"],
         shopdiscription= snapshot.value["shopdiscription"],
         shopimage= snapshot.value["shopimage"],
-        shoptown= snapshot.value["shoptown"],
-        shopname= snapshot.value["shopname"];
+        shopname= snapshot.value["shopname"],
+        location= snapshot.value["location"];
 
 
   toJson() {
@@ -30,8 +30,9 @@ class Shops {
       "shopcategory": shopcategory,
       "shopdiscription": shopdiscription,
       "shopimage": shopimage,
-      "shoptown": shoptown,
       "shopname": shopname,
+      "location": location,
+
     };
   }
 

@@ -112,18 +112,37 @@ class _SingleProductState extends State<SingleProduct> {
 
 
   List<Cart> carts;
+  FirebaseUser user=null;
    @override
   initState()   {
     super.initState();
-    carts = new List();
 
+    FirebaseAuth.instance.currentUser().then((firebaseUser){
+
+
+      user=firebaseUser;
+
+      if(firebaseUser != null){
+        carts = new List();
 
         DatabaseReference volunteerRef;
 
         final FirebaseDatabase database = FirebaseDatabase.instance;
         volunteerRef = database.reference().child("Cart").child(DataStream.UserId);
         volunteerRef.onChildAdded.listen(_onEntryAdded);
-    volunteerRef.onChildChanged.listen(_onEntryChanged);
+        volunteerRef.onChildChanged.listen(_onEntryChanged);
+
+        setState(() {
+
+        });
+      }
+
+
+    });
+
+
+
+
 
 
    }
@@ -336,7 +355,10 @@ class _SingleProductState extends State<SingleProduct> {
 
           Positioned(
             bottom: 0,
-            child: Padding(
+            child:
+            user!=null?
+
+            Padding(
               padding: const EdgeInsets.fromLTRB(40.0, 30.0, 40.0, 25),
               child: Row(
                 children: [
@@ -383,7 +405,7 @@ class _SingleProductState extends State<SingleProduct> {
                             'cardimage': product.cardimage.toString(),
                             'cardprice': product.cardprice,
 
-                            'town':"Bahria Town Phase 4",
+                          //  'town':"Bahria Town Phase 4",
                             'shopcatagory': DataStream.ShopCatagory,
                             'shopid': DataStream.ShopId,
 
@@ -452,6 +474,28 @@ class _SingleProductState extends State<SingleProduct> {
                     ),
                   ),
                 ],
+              ),
+            ):
+            Padding(
+              padding: const EdgeInsets.fromLTRB(40.0, 10.0, 40.0, 10),
+              child: SizedBox(
+                width: screenWidth(context)-80,
+
+                 child: RaisedButton(
+                  shape: RoundedRectangleBorder(
+                    borderRadius: new BorderRadius.circular(18.0),
+
+                  ),
+
+                  color: primaryDark,
+                  onPressed: () async {
+                    //   await loginUser();
+                    Navigator.of(context).pushReplacement(
+                        MaterialPageRoute(
+                            builder: (context) => SignIn()));
+                  },
+                  child: Text( "SIGN IN",style: TextStyle(color: Colors.white),),
+                ),
               ),
             ),
           ),
