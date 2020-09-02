@@ -111,30 +111,22 @@ class HomePage extends State<Home> {
 
       user=firebaseUser;
 
-      if(firebaseUser != null){
+       if(firebaseUser != null){
+         print(user.uid);
+
         setupCart();
         setupBanner();
         getodercount();
-        gerOrderRadius();
 
-      }
+      }else{
+         setupBanner();
+       }
 
 
     });
 
   }
 
-  void gerOrderRadius() {
-    final locationDbRef = FirebaseDatabase.instance.reference().child(
-        "Admin").child("Radius");
-
-    locationDbRef.once().then((value) async {
-      print(value.value["user_order_radius"]);
-
-      DataStream.OrderRadius = value.value['user_order_radius'];
-    }
-    );
-  }
     void getodercount(){
     final locationDbRef = FirebaseDatabase.instance.reference().child("User Orders").child(DataStream.UserId).child("Order Count");
 
@@ -146,6 +138,8 @@ class HomePage extends State<Home> {
 
         if (order_count < 3) {
           DataStream.DeliverCharges = 0;
+          DataStream.Discount = 100;
+
         }
         else {
           final locationDbRef = FirebaseDatabase.instance.reference().child(
@@ -161,6 +155,7 @@ class HomePage extends State<Home> {
       }else{
         if (order_count < 3) {
           DataStream.DeliverCharges = 0;
+          DataStream.Discount = 100;
         }
         else {
           final locationDbRef = FirebaseDatabase.instance.reference().child(
@@ -768,19 +763,8 @@ class HomePage extends State<Home> {
                         child: Icon(Icons.shopping_cart),
                       ),
                     ),
-                  ):
-                  Positioned(
-                    right: 15,
-                    bottom: 15,
-                    child:FloatingActionButton(
-                      onPressed: (){
-                        Navigator.push( context, MaterialPageRoute( builder: (BuildContext context) => CartScreen(),));
+                  ):SizedBox(height: 1,)
 
-                      },
-
-                      child: Icon(Icons.shopping_cart),
-                    ),
-                  ),
                 ],
               ),
             ),

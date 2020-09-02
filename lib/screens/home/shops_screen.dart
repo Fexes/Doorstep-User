@@ -202,10 +202,10 @@ class _ShopsScreenState extends State<ShopsScreen> {
 
                         //  Shops(this.key,this.shopid,this.shopcategory,this.shopdiscription,this.shopimage,this.shopname,this.location);
 
-
                         double distanceInMeters = calculateDistance(DataStream.userlocation.latitude,DataStream.userlocation.longitude,double.parse(v["location"].toString().split(",")[0]),double.parse(v["location"].toString().split(",")[1]));
 
-                       // print(distanceInMeters.toString()+"-"+v["shopname"]);
+                    //    print(distanceInMeters.toString()+"-"+v["shopname"]);
+
 
                         if(distanceInMeters< DataStream.OrderRadius){
                          // print(distanceInMeters);

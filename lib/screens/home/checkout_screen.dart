@@ -108,28 +108,49 @@ class _CheckOutScreenState extends State<CheckOutScreen> {
 
     getodercount();
   }
-
   void getodercount(){
     final locationDbRef = FirebaseDatabase.instance.reference().child("User Orders").child(DataStream.UserId).child("Order Count");
 
     locationDbRef.once().then((value) async {
-      print(value.value["no_of_orders"]);
-      order_count=value.value['no_of_orders'];
-      if(order_count<3) {
-        DataStream.DeliverCharges = 0;
-      }
-      else{
-        final locationDbRef = FirebaseDatabase.instance.reference().child("Admin").child("Delivery");
+      if(value.value!=null){
 
-        locationDbRef.once().then((value) async {
-          print(value.value["delivery_charges"]);
+        print(value.value["no_of_orders"]);
+        order_count = value.value['no_of_orders'];
 
-          DataStream.DeliverCharges = value.value['delivery_charges'];
-
-
+        if (order_count < 3) {
+          DataStream.DeliverCharges = 0;
+          DataStream.Discount = 100;
         }
-        );
+        else {
+          final locationDbRef = FirebaseDatabase.instance.reference().child(
+              "Admin").child("Delivery");
+
+          locationDbRef.once().then((value) async {
+            print(value.value["delivery_charges"]);
+
+            DataStream.DeliverCharges = value.value['delivery_charges'];
+          }
+          );
+        }
+      }else{
+
+        if (order_count < 3) {
+          DataStream.DeliverCharges = 0;
+          DataStream.Discount = 100;
+        }
+        else {
+          final locationDbRef = FirebaseDatabase.instance.reference().child(
+              "Admin").child("Delivery");
+
+          locationDbRef.once().then((value) async {
+            print(value.value["delivery_charges"]);
+
+            DataStream.DeliverCharges = value.value['delivery_charges'];
+          }
+          );
+        }
       }
+
       setuplist();
 
     }
@@ -210,7 +231,7 @@ class _CheckOutScreenState extends State<CheckOutScreen> {
       total=total+(carts[i].no_of_items*carts[i].cardprice);
     }
 
-    return total+DataStream.DeliverCharges;
+    return (total+DataStream.DeliverCharges)-DataStream.Discount;
   }
 
 
@@ -361,7 +382,7 @@ class _CheckOutScreenState extends State<CheckOutScreen> {
                             padding: const EdgeInsets.all(5.0),
                             child: Container(
 
-                              height: 135,
+                              height: 160,
                                width: screenWidth(context)-10,
                               child: Padding(
                                 padding: EdgeInsets.all(20),
@@ -398,6 +419,20 @@ class _CheckOutScreenState extends State<CheckOutScreen> {
                                         ),
                                         Text(
                                           'Rs. ${DataStream.DeliverCharges}',
+                                          style: TextStyle(fontSize: 16, fontWeight: FontWeight.w300,color: Colors.black),
+                                        ),
+                                      ],
+                                    ),
+                                    SizedBox(height: 5,),
+                                    Row(
+                                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                                      children: [
+                                        Text(
+                                          'Discount ',
+                                          style: TextStyle(fontSize: 16, fontWeight: FontWeight.w300,color: Colors.black),
+                                        ),
+                                        Text(
+                                          'Rs. ${DataStream.Discount}',
                                           style: TextStyle(fontSize: 16, fontWeight: FontWeight.w300,color: Colors.black),
                                         ),
                                       ],

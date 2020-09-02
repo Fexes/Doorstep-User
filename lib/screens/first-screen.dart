@@ -4,6 +4,7 @@ import 'dart:io';
 import 'package:Doorstep/screens/home/home_screen.dart';
 import 'package:Doorstep/styles/styles.dart';
 import 'package:Doorstep/utilts/UI/DataStream.dart';
+import 'package:Doorstep/utilts/UI/toast_utility.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_database/firebase_database.dart';
 import 'package:flutter/material.dart';
@@ -15,6 +16,7 @@ import 'package:permission_handler/permission_handler.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'dart:async';
 import 'auth/sign-in.dart';
+import 'package:location/location.dart' as loc;
 
 void main() {
   runApp(MaterialApp(
@@ -47,8 +49,19 @@ class SplashScreenState extends State<SplashScreen> {
 
           DataStream.DeliverCharges = value.value['delivery_charges'];
 
+        final locationDbRef = FirebaseDatabase.instance.reference().child("Admin").child("Radius");
 
-        loadData();
+        locationDbRef.once().then((value) async {
+          print(value.value["user_order_radius"]);
+
+          DataStream.OrderRadius = value.value['user_order_radius'];
+
+
+          loadData();
+
+        }
+        );
+
 
       }
       );
@@ -135,11 +148,19 @@ class SplashScreenState extends State<SplashScreen> {
 
 
         }
-        addLocation();
+        _checkGps().then((value){
+
+          if(value){
+            addLocation();
+          }else{
+            ToastUtils.showCustomToast(context, "Location Service Disabled", false);
+
+          }
+
+        });
 
 
           // print(DataStream.PhoneNumber);
-
 
       });
         //    });
@@ -151,6 +172,17 @@ class SplashScreenState extends State<SplashScreen> {
 
 
 }
+  loc.Location location = loc.Location();//explicit reference to the Location class
+
+  Future _checkGps() async {
+    if (!await location.serviceEnabled()) {
+      location.requestService();
+      return false;
+    }else{
+      return true;
+    }
+
+  }
 
 bool error=false;
 
@@ -166,16 +198,20 @@ bool error=false;
                 padding: EdgeInsets.fromLTRB(100,100,100,30),
                 child: Image.asset("assets/icons/logo.png", ),
               ),
-
-              Column(
-                children: [
-                  Text( "DOORSTEP",style: TextStyle(color: Colors.black,fontSize: 42,fontWeight: FontWeight.w700,
-                  ),),
-                  SizedBox(height: 5,),
-
-                  Text( "Everything at your Doorstep",style: TextStyle(color: Colors.black,fontSize: 18,fontWeight: FontWeight.w300),),
-                ],
+              Padding(
+                padding: EdgeInsets.fromLTRB(70,30,70,30),
+                child: Image.asset("assets/imgs/tag.png", ),
               ),
+
+//              Column(
+//                children: [
+//                  Text( "DOORSTEP",style: TextStyle(color: Colors.black,fontSize: 42,fontWeight: FontWeight.w700,
+//                  ),),
+//                  SizedBox(height: 5,),
+//
+//                  Text( "Everything at your Doorstep",style: TextStyle(color: Colors.black,fontSize: 18,fontWeight: FontWeight.w300),),
+//                ],
+//              ),
 
               SizedBox(height: 100,),
               error?

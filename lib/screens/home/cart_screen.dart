@@ -119,6 +119,7 @@ class _CartScreenState extends State<CartScreen> {
 
       if (order_count < 3) {
         DataStream.DeliverCharges = 0;
+        DataStream.Discount = 100;
       }
       else {
         final locationDbRef = FirebaseDatabase.instance.reference().child(
@@ -135,6 +136,7 @@ class _CartScreenState extends State<CartScreen> {
 
         if (order_count < 3) {
           DataStream.DeliverCharges = 0;
+          DataStream.Discount = 100;
         }
         else {
           final locationDbRef = FirebaseDatabase.instance.reference().child(
@@ -160,6 +162,7 @@ class _CartScreenState extends State<CartScreen> {
    DatabaseReference volunteerRef;
   Future<void> setuplist() async {
 
+    carts.clear();
     FirebaseAuth.instance.currentUser().then((firebaseUser){
       if(firebaseUser == null)
       {
@@ -215,7 +218,7 @@ class _CartScreenState extends State<CartScreen> {
       Subtotal=Subtotal+(carts[i].no_of_items*carts[i].cardprice);
     }
 
-        return Subtotal;
+        return Subtotal ;
   }
 
   int caltotal(){
@@ -225,7 +228,7 @@ class _CartScreenState extends State<CartScreen> {
       total=total+(carts[i].no_of_items*carts[i].cardprice);
     }
 
-    return total+DataStream.DeliverCharges;
+    return (total+DataStream.DeliverCharges)-DataStream.Discount;
   }
 
 
@@ -366,7 +369,7 @@ class _CartScreenState extends State<CartScreen> {
               child: Column(
                 children: [
                   Container(
-                    height: 125,
+                    height: 150,
                     decoration: BoxDecoration(
                       color: Colors.white,
                       borderRadius: BorderRadius.only(
@@ -413,6 +416,20 @@ class _CartScreenState extends State<CartScreen> {
                               ),
                               Text(
                                 'Rs. ${DataStream.DeliverCharges}',
+                                style: TextStyle(fontSize: 16, fontWeight: FontWeight.w300,color: Colors.black),
+                              ),
+                            ],
+                          ),
+                          SizedBox(height: 5,),
+                          Row(
+                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                            children: [
+                              Text(
+                                'Discount ',
+                                style: TextStyle(fontSize: 16, fontWeight: FontWeight.w300,color: Colors.black),
+                              ),
+                              Text(
+                                'Rs. ${DataStream.Discount}',
                                 style: TextStyle(fontSize: 16, fontWeight: FontWeight.w300,color: Colors.black),
                               ),
                             ],

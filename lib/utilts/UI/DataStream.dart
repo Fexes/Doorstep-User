@@ -17,7 +17,10 @@ class DataStream{
   static String ShopId;
   static String ShopCatagory;
   static String ShopName;
-  static int DeliverCharges=49;
-  static int OrderRadius=49;
+  static int DeliverCharges;
+  static int OrderRadius;
+  static int Discount=0;
+
+
 
 }
