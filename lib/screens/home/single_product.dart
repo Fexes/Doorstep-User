@@ -294,13 +294,20 @@ class _SingleProductState extends State<SingleProduct> {
                             iconsColor: Colors.black,
                             withSpring: false,
                             maxValue:50,
-                            stepperValue:val,
+                            stepperValue:itemcount,
                             withNaturalNumbers: true,
                             withPlusMinus: true,
                             withFastCount: true,
+
                             onChanged: (int val) {
+
                                 itemcount=val;
-                            }),
+                                setState(() {
+
+                                });
+
+                            }
+                            ),
                           ),
                         ),
 
@@ -367,7 +374,7 @@ class _SingleProductState extends State<SingleProduct> {
                     height: 60,
 
                     decoration: BoxDecoration(
-                      color: Colors.white,
+                      color: itemcount==0?Colors.grey[600]: Colors.white,
                       borderRadius: BorderRadius.only(
                           topLeft: Radius.circular(10),
                           topRight: Radius.circular(10),
@@ -388,7 +395,7 @@ class _SingleProductState extends State<SingleProduct> {
                       shape: RoundedRectangleBorder(
                         borderRadius: BorderRadius.circular(18.0),
                       ),
-                      color: Colors.white,
+                      color: itemcount==0?Colors.grey[600]: Colors.white,
                       onPressed: () async {
 
                         if(itemcount>0) {
@@ -421,7 +428,7 @@ class _SingleProductState extends State<SingleProduct> {
                           ToastUtils.showCustomToast(context, "Select Quantity", null);
                         }
                       },
-                      child: Text('Add to Cart',style: TextStyle(color: Colors.black,fontWeight: FontWeight.w500, fontSize: 16),),
+                      child: Text('Add to Cart',style: TextStyle(color: itemcount==0?Colors.grey[400]: Colors.black,fontWeight: FontWeight.w500, fontSize: 16),),
                     ),
                   ),
                   SizedBox(width: 20,),

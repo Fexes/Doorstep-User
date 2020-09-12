@@ -42,6 +42,7 @@ class SplashScreenState extends State<SplashScreen> {
 
 
 
+
       final locationDbRef = FirebaseDatabase.instance.reference().child("Admin").child("Delivery");
 
       locationDbRef.once().then((value) async {
@@ -153,6 +154,7 @@ class SplashScreenState extends State<SplashScreen> {
           if(value){
             addLocation();
           }else{
+
             ToastUtils.showCustomToast(context, "Location Service Disabled", false);
 
           }
@@ -164,12 +166,6 @@ class SplashScreenState extends State<SplashScreen> {
 
       });
         //    });
-
-
-
-
-
-
 
 }
   loc.Location location = loc.Location();//explicit reference to the Location class
@@ -258,4 +254,7 @@ bool error=false;
 
 
 }
+
+
+
 

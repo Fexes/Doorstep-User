@@ -10,7 +10,6 @@ class DataStream{
   static FirebaseUser user;
   static String googleAPIKey ="AIzaSyBoLgH-s1XnyhCQ2PZEUbIaH_Jj2RKhMSU";
 
-
    static LatLng userlocation;
 
 
@@ -20,6 +19,7 @@ class DataStream{
   static int DeliverCharges;
   static int OrderRadius;
   static int Discount=0;
+  static int MinOrder=0;
 
 
 

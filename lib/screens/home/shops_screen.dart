@@ -105,6 +105,8 @@ class _ShopsScreenState extends State<ShopsScreen> {
     _todoList = new List();
 
 
+
+
     dd();
 
   }
@@ -139,6 +141,23 @@ class _ShopsScreenState extends State<ShopsScreen> {
 //      shops[shops.indexOf(old)] = Shops.fromSnapshot(event.snapshot);
 //    });
 //  }
+
+  bool checkTime(String open, String close){
+
+    final currentTime = DateTime.now();
+
+
+    final startTime = DateTime(currentTime.year, currentTime.month, currentTime.day,int.parse(open.split(":")[0]) , int.parse(open.split(":")[1]));
+    final endTime = DateTime(currentTime.year, currentTime.month, currentTime.day,int.parse(close.split(":")[0]) , int.parse(close.split(":")[1]));
+
+
+    if(currentTime.isAfter(startTime) && currentTime.isBefore(endTime)) {
+       return true;
+    }else{
+      return false;
+
+    }
+  }
 
   double calculateDistance(lat1, lon1, lat2, lon2){
     var p = 0.017453292519943295;
@@ -213,7 +232,8 @@ class _ShopsScreenState extends State<ShopsScreen> {
                           shops.add(new Shops(
                               v["key"], v["shopid"], v["shopcategory"],
                               v["shopdiscription"],
-                              v["shopimage"], v["shopname"], v["location"]));
+                              v["shopimage"], v["shopname"], v["location"],
+                              v["openTime"], v["closeTime"], v["ShopStatus"]));
                         }
 
                       }
@@ -229,11 +249,22 @@ class _ShopsScreenState extends State<ShopsScreen> {
                       itemBuilder: (BuildContext context, int index) {
                         return GestureDetector(
                           onTap: (){
-                            DataStream.ShopName=shops[index].shopname;
-                            DataStream.ShopId=shops[index].shopid;
-                            DataStream.ShopCatagory=shops[index].shopcategory;
-                            Navigator.push( context, MaterialPageRoute( builder: (BuildContext context) => ProductCatalog(shops[index],shops[index].shopid),),);
 
+                            if(shops[index].ShopStatus.contains("Closed")||!checkTime(shops[index].openTime,shops[index].closeTime)){
+
+                               ToastUtils.showCustomToast(context, "Shop Closed", null);
+
+
+                            }else {
+                              DataStream.ShopName = shops[index].shopname;
+                              DataStream.ShopId = shops[index].shopid;
+                              DataStream.ShopCatagory =
+                                  shops[index].shopcategory;
+                              Navigator.push(context, MaterialPageRoute(
+                                builder: (BuildContext context) =>
+                                    ProductCatalog(
+                                        shops[index], shops[index].shopid),),);
+                            }
 
 
                           },
@@ -293,6 +324,48 @@ class _ShopsScreenState extends State<ShopsScreen> {
                                           shops[index].shopdiscription,
                                           style: TextStyle(fontSize: 20, fontWeight: FontWeight.w300,color: Colors.white),
                                         ),
+
+
+
+
+                                        !checkTime(shops[index].openTime,shops[index].closeTime)?
+                                        Container(
+                                           decoration: BoxDecoration(
+
+                                            shape: BoxShape.rectangle,
+                                            borderRadius: BorderRadius.all(Radius.circular(4.0)),
+                                           color: Colors.redAccent[700]
+
+                                          ),
+                                          child: Padding(
+                                            padding: const EdgeInsets.fromLTRB(20, 3, 20, 3),
+                                            child: Text(
+                                              "Closed",
+                                              style: TextStyle(fontSize: 20, fontWeight: FontWeight.w300,color:Colors.white),
+                                            ),
+                                          ),
+                                        ):
+
+                                        shops[index].ShopStatus.contains("Closed")?
+                                        Container(
+                                          decoration: BoxDecoration(
+
+                                              shape: BoxShape.rectangle,
+                                              borderRadius: BorderRadius.all(Radius.circular(4.0)),
+                                              color: Colors.redAccent[700]
+
+                                          ),
+                                          child: Padding(
+                                            padding: const EdgeInsets.fromLTRB(20, 3, 20, 3),
+                                            child: Text(
+                                              "Closed",
+                                              style: TextStyle(fontSize: 20, fontWeight: FontWeight.w300,color:Colors.white),
+                                            ),
+                                          ),
+                                        ):
+                                        SizedBox()
+
+
                                       ],
                                     ),
                                   ),

@@ -177,8 +177,6 @@ PODS:
     - Flutter
   - cloud_firestore_web (0.1.0):
     - Flutter
-  - country_list_pick (0.0.1):
-    - Flutter
   - Firebase/Auth (6.16.0):
     - Firebase/CoreOnly
     - FirebaseAuth (~> 6.4.3)
@@ -285,7 +283,7 @@ PODS:
     - Flutter
   - google_maps_flutter (0.0.1):
     - Flutter
-    - GoogleMaps
+    - GoogleMaps (< 3.10)
   - google_sign_in (0.0.1):
     - Flutter
     - GoogleSignIn (~> 5.0)
@@ -395,7 +393,6 @@ DEPENDENCIES:
   - android_intent (from `.symlinks/plugins/android_intent/ios`)
   - cloud_firestore (from `.symlinks/plugins/cloud_firestore/ios`)
   - cloud_firestore_web (from `.symlinks/plugins/cloud_firestore_web/ios`)
-  - country_list_pick (from `.symlinks/plugins/country_list_pick/ios`)
   - Firebase/Auth
   - firebase_auth (from `.symlinks/plugins/firebase_auth/ios`)
   - firebase_auth_web (from `.symlinks/plugins/firebase_auth_web/ios`)
@@ -466,8 +463,6 @@ EXTERNAL SOURCES:
     :path: ".symlinks/plugins/cloud_firestore/ios"
   cloud_firestore_web:
     :path: ".symlinks/plugins/cloud_firestore_web/ios"
-  country_list_pick:
-    :path: ".symlinks/plugins/country_list_pick/ios"
   firebase_auth:
     :path: ".symlinks/plugins/firebase_auth/ios"
   firebase_auth_web:
@@ -534,7 +529,6 @@ SPEC CHECKSUMS:
   BoringSSL-GRPC: db8764df3204ccea016e1c8dd15d9a9ad63ff318
   cloud_firestore: 2a4f8f802fb0b701cf809b283b6bec7477ebaa6f
   cloud_firestore_web: 9ec3dc7f5f98de5129339802d491c1204462bfec
-  country_list_pick: 15dde46ef0157b459a00e2747795278c104b437a
   Firebase: 497158b816d0a86fc31babbd05546fcd7e6083ff
   firebase_auth: af8784c4d8d87c36f730a305f97bfbcb24db024b
   firebase_auth_web: 0955c07bcc06e84af76b9d4e32e6f31518f2d7de
@@ -559,7 +553,7 @@ SPEC CHECKSUMS:
   geolocator: f7622e0e7e2a24718285b73916d60c4a54b9f5b6
   google_api_availability: 15fa42a8cd83c0a6738507ffe6e87096f12abcb8
   google_map_location_picker: 01403f2fb025f6aedf0b36b5f15eccc9415a55f1
-  google_maps_flutter: df4e7de95264aa0a2f11aac0fc7e313acb8ffc7e
+  google_maps_flutter: c7f9c73576de1fbe152a227bfd6e6c4ae8088619
   google_sign_in: 6bd214b9c154f881422f5fe27b66aaa7bbd580cc
   google_sign_in_web: 52deb24929ac0992baff65c57956031c44ed44c3
   GoogleAppMeasurement: d0560d915abf15e692e8538ba1d58442217b6aff

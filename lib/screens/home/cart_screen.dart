@@ -120,7 +120,8 @@ class _CartScreenState extends State<CartScreen> {
       if (order_count < 3) {
         DataStream.DeliverCharges = 0;
         DataStream.Discount = 100;
-      }
+        DataStream.MinOrder = 200;
+       }
       else {
         final locationDbRef = FirebaseDatabase.instance.reference().child(
             "Admin").child("Delivery");
@@ -137,6 +138,7 @@ class _CartScreenState extends State<CartScreen> {
         if (order_count < 3) {
           DataStream.DeliverCharges = 0;
           DataStream.Discount = 100;
+          DataStream.MinOrder = 200;
         }
         else {
           final locationDbRef = FirebaseDatabase.instance.reference().child(
@@ -544,8 +546,14 @@ class _CartScreenState extends State<CartScreen> {
                           color: Colors.green,
                           onPressed: (){
 
-                            Navigator.of(context).pushReplacement(MaterialPageRoute(builder: (context) => CheckOutScreen()));
+                            if(calSubtotal() >= 200) {
+                              Navigator.of(context).pushReplacement(
+                                  MaterialPageRoute(
+                                      builder: (context) => CheckOutScreen())).then((value) {setupCart();});
+                            }else{
+                              ToastUtils.showCustomToast(context, "Minimum Order \n is Rs. 200 \n for first 3 orders",null);
 
+                            }
 
                           },
                           child: Text('Checkout',style: TextStyle(color: Colors.white,fontWeight: FontWeight.w500, fontSize: 18),),
@@ -564,5 +572,17 @@ class _CartScreenState extends State<CartScreen> {
 
   }
 
+  void setupCart(){
 
+   // orders = new List();
+    carts = new List();
+
+    DatabaseReference volunteerRef;
+
+    final FirebaseDatabase database = FirebaseDatabase.instance;
+    volunteerRef = database.reference().child("Cart").child(DataStream.UserId);
+    volunteerRef.onChildAdded.listen(_onEntryAdded);
+    volunteerRef.onChildChanged.listen(_onEntryChanged);
+
+  }
 }

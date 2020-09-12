@@ -139,6 +139,7 @@ class HomePage extends State<Home> {
         if (order_count < 3) {
           DataStream.DeliverCharges = 0;
           DataStream.Discount = 100;
+          DataStream.MinOrder = 200;
 
         }
         else {
@@ -156,6 +157,7 @@ class HomePage extends State<Home> {
         if (order_count < 3) {
           DataStream.DeliverCharges = 0;
           DataStream.Discount = 100;
+          DataStream.MinOrder = 200;
         }
         else {
           final locationDbRef = FirebaseDatabase.instance.reference().child(
@@ -206,7 +208,6 @@ class HomePage extends State<Home> {
   void setupCart(){
 
     orders = new List();
-
     carts = new List();
 
     DatabaseReference volunteerRef;
@@ -238,6 +239,7 @@ class HomePage extends State<Home> {
   @override
   Widget build(BuildContext context) {
    // imgList = new List();
+
     List<Widget> imageSliders;
 
 
@@ -290,10 +292,39 @@ class HomePage extends State<Home> {
      Widget HomeScreen  = Scaffold(
        appBar: AppBar(
          title:  Row(
-           mainAxisAlignment: MainAxisAlignment.center,
+           mainAxisAlignment: MainAxisAlignment.spaceBetween,
            children: [
+              Text('     '),
+
              Text('Doorstep'),
            //  Image.asset("assets/icons/logo.png",height: 40,width: 40, ),
+
+             user!=null?
+               Badge(
+                 badgeColor: Colors.redAccent,
+                 badgeContent: Container(
+                   height: 13,
+                   width: 13,
+                   child: Column(
+                     mainAxisAlignment: MainAxisAlignment.center,
+                     crossAxisAlignment: CrossAxisAlignment.center,
+                     children: [
+
+                          Text(carts.length.toString(),style: TextStyle(color: Colors.white,fontSize: 11),),
+                     ],
+                   ),
+                 ),
+
+
+                 child: GestureDetector(
+                   onTap: (){
+                     Navigator.push( context, MaterialPageRoute( builder: (BuildContext context) => CartScreen(),),).then((value) {setupCart();});
+
+                   },
+                   child: Icon(Icons.shopping_cart,size: 34,),),
+               )
+              :SizedBox(height: 1,)
+
 
            ],
          ),
@@ -732,38 +763,36 @@ class HomePage extends State<Home> {
                         ],
                       ),
 
-
-
                     ],
                   ),
-                  user!=null?
-                  Positioned(
-                    right: 15,
-                    bottom: 15,
-                    child: Badge(
-                      badgeColor: Colors.redAccent,
-                      badgeContent: Container(
-                        height: 20,
-                        width: 20,
-                        child: Column(
-                          mainAxisAlignment: MainAxisAlignment.center,
-                          crossAxisAlignment: CrossAxisAlignment.center,
-                          children: [
-
-                            Text(carts.length.toString(),style: TextStyle(color: Colors.white),),
-                          ],
-                        ),
-                      ),
-                      child: FloatingActionButton(
-                        onPressed: (){
-                           Navigator.push( context, MaterialPageRoute( builder: (BuildContext context) => CartScreen(),),).then((value) {setupCart();});
-
-                        },
-
-                        child: Icon(Icons.shopping_cart),
-                      ),
-                    ),
-                  ):SizedBox(height: 1,)
+//                  user!=null?
+//                  Positioned(
+//                    right: 15,
+//                    top: 15,
+//                    child: Badge(
+//                      badgeColor: Colors.redAccent,
+//                      badgeContent: Container(
+//                        height: 20,
+//                        width: 20,
+//                        child: Column(
+//                          mainAxisAlignment: MainAxisAlignment.center,
+//                          crossAxisAlignment: CrossAxisAlignment.center,
+//                          children: [
+//
+//                            Text(carts.length.toString(),style: TextStyle(color: Colors.white),),
+//                          ],
+//                        ),
+//                      ),
+//                      child: FloatingActionButton(
+//                        onPressed: (){
+//                           Navigator.push( context, MaterialPageRoute( builder: (BuildContext context) => CartScreen(),),).then((value) {setupCart();});
+//
+//                        },
+//
+//                        child: Icon(Icons.shopping_cart),
+//                      ),
+//                    ),
+//                  ):SizedBox(height: 1,)
 
                 ],
               ),

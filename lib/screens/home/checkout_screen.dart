@@ -120,6 +120,7 @@ class _CheckOutScreenState extends State<CheckOutScreen> {
         if (order_count < 3) {
           DataStream.DeliverCharges = 0;
           DataStream.Discount = 100;
+          DataStream.MinOrder = 200;
         }
         else {
           final locationDbRef = FirebaseDatabase.instance.reference().child(
@@ -137,6 +138,7 @@ class _CheckOutScreenState extends State<CheckOutScreen> {
         if (order_count < 3) {
           DataStream.DeliverCharges = 0;
           DataStream.Discount = 100;
+          DataStream.MinOrder = 200;
         }
         else {
           final locationDbRef = FirebaseDatabase.instance.reference().child(
