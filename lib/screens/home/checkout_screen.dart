@@ -573,9 +573,18 @@ class _CheckOutScreenState extends State<CheckOutScreen> {
                                           'Delivery Time ',
                                           style: TextStyle(fontSize: 16, fontWeight: FontWeight.w300,color: Colors.black),
                                         ),
-                                        Text(
-                                          '45 min',
-                                          style: TextStyle(fontSize: 16, fontWeight: FontWeight.w200,color: Colors.black),
+                                        Column(
+                                          children: [
+                                            //
+                                            Text(
+                                              '30 - 60 min',
+                                              style: TextStyle(fontSize: 16, fontWeight: FontWeight.w300,color: Colors.black),
+                                            ),
+                                            Text(
+                                              'Depending on your location',
+                                              style: TextStyle(fontSize: 10, fontWeight: FontWeight.w200,color: Colors.black),
+                                            ),
+                                          ],
                                         ),
 
                                       ],
@@ -591,7 +600,7 @@ class _CheckOutScreenState extends State<CheckOutScreen> {
                                         ),
                                         Text(
                                           'Cash on delivery',
-                                          style: TextStyle(fontSize: 16, fontWeight: FontWeight.w200,color: Colors.black),
+                                          style: TextStyle(fontSize: 16, fontWeight: FontWeight.w300,color: Colors.black),
                                         ),
 
                                       ],

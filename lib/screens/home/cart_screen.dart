@@ -333,7 +333,7 @@ class _CartScreenState extends State<CartScreen> {
                                     style: TextStyle(fontSize: 14, fontWeight: FontWeight.w300,color: Colors.black),
                                   ),
                                   Text(
-                                    'Rs. ${carts[index].cardprice}  each',
+                                    'Rs. ${carts[index].cardprice} ',
                                     style: TextStyle(fontSize: 14, fontWeight: FontWeight.w300,color: Colors.black),
                                   ),
                                   Text(

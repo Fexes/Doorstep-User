@@ -244,9 +244,20 @@ class _SingleProductState extends State<SingleProduct> {
                           style: TextStyle(fontSize: 30, fontWeight: FontWeight.w500,color: Colors.black),
                         ),
                         SizedBox(height: 10,),
-                        Text(
-                          'Rs. ${product.cardprice}',
-                          style: TextStyle(fontSize: 20, fontWeight: FontWeight.w400,color: Colors.green[800]),
+                        Row(
+                          mainAxisAlignment: MainAxisAlignment.start,
+                          crossAxisAlignment: CrossAxisAlignment.end,
+
+                          children: [
+                            Text(
+                              'Rs. ${product.cardprice} /',
+                              style: TextStyle(fontSize: 20, fontWeight: FontWeight.w400,color: Colors.green[800]),
+                            ),
+                            Text(
+                              ' ${product.unit}',
+                              style: TextStyle(fontSize: 12, fontWeight: FontWeight.w300,color: Colors.black),
+                            ),
+                          ],
                         ),
 
                       ],

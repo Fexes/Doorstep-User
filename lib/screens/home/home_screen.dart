@@ -27,6 +27,7 @@ import 'package:carousel_slider/carousel_slider.dart';
 
 
 import 'package:http/http.dart' as http;
+ import 'package:url_launcher/url_launcher.dart' as UrlLauncher;
 
 import 'cart_screen.dart';
 import 'order_items_screen.dart';
@@ -300,28 +301,30 @@ class HomePage extends State<Home> {
            //  Image.asset("assets/icons/logo.png",height: 40,width: 40, ),
 
              user!=null?
-               Badge(
-                 badgeColor: Colors.redAccent,
-                 badgeContent: Container(
-                   height: 13,
-                   width: 13,
-                   child: Column(
-                     mainAxisAlignment: MainAxisAlignment.center,
-                     crossAxisAlignment: CrossAxisAlignment.center,
-                     children: [
+               GestureDetector(
+                 onTap: (){
+                   Navigator.push( context, MaterialPageRoute( builder: (BuildContext context) => CartScreen(),),).then((value) {setupCart();});
 
-                          Text(carts.length.toString(),style: TextStyle(color: Colors.white,fontSize: 11),),
-                     ],
+                 },
+                 child: Badge(
+                   badgeColor: Colors.redAccent,
+                   badgeContent: Container(
+                     height: 13,
+                     width: 13,
+                     child: Column(
+                       mainAxisAlignment: MainAxisAlignment.center,
+                       crossAxisAlignment: CrossAxisAlignment.center,
+                       children: [
+
+                            Text(carts.length.toString(),style: TextStyle(color: Colors.white,fontSize: 11),),
+                       ],
+                     ),
                    ),
+
+
+
+                     child: Icon(Icons.shopping_cart,size: 34,),
                  ),
-
-
-                 child: GestureDetector(
-                   onTap: (){
-                     Navigator.push( context, MaterialPageRoute( builder: (BuildContext context) => CartScreen(),),).then((value) {setupCart();});
-
-                   },
-                   child: Icon(Icons.shopping_cart,size: 34,),),
                )
               :SizedBox(height: 1,)
 
@@ -559,7 +562,7 @@ class HomePage extends State<Home> {
                                             style: TextStyle( fontSize: 22, fontWeight: FontWeight.w500,color: Colors.white),
                                           ),
                                           Text(
-                                            'The place to meet',
+                                            'The place to meat',
                                             style: TextStyle( fontSize: 16, fontWeight: FontWeight.w300,color: Colors.white),
                                           ),
                                         ],
@@ -1079,20 +1082,20 @@ class HomePage extends State<Home> {
 //                                             print("Shops."+ordereditems[i].town+"."+ordereditems[i].shopcatagory+"."+ordereditems[i].shopid+" orders."+"active."+ordereditems[index].orderID);
 //
 //
-////                                            try {
-////                                              del = database.reference()
-////                                                  .child("Shops").child(ordereditems[i].town)
-////                                                  .child(ordereditems[i].shopcatagory)
-////                                                  .child(ordereditems[i].shopid)
-////                                                  .child("Orders").child(
-////                                                  "Active")
-////                                                  .child(ordereditems[index].orderID);
-////                                              del.remove();
-////                                            }catch(e){
-////                                              print(e);
-////
-////                                              print("err");
-////                                            }
+//                                            try {
+//                                              del = database.reference()
+//                                                  .child("Shops").child(ordereditems[i].town)
+//                                                  .child(ordereditems[i].shopcatagory)
+//                                                  .child(ordereditems[i].shopid)
+//                                                  .child("Orders").child(
+//                                                  "Active")
+//                                                  .child(ordereditems[index].orderID);
+//                                              del.remove();
+//                                            }catch(e){
+//                                              print(e);
+//
+//                                              print("err");
+//                                            }
 //                                          }
 
                                           del = database.reference()
@@ -1105,19 +1108,13 @@ class HomePage extends State<Home> {
                                                 .child(orders[index].orderID);
                                           del.remove();
 
-
                                         });
-
-
 
                                       },
                                       child: Row(
                                         mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-
                                         children: [
-
                                           Text('Cancel Order',style: TextStyle(color: Colors.white,fontWeight: FontWeight.w500, fontSize: 18),),
-
                                         ],
                                       ),
                                     ),
@@ -1281,7 +1278,6 @@ class HomePage extends State<Home> {
                                       style: TextStyle(fontSize: 16, fontWeight: FontWeight.w300,color: Colors.black),
                                     ),
                                   ),
-
                                 ],
                               ),
                               SizedBox(height: 5,),
@@ -1333,7 +1329,6 @@ class HomePage extends State<Home> {
                                 ],
                               ),
                               SizedBox(height: 20,),
-
 
                               orders[index].status=="cancelled"?
                               Row(
@@ -1543,7 +1538,20 @@ class HomePage extends State<Home> {
                 ),
               ),
 
-               SizedBox(height: 30,)
+               SizedBox(height: 20,),
+               GestureDetector(
+                 onTap: (){
+                   _launchCaller();
+
+                },
+                 child: Padding(
+                   padding: const EdgeInsets.fromLTRB(0, 5, 0, 20),
+                   child: Text('Contact Us',
+                     style: TextStyle(fontSize: 14, fontWeight: FontWeight.w500,color: Colors.blue[500], decoration: TextDecoration.underline,
+                     ),),
+                 ),
+               ),
+               SizedBox(height: 10,),
             ],
           ),
         ):
@@ -1639,6 +1647,10 @@ class HomePage extends State<Home> {
       _selectedIndex = index;
     });
   }
+  _launchCaller() async {
+    print("call");
+    UrlLauncher.launch('tel://0512714414}');
 
+  }
 }
 

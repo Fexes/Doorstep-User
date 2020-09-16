@@ -188,6 +188,8 @@ class _ProductCatalogState extends State<ProductCatalog> {
       productscat.add(Product.fromSnapshot(event.snapshot));
 
       tempcategory.add("All");
+
+
       tempcategory.add(Product.fromSnapshot(event.snapshot).category);
       tempcategory = tempcategory.toSet().toList();
 
@@ -224,9 +226,6 @@ class _ProductCatalogState extends State<ProductCatalog> {
   @override
   Widget build(BuildContext context) {
 
-
-
-
     return
       Scaffold(
 
@@ -235,8 +234,9 @@ class _ProductCatalogState extends State<ProductCatalog> {
             return <Widget>[
 
               SliverAppBar(
-                expandedHeight: 300.0,
-                floating: false,
+                expandedHeight: 230.0,
+
+                 floating: false,
                 pinned: true,
                 flexibleSpace: FlexibleSpaceBar(
                     centerTitle: true,
@@ -245,8 +245,7 @@ class _ProductCatalogState extends State<ProductCatalog> {
                           color: Colors.white,
                         )),
                     background:Container(
-                      height: 100,
-                      width: double.infinity,
+                       width: double.infinity,
 
                       decoration: BoxDecoration(
 
@@ -308,11 +307,12 @@ class _ProductCatalogState extends State<ProductCatalog> {
               ),
             ];
           },
+
           body:
             Column(
               children: [
 
-                SizedBox(height: 90,),
+            //    SizedBox(height: 90,),
                  Padding(
                   padding: const EdgeInsets.fromLTRB(20, 15, 20, 15),
                   child: Container(
@@ -404,23 +404,52 @@ class _ProductCatalogState extends State<ProductCatalog> {
                     ),
                   ),
                 ),
+                    SizedBox(height: 10,),
+                    SingleChildScrollView(
+                      scrollDirection: Axis.horizontal,
 
-                Row(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  children: tempcategory.map((String char){
-                    return RaisedButton(
-                        onPressed: (){
+                      child: Row(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        children: tempcategory.map((String char){
+                          return
+                            Row(
+                              mainAxisAlignment: MainAxisAlignment.end,
+                              children: <Widget>[
+                                Padding(
+                                  padding: const EdgeInsets.all(6.0),
+                                  child: FlatButton(
+                                    onPressed: (){
+                                      filterProductCatagory(char);
+                                      setState(() {
 
-                           filterProductCatagory(char);
-                           setState(() {
+                                      });
+                                    },
+                                    shape: RoundedRectangleBorder(
+                                        borderRadius: BorderRadius.circular(18.0),
+                                        side: BorderSide(color: Colors.green[400])),
+                                    color: Colors.white,
+                                    textColor: Colors.green[600],
+                                    padding: EdgeInsets.all(8.0),
+                                     child: Text(
+                                      char.toUpperCase(),
+                                      style: TextStyle(
+                                        fontSize: 14.0,
+                                      ),
+                                    ),
+                                  ),
+                                ),
 
-                          });
-                        },
-                        child: Text(char)
+                              ],
+                            );
 
-                    );
-                  }).toList(),
-                ),
+
+
+
+
+                        }).toList(),
+                      ),
+                    ),
+
 
 
 
@@ -482,16 +511,16 @@ class _ProductCatalogState extends State<ProductCatalog> {
                                       children: [
                                         Text(
                                           products[index].cardname,
-                                          style: TextStyle(fontSize: 12, fontWeight: FontWeight.w500,color: Colors.white),
+                                          style: TextStyle(fontSize: 14, fontWeight: FontWeight.w500,color: Colors.white),
                                         ),
                                         Text('Rs. ${products[index].cardprice} / ${products[index].unit}'
                                           ,
-                                          style: TextStyle(fontSize: 11, fontWeight: FontWeight.w300,color: Colors.white),
+                                          style: TextStyle(fontSize: 12, fontWeight: FontWeight.w300,color: Colors.white),
                                         ),
 
-                                        Text(' ${products[index].category} '
+                                        Text('${products[index].category} '
                                           ,
-                                          style: TextStyle(fontSize: 11, fontWeight: FontWeight.w300,color: Colors.white),
+                                          style: TextStyle(fontSize: 10, fontWeight: FontWeight.w300,color: Colors.white),
                                         ),
                                       ],
                                     ),
@@ -506,143 +535,6 @@ class _ProductCatalogState extends State<ProductCatalog> {
                   ),
 
 
-//                  child: StreamBuilder(
-//                      stream: FirebaseDatabase.instance
-//                          .reference()
-//                          .child("Shops").child(DataStream.ShopCatagory).child(SHOP_KEY).child("Products")
-//                          .onValue,
-//                      builder: (BuildContext context, AsyncSnapshot<Event> snapshot) {
-//                        if (snapshot.hasData) {
-//                          Map<dynamic, dynamic> map = snapshot.data.snapshot.value;
-//
-//
-//                          products.clear();
-//
-//                          List<String> tempcategory;
-//                          tempcategory= new List();
-//                          if(map!=null) {
-//                            map.forEach((dynamic, v) {
-//                              if (v["cardname"].toString().toLowerCase().contains(
-//                                  search.toLowerCase())
-////                                  &&
-////                                  v["category"].toString().toLowerCase() ==
-////                                      catsearch.toLowerCase()
-//
-//                              ){
-//
-//
-//
-//                                  products.add(new Product(
-//                                      v["key"], v["cardid"], v["cardname"],
-//                                      v["cardimage"],
-//                                      v["cardprice"], v["carddiscription"], v["unit"],v["category"]));
-//
-//                                  tempcategory.add("All");
-//
-//                                  tempcategory.add(v["category"]);
-//
-//
-//
-//
-//
-//                              }
-//                            }
-//
-//
-//
-//
-//                        );
-//                          }
-//
-//
-//
-//                          category = tempcategory.toSet().toList();
-//
-//
-//
-//
-//                          return Container(
-//                            child:
-//
-//                                GridView.builder(
-//                                  gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
-//                                      crossAxisCount: 3),
-//                                  itemCount: products.length,
-//                                  padding: EdgeInsets.all(2.0),
-//                                  itemBuilder: (BuildContext context, int index) {
-//                                    return     GestureDetector(
-//                                      onTap: (){
-//                                        Navigator.push( context, MaterialPageRoute( builder: (BuildContext context) => SingleProduct(products[index]),),);
-//
-//                                      },
-//                                      child: Padding(
-//                                        padding: EdgeInsets.all(5),
-//                                        child: Container(
-//
-//                                          width: (screenWidth(context)/2)-15,
-//                                          height: 150,
-//                                          decoration: BoxDecoration(
-//
-//                                            shape: BoxShape.rectangle,
-//                                            borderRadius: BorderRadius.all(Radius.circular(15.0)),
-//                                            image: DecorationImage(
-//                                              image: NetworkImage(products[index].cardimage),
-//                                              fit: BoxFit.cover,
-//                                            ),
-//                                          ),
-//                                          child:  Padding(
-//                                            padding: EdgeInsets.all(0),
-//                                            child: Container(
-//
-//                                              decoration: BoxDecoration(
-//                                                shape: BoxShape.rectangle,
-//                                                borderRadius: BorderRadius.all(Radius.circular(15.0)),
-//                                                gradient: new LinearGradient(
-//
-//                                                    colors: [
-//                                                      Colors.black.withOpacity(0.7),
-//                                                      const Color(0x19000000),
-//                                                    ],
-//
-//                                                    begin: const FractionalOffset(0.0, 1.0),
-//                                                    end: const FractionalOffset(0.0, 0.0),
-//                                                    stops: [0.0, 1.0],
-//                                                    tileMode: TileMode.clamp),
-//                                              ),
-//                                              child: Padding(
-//                                                padding: EdgeInsets.all(10),
-//                                                child: Column(
-//                                                  crossAxisAlignment: CrossAxisAlignment.start,
-//                                                  mainAxisAlignment: MainAxisAlignment.end,
-//                                                  children: [
-//                                                    Text(
-//                                                      products[index].cardname,
-//                                                      style: TextStyle(fontSize: 12, fontWeight: FontWeight.w500,color: Colors.white),
-//                                                    ),
-//                                                    Text('Rs. ${products[index].cardprice} / ${products[index].unit}'
-//                                                      ,
-//                                                      style: TextStyle(fontSize: 11, fontWeight: FontWeight.w300,color: Colors.white),
-//                                                    ),
-//
-//                                                    Text(' ${products[index].category} '
-//                                                      ,
-//                                                      style: TextStyle(fontSize: 11, fontWeight: FontWeight.w300,color: Colors.white),
-//                                                    ),
-//                                                  ],
-//                                                ),
-//                                              ),
-//                                            ),
-//                                          ), /* add child content here */
-//                                        ),
-//                                      ),
-//                                    );
-//                                  },
-//                                ),
-//                          );
-//                        } else {
-//                          return CircularProgressIndicator();
-//                        }
-//                      }),
                 ),
               ],
             ),
