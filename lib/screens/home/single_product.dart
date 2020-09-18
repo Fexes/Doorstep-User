@@ -410,7 +410,9 @@ class _SingleProductState extends State<SingleProduct> {
                       onPressed: () async {
 
                         if(itemcount>0) {
+                          setState(() {
 
+                          });
                           FirebaseDatabase database = new FirebaseDatabase();
                           DatabaseReference _userRef = database.reference()
                               .child('Cart').child(DataStream.UserId)
@@ -429,10 +431,14 @@ class _SingleProductState extends State<SingleProduct> {
 
 
                           }).then((_) {
-                            itemcount=0;
+                            setState(() {
+                              itemcount=0;
+
+                            });
                             ToastUtils.showCustomToast(
                                 context, "Added to Cart", true);
                           });
+
 
 
                         }else{

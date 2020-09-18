@@ -1043,29 +1043,32 @@ class HomePage extends State<Home> {
                                               'cardname': Cart.fromSnapshot(event.snapshot).cardname.toString(),
                                               'cardimage': Cart.fromSnapshot(event.snapshot).cardimage.toString(),
                                               'cardprice': Cart.fromSnapshot(event.snapshot).cardprice,
-                                              'town':Cart.fromSnapshot(event.snapshot).town,
                                               'shopcatagory': Cart.fromSnapshot(event.snapshot).shopcatagory,
                                               'shopid': Cart.fromSnapshot(event.snapshot).shopid,
 
+                                            }).then((value) {
+                                              try{
+
+                                                DatabaseReference del = database.reference();
+                                                del = database.reference()
+                                                    .child("Shops")
+
+                                                    .child(Cart.fromSnapshot(event.snapshot).shopcatagory)
+                                                    .child(Cart.fromSnapshot(event.snapshot).shopid)
+                                                    .child("Orders").child(
+                                                    "Active")
+                                                    .child(orders[index].orderID);
+                                                del.remove();
+                                                print("removed");
+
+                                              }catch(e){
+                                                print(e);
+
+                                                print("err");
+                                              }
                                             });
 
-                                            try{
-                                            DatabaseReference del = database.reference();
-                                            del = database.reference()
-                                                  .child("Shops").child(Cart.fromSnapshot(event.snapshot).town)
-                                                  .child(Cart.fromSnapshot(event.snapshot).shopcatagory)
-                                                  .child(Cart.fromSnapshot(event.snapshot).shopid)
-                                                  .child("Orders").child(
-                                                  "Active")
-                                                  .child(orders[index].orderID);
-                                              del.remove();
-                                            print("removed");
 
-                                            }catch(e){
-                                              print(e);
-
-                                              print("err");
-                                            }
 
                                           });
 
@@ -1475,83 +1478,198 @@ class HomePage extends State<Home> {
         user!=null?
         Center(
           child: Column(
-            mainAxisAlignment: MainAxisAlignment.end,
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
              children: [
-               Padding(
-                 padding: const EdgeInsets.fromLTRB(0, 10, 0, 0),
-                 child: Text('Privacy Policy',
-                   style: TextStyle(fontSize: 16, fontWeight: FontWeight.w300,color: Colors.black,),),
-               ),
-            Padding(
-              padding: const EdgeInsets.fromLTRB(0, 5, 0, 20),
-              child: Text('Terms and Conditions',
-              style: TextStyle(fontSize: 16, fontWeight: FontWeight.w300,color: Colors.black,),),
-            ),
-              Container(
-                height: 40,
-                decoration: BoxDecoration(
-                  color: Colors.redAccent,
-                  borderRadius: BorderRadius.only(
-                      topLeft: Radius.circular(10),
-                      topRight: Radius.circular(10),
-                      bottomLeft: Radius.circular(10),
-                      bottomRight: Radius.circular(10)
-                  ),
-                  boxShadow: [
-                    BoxShadow(
-                      color: Colors.redAccent[100],
-                      spreadRadius: 3,
-                      blurRadius: 4,
-                      offset: Offset(0, 3),
-                    ),
-                  ],
-                ),
-                width: screenWidth(context)-40,
-                child: FlatButton(
-                  shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(8.0),
-                  ),
-                  color: Colors.redAccent,
-                  onPressed: (){
+                              SizedBox(height: 5,),
 
 
-                    FirebaseAuth.instance.currentUser().then((firebaseUser) async {
-                      if(firebaseUser != null){
-                        await FirebaseAuth.instance.signOut();
+//
+//                 Column(
+//                   children: [
+//                     SizedBox(height: 5,),
+//
+//                     Padding(
+//                       padding: const EdgeInsets.all(15.0),
+//                       child: Container(
+//                         decoration: BoxDecoration(
+//                           color: Colors.white,
+//                           borderRadius: BorderRadius.only(
+//                               topLeft: Radius.circular(10),
+//                               topRight: Radius.circular(10),
+//                               bottomLeft: Radius.circular(10),
+//                               bottomRight: Radius.circular(10)
+//                           ),
+//                           boxShadow: [
+//                             BoxShadow(
+//                               color: Colors.grey.withOpacity(0.5),
+//                               spreadRadius: 5,
+//                               blurRadius: 7,
+//                               offset: Offset(0, 3),
+//                             ),
+//                           ],
+//                         ),
+//                         width: screenWidth(context)-10,
+//                         child: Padding(
+//                           padding: EdgeInsets.all(20),
+//                           child: Column(
+//                             crossAxisAlignment:CrossAxisAlignment.start,
+//                             children: [
+//
+//                               Row(
+//                                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
+//                                 children: [
+//                                   Text(
+//                                     'Contact info ',
+//                                     style: TextStyle(fontSize: 16, fontWeight: FontWeight.w500,color: Colors.black),
+//                                   ),
+//                                   Text(
+//                                     'Edit',
+//                                     style: TextStyle(fontSize: 16, fontWeight: FontWeight.w600,color: Colors.green),
+//                                   ),
+//
+//                                 ],
+//                               ),
+//                               SizedBox(height: 20,),
+//
+//                               Row(
+//                                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
+//                                 children: [
+//                                   Text(
+//                                     'Username ',
+//                                     style: TextStyle(fontSize: 16, fontWeight: FontWeight.w300,color: Colors.black),
+//                                   ),
+//                                   Text(
+//                                     'Farhan',
+//                                     style: TextStyle(fontSize: 16, fontWeight: FontWeight.w300,color: Colors.black),
+//                                   ),
+//
+//                                 ],
+//                               ),
+//
+//                               SizedBox(height: 8,),
+//
+//                               Row(
+//                                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
+//                                 children: [
+//                                   Text(
+//                                     'Phone Number ',
+//                                     style: TextStyle(fontSize: 16, fontWeight: FontWeight.w300,color: Colors.black),
+//                                   ),
+//                                   Text(
+//                                     DataStream.PhoneNumber,
+//                                     style: TextStyle(fontSize: 16, fontWeight: FontWeight.w300,color: Colors.black),
+//                                   ),
+//
+//                                 ],
+//                               ),
+//
+//
+//                               SizedBox(height: 8,),
+//
+//                               Row(
+//                                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
+//                                 children: [
+//                                   Text(
+//                                     'E-mail Address ',
+//                                     style: TextStyle(fontSize: 16, fontWeight: FontWeight.w300,color: Colors.black),
+//                                   ),
+//                                   Text(
+//                                     'farhanfida10@gmail.com',
+//                                     style: TextStyle(fontSize: 16, fontWeight: FontWeight.w300,color: Colors.black),
+//                                   ),
+//
+//                                 ],
+//                               ),
+//                             ],
+//                           ),
+//                         ),
+//
+//                       ),
+//                     ),
+//                   ],
+//                 ),
+//
+//
 
-                        Navigator.of(context).pushReplacement(MaterialPageRoute(builder: (context) => SignIn()));
+               Column(
+                 children: [
+                   Padding(
+                     padding: const EdgeInsets.fromLTRB(0, 10, 0, 0),
+                     child: Text('Privacy Policy',
+                       style: TextStyle(fontSize: 16, fontWeight: FontWeight.w300,color: Colors.black,),),
+                   ),
+                   Padding(
+                     padding: const EdgeInsets.fromLTRB(0, 5, 0, 20),
+                     child: Text('Terms and Conditions',
+                       style: TextStyle(fontSize: 16, fontWeight: FontWeight.w300,color: Colors.black,),),
+                   ),
+                   Container(
+                     height: 40,
+                     decoration: BoxDecoration(
+                       color: Colors.redAccent,
+                       borderRadius: BorderRadius.only(
+                           topLeft: Radius.circular(10),
+                           topRight: Radius.circular(10),
+                           bottomLeft: Radius.circular(10),
+                           bottomRight: Radius.circular(10)
+                       ),
+                       boxShadow: [
+                         BoxShadow(
+                           color: Colors.redAccent[100],
+                           spreadRadius: 3,
+                           blurRadius: 4,
+                           offset: Offset(0, 3),
+                         ),
+                       ],
+                     ),
+                     width: screenWidth(context)-40,
+                     child: FlatButton(
+                       shape: RoundedRectangleBorder(
+                         borderRadius: BorderRadius.circular(8.0),
+                       ),
+                       color: Colors.redAccent,
+                       onPressed: (){
 
-                      }
 
-                    });
+                         FirebaseAuth.instance.currentUser().then((firebaseUser) async {
+                           if(firebaseUser != null){
+                             await FirebaseAuth.instance.signOut();
 
-                  },
-                  child: Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                             Navigator.of(context).pushReplacement(MaterialPageRoute(builder: (context) => SignIn()));
 
-                    children: [
+                           }
 
-                      Text('Logout',style: TextStyle(color: Colors.white,fontWeight: FontWeight.w500, fontSize: 18),),
+                         });
 
-                    ],
-                  ),
-                ),
-              ),
+                       },
+                       child: Row(
+                         mainAxisAlignment: MainAxisAlignment.spaceEvenly,
 
-               SizedBox(height: 20,),
-               GestureDetector(
-                 onTap: (){
-                   _launchCaller();
+                         children: [
 
-                },
-                 child: Padding(
-                   padding: const EdgeInsets.fromLTRB(0, 5, 0, 20),
-                   child: Text('Contact Us',
-                     style: TextStyle(fontSize: 14, fontWeight: FontWeight.w500,color: Colors.blue[500], decoration: TextDecoration.underline,
-                     ),),
-                 ),
-               ),
-               SizedBox(height: 10,),
+                           Text('Logout',style: TextStyle(color: Colors.white,fontWeight: FontWeight.w500, fontSize: 18),),
+
+                         ],
+                       ),
+                     ),
+                   ),
+
+                   SizedBox(height: 20,),
+                   GestureDetector(
+                     onTap: (){
+                       _launchCaller();
+
+                     },
+                     child: Padding(
+                       padding: const EdgeInsets.fromLTRB(0, 5, 0, 20),
+                       child: Text('Contact Us',
+                         style: TextStyle(fontSize: 14, fontWeight: FontWeight.w500,color: Colors.blue[500], decoration: TextDecoration.underline,
+                         ),),
+                     ),
+                   ),
+                   SizedBox(height: 10,),
+                 ],
+               )
             ],
           ),
         ):

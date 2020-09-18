@@ -190,7 +190,7 @@ class _ProductCatalogState extends State<ProductCatalog> {
       tempcategory.add("All");
 
 
-      tempcategory.add(Product.fromSnapshot(event.snapshot).category);
+      tempcategory.add(Product.fromSnapshot(event.snapshot).category.toUpperCase().trim());
       tempcategory = tempcategory.toSet().toList();
 
       //   print(products.length);
