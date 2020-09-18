@@ -151,10 +151,16 @@ class _ShopsScreenState extends State<ShopsScreen> {
     final endTime = DateTime(currentTime.year, currentTime.month, currentTime.day,int.parse(close.split(":")[0]) , int.parse(close.split(":")[1]));
 
 
-    if(currentTime.isAfter(startTime) && currentTime.isBefore(endTime)) {
-       return true;
+    if(currentTime.isBefore(startTime) && currentTime.isAfter(endTime)){
+       return false;
     }else{
-      return false;
+     // if(currentTime.isBefore(startTime) && currentTime.isAfter(endTime)){
+        return true;
+
+
+      //  return false;
+
+
 
     }
   }

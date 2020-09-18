@@ -14,6 +14,7 @@ import 'package:Doorstep/utilts/UI/toast_utility.dart';
 import 'package:flutter/material.dart';
 import 'package:Doorstep/styles/styles.dart';
 import 'package:Doorstep/screens/auth/sign-up.dart';
+import 'package:intl/intl.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'dart:async';
 import 'dart:convert' show jsonDecode, utf8;
@@ -281,8 +282,14 @@ class _ProductCatalogState extends State<ProductCatalog> {
                             crossAxisAlignment: CrossAxisAlignment.center,
                             mainAxisAlignment: MainAxisAlignment.center,
                             children: [
+
+                              DateFormat("h:mma").format(DateFormat("hh:mm").parse(shop.openTime)) == DateFormat("h:mma").format(DateFormat("hh:mm").parse(shop.closeTime))?
                               Text(
-                                shop.openTime +" a.m  -  "+ shop.closeTime +" p.m",
+                               "24 / 7 Open",
+                                style: TextStyle(fontSize: 28, fontWeight: FontWeight.w400,color: Colors.white),
+                              ):
+                              Text(
+                                DateFormat("h:mma").format(DateFormat("hh:mm").parse(shop.openTime))  +"  -  "+ DateFormat("h:mma").format(DateFormat("hh:mm").parse(shop.closeTime)),
                                 style: TextStyle(fontSize: 28, fontWeight: FontWeight.w400,color: Colors.white),
                               ),
                               Text(
