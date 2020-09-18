@@ -1009,8 +1009,12 @@ class HomePage extends State<Home> {
                                         DatabaseReference _userRef = database.reference()
                                             .child("User Orders").child(DataStream.UserId).child("History").child(orders[index].orderID);
 
+                                         DatabaseReference _adminRef = database.reference()
+                                             .child("Admin").child("Orders").child("History").child(orders[index].orderID);
 
-                                        _userRef.set(<dynamic, dynamic>{
+
+
+                                         _userRef.set(<dynamic, dynamic>{
                                           'no_of_items': orders[index].no_of_items,
                                           'userID':orders[index].userID,
                                           'bill': orders[index].bill,
@@ -1058,7 +1062,22 @@ class HomePage extends State<Home> {
                                                     .child("Orders").child(
                                                     "Active")
                                                     .child(orders[index].orderID);
-                                                del.remove();
+                                                del.remove().then((value) {
+                                                  DatabaseReference cancel = database.reference();
+                                                  cancel = database.reference()
+                                                      .child("Shops")
+
+                                                      .child(Cart.fromSnapshot(event.snapshot).shopcatagory)
+                                                      .child(Cart.fromSnapshot(event.snapshot).shopid)
+                                                      .child("Orders").child(
+                                                      "History")
+                                                      .child(orders[index].orderID);
+
+                                                  cancel.update(<String, dynamic>{
+                                                    'status': 'cancelled',
+
+                                                  });
+                                                });
                                                 print("removed");
 
                                               }catch(e){
@@ -1111,7 +1130,65 @@ class HomePage extends State<Home> {
                                                 .child(orders[index].orderID);
                                           del.remove();
 
-                                        });
+                                        }).then((value) {
+
+
+
+
+                                           _adminRef.set(<dynamic, dynamic>{
+                                             'no_of_items': orders[index].no_of_items,
+                                             'userID':orders[index].userID,
+                                             'bill': orders[index].bill,
+                                             'status': 'cancelled',
+                                             'orderDate':orders[index].orderDate,
+                                             'orderTime': orders[index].orderTime,
+                                             'phonenumber' :orders[index].phonenumber,
+                                             'orderID': orders[index].orderID,
+                                             'address': orders[index].address,
+                                             'location':orders[index].location,
+
+                                           }).then((value) {
+
+                                             FirebaseDatabase database = new FirebaseDatabase();
+                                             DatabaseReference _userRef = database.reference()
+                                                 .child("Admin").child("Orders").child("History").child(orders[index].orderID);
+
+
+
+                                             volunteerRef = database.reference().child("User Orders").child(DataStream.UserId).child("History").child(orders[index].orderID).child("items");
+                                             volunteerRef.onChildAdded.listen((event) {
+
+                                               // ordereditems.add(Cart.fromSnapshot(event.snapshot));
+
+                                               //   print("Shops."+Cart.fromSnapshot(event.snapshot).town+"."+Cart.fromSnapshot(event.snapshot).shopcatagory+"."+Cart.fromSnapshot(event.snapshot).shopid+" orders."+"active."+orders[index].orderID);
+
+                                               _userRef.child("items").push().set(<dynamic, dynamic>{
+                                                 'no_of_items': Cart.fromSnapshot(event.snapshot).no_of_items,
+                                                 'cardid': Cart.fromSnapshot(event.snapshot).cardid.toString(),
+                                                 'cardname': Cart.fromSnapshot(event.snapshot).cardname.toString(),
+                                                 'cardimage': Cart.fromSnapshot(event.snapshot).cardimage.toString(),
+                                                 'cardprice': Cart.fromSnapshot(event.snapshot).cardprice,
+                                                 'shopcatagory': Cart.fromSnapshot(event.snapshot).shopcatagory,
+                                                 'shopid': Cart.fromSnapshot(event.snapshot).shopid,
+
+                                               });
+
+
+
+                                             });
+
+
+
+
+                                           });
+
+                                         });
+
+
+
+
+
+
 
                                       },
                                       child: Row(

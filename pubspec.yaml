@@ -51,7 +51,6 @@ flutter:
   uses-material-design: true
 
   assets:
-    - assets/.DS_Store
     - assets/bgs/bg-gradient.png
     - assets/bgs/bg-signup.png
     - assets/fonts/AcuminProBold.otf

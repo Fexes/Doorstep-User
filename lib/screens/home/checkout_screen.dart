@@ -800,8 +800,45 @@ class _CheckOutScreenState extends State<CheckOutScreen> {
                                       }
                                   );
 
-                                });
+                                }).then((value) {
 
+                                  shoporder.child(
+                                      carts[i].shopcatagory).child(
+                                      carts[i].shopid).child("Orders")
+                                      .child("History")
+                                      .child(orderID)
+                                      .set(<dynamic, dynamic>{
+                                    'no_of_items': '${carts.length}',
+                                    'userID':DataStream.UserId,
+                                    'bill': '${caltotal()}',
+                                    'status': 'pending',
+                                    'orderDate': date.format(now),
+                                    'orderTime': time.format(now),
+                                    'phonenumber': DataStream.PhoneNumber,
+                                    'orderID': orderID,
+                                    'address': Useraddress,
+                                    'location': "${deliverylocation
+                                        .latitude},${deliverylocation.longitude}",
+
+                                  }).then((value) {
+
+                                    shoporder.child(carts[i].shopcatagory).child(carts[i].shopid).child("Orders")
+                                        .child("History").child(orderID).child("items").push().set(
+                                        <dynamic, dynamic>{
+                                          'no_of_items': carts[i].no_of_items,
+                                          'cardid': carts[i].cardid.toString(),
+                                          'cardname': carts[i].cardname.toString(),
+                                          'cardimage': carts[i].cardimage.toString(),
+                                          'cardprice': carts[i].cardprice,
+                                          'town':carts[i].town,
+                                          'shopcatagory':carts[i].shopcatagory,
+                                          'shopid': carts[i].shopid,
+
+                                        }
+                                    );
+
+                                  });
+                                });
 
 
 
