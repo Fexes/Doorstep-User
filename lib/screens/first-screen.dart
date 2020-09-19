@@ -12,11 +12,13 @@ import 'package:flutter_spinkit/flutter_spinkit.dart';
 import 'package:Doorstep/styles/styles.dart';
 import 'package:geolocator/geolocator.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
+import 'package:package_info/package_info.dart';
 import 'package:permission_handler/permission_handler.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'dart:async';
 import 'auth/sign-in.dart';
 import 'package:location/location.dart' as loc;
+import 'package:launch_review/launch_review.dart';
 
 void main() {
   runApp(MaterialApp(
@@ -37,35 +39,10 @@ class SplashScreenState extends State<SplashScreen> {
   String UserToken;
   String loginas;
   @override
-  void initState() {
+  Future<void> initState()  {
     super.initState();
 
-
-
-
-      final locationDbRef = FirebaseDatabase.instance.reference().child("Admin").child("Delivery");
-
-      locationDbRef.once().then((value) async {
-        print(value.value["delivery_charges"]);
-
-          DataStream.DeliverCharges = value.value['delivery_charges'];
-
-        final locationDbRef = FirebaseDatabase.instance.reference().child("Admin").child("Radius");
-
-        locationDbRef.once().then((value) async {
-          print(value.value["user_order_radius"]);
-
-          DataStream.OrderRadius = value.value['user_order_radius'];
-
-
-          loadData();
-
-        }
-        );
-
-
-      }
-      );
+   start();
 
   }
 
@@ -149,17 +126,34 @@ class SplashScreenState extends State<SplashScreen> {
 
 
         }
-        _checkGps().then((value){
 
-          if(value){
-            addLocation();
-          }else{
+        _checkGps().then((value) {
 
-            ToastUtils.showCustomToast(context, "Location Service Disabled", false);
 
-          }
+            if(value){
+            //  ToastUtils.showCustomToast(context, "Getting Location", null);
+            }else{
+
+              ToastUtils.showCustomToast(context, "Location Service Disabled", false);
+
+            }
+
+        }).whenComplete(() {
+
+          addLocation();
 
         });
+
+        // _checkGps().then((value){
+        //   if(value){
+        //     addLocation();
+        //   }else{
+        //
+        //     ToastUtils.showCustomToast(context, "Location Service Disabled", false);
+        //
+        //   }
+        //
+        // });
 
 
           // print(DataStream.PhoneNumber);
@@ -230,6 +224,48 @@ bool error=false;
                   child: Text( "Retry",style: TextStyle(color: Colors.white),),
                 ),
               ):
+
+
+              updateavail?
+              Column(
+                children: [
+                  SizedBox(
+                    width:300,
+                    child: FlatButton(
+
+                      color: Colors.white,
+
+                      child: Text( "A new version of Doorstep is available. Please Update the App" ,textAlign: TextAlign.center,style: TextStyle(color: Colors.black,fontSize: 16,fontWeight: FontWeight.w300,
+                      ),),
+                    ),
+                  ),
+                  SizedBox(height: 10,),
+
+
+                   SizedBox(
+                    width:200,
+                    child: RaisedButton(
+                      shape: RoundedRectangleBorder(
+                        borderRadius: new BorderRadius.circular(18.0),
+
+                      ),
+
+                      color: primaryDark,
+                      onPressed: () async {
+
+                        LaunchReview.launch(androidAppId:"com.doorstep.app",
+                            iOSAppId: "1:391131119962:ios:7800a1fb8c2e8cfcdcf363");
+
+                        setState(() {
+
+                        });
+                      },
+                      child: Text( "Update App",style: TextStyle(color: Colors.white),),
+                    ),
+                  ),
+                ],
+              ):
+
               SpinKitFadingCircle(
                 itemBuilder: (BuildContext context, int index) {
                   return DecoratedBox(
@@ -244,10 +280,110 @@ bool error=false;
                   );
                 },
               ),
+              // SizedBox(
+              //   width:300,
+              //   child: FlatButton(
+              //
+              //     color: Colors.white,
+              //
+              //     child: Text( "The App is Under Maintenance" ,textAlign: TextAlign.center,style: TextStyle(color: Colors.black,fontSize: 16,fontWeight: FontWeight.w300,
+              //     ),),
+              //   ),
+              // ),
+
+              SizedBox(height: 5,),
+              SizedBox(
+                width:300,
+                child: FlatButton(
+
+                  color: Colors.white,
+                  onPressed: () async {
+                    error=false;
+                    loadData();
+                    setState(() {
+
+                    });
+                  },
+                  child: Text( "Version    $appVersion" ,textAlign: TextAlign.center,style: TextStyle(color: Colors.black,fontSize: 12,fontWeight: FontWeight.w200,
+                  ),),
+                ),
+              ),
+
             ],
           )),
         // color
 
+    );
+  }
+
+  String appVersion="";
+  String code="";
+
+  bool updateavail=false;
+  bool maintenance=false;
+
+  Future<void> start() async {
+    PackageInfo packageInfo = await PackageInfo.fromPlatform();
+    String versionName = packageInfo.buildNumber;
+
+     appVersion = packageInfo.version;
+    setState(() {
+
+    });
+
+    print(versionName);
+
+    final versionDbRef = FirebaseDatabase.instance.reference().child("Admin").child("AppVersion");
+
+    versionDbRef.once().then((value) async {
+
+
+      code=value.value["version_code"];
+
+      if(code=="maintenance"){
+        maintenance=true;
+
+      }else {
+        maintenance=false;
+        if (int.parse(value.value["version_code"]) > int.parse(versionName)) {
+          updateavail = true;
+          setState(() {
+
+          });
+        } else {
+          updateavail = false;
+          setState(() {
+
+          });
+          final locationDbRef = FirebaseDatabase.instance.reference().child(
+              "Admin").child("Delivery");
+
+          locationDbRef.once().then((value) async {
+            print(value.value["delivery_charges"]);
+
+            DataStream.DeliverCharges = value.value['delivery_charges'];
+
+            final locationDbRef = FirebaseDatabase.instance.reference().child(
+                "Admin").child("Radius");
+
+            locationDbRef.once().then((value) async {
+              print(value.value["user_order_radius"]);
+
+              DataStream.OrderRadius = value.value['user_order_radius'];
+
+
+              loadData();
+            }
+            );
+          }
+          );
+        }
+      }
+
+
+
+
+    }
     );
   }
 

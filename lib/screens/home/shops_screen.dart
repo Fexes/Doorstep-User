@@ -150,18 +150,30 @@ class _ShopsScreenState extends State<ShopsScreen> {
     final startTime = DateTime(currentTime.year, currentTime.month, currentTime.day,int.parse(open.split(":")[0]) , int.parse(open.split(":")[1]));
     final endTime = DateTime(currentTime.year, currentTime.month, currentTime.day,int.parse(close.split(":")[0]) , int.parse(close.split(":")[1]));
 
+    if(startTime.isBefore(endTime)) {
+      print("day shop");
 
-    if(currentTime.isBefore(startTime) && currentTime.isAfter(endTime)){
-       return false;
-    }else{
-     // if(currentTime.isBefore(startTime) && currentTime.isAfter(endTime)){
+      if (currentTime.isBefore(startTime) || currentTime.isAfter(endTime)) {
+        return false;
+      } else {
+        // if(currentTime.isBefore(startTime) && currentTime.isAfter(endTime)){
         return true;
 
 
-      //  return false;
+      }
+    }else{
+
+      print("night shop");
+
+      if (currentTime.isAfter(startTime) || currentTime.isBefore(endTime)) {
+
+        return true;
+      } else {
+        // if(currentTime.isBefore(startTime) && currentTime.isAfter(endTime)){
+        return false;
 
 
-
+      }
     }
   }
 

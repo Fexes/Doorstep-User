@@ -212,6 +212,8 @@ class _ProductCatalogState extends State<ProductCatalog> {
 
   List<String> category;
 
+  String selectfilter="All";
+
   DatabaseReference volunteerRef;
 
 
@@ -426,15 +428,18 @@ class _ProductCatalogState extends State<ProductCatalog> {
                                   padding: const EdgeInsets.all(6.0),
                                   child: FlatButton(
                                     onPressed: (){
+                                      selectfilter=char;
                                       filterProductCatagory(char);
                                       setState(() {
 
                                       });
                                     },
                                     shape: RoundedRectangleBorder(
+
                                         borderRadius: BorderRadius.circular(18.0),
                                         side: BorderSide(color: Colors.green[400])),
-                                    color: Colors.white,
+                                    color:selectfilter==char? Colors.green[100]: Colors.white,
+
                                     textColor: Colors.green[600],
                                     padding: EdgeInsets.all(8.0),
                                      child: Text(

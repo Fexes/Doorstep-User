@@ -628,7 +628,7 @@ class _OrderItemsScreenState extends State<OrderItemsScreen> {
                         'cardname': Cart.fromSnapshot(event.snapshot).cardname.toString(),
                         'cardimage': Cart.fromSnapshot(event.snapshot).cardimage.toString(),
                         'cardprice': Cart.fromSnapshot(event.snapshot).cardprice,
-                        'town':Cart.fromSnapshot(event.snapshot).town,
+                        'unit':Cart.fromSnapshot(event.snapshot).unit,
                         'shopcatagory': Cart.fromSnapshot(event.snapshot).shopcatagory,
                         'shopid': Cart.fromSnapshot(event.snapshot).shopid,
 

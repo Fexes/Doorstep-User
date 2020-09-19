@@ -19,6 +19,8 @@ import 'package:progress_dialog/progress_dialog.dart';
 
 import 'package:http/http.dart' as http;
 
+import '../first-screen.dart';
+
 class SignIn extends StatefulWidget {
   @override
   _SignInState createState() => _SignInState();
@@ -356,7 +358,7 @@ class _SignInState extends State<SignIn> {
           ToastUtils.showCustomToast(context, "Phone Verified",true);
 
 
-          Navigator.of(context).pushReplacement(MaterialPageRoute(builder: (context) => Home()));
+          Navigator.of(context).pushReplacement(MaterialPageRoute(builder: (context) => SplashScreen()));
 
 
         },
@@ -420,42 +422,39 @@ class _SignInState extends State<SignIn> {
                       color: Colors.green,
                       onPressed: () async {
 
-                        final code = _controllerCode.text.trim();
-                        AuthCredential credential =
-                        PhoneAuthProvider.getCredential(
-                            verificationId: verification, smsCode: code);
-                        AuthResult result =
-                        await _auth.signInWithCredential(credential).then((value)  {
+                        try {
+                          final code = _controllerCode.text.trim();
+                          AuthCredential credential =
+                          PhoneAuthProvider.getCredential(
+                              verificationId: verification, smsCode: code);
+                          AuthResult result =
+                          await _auth.signInWithCredential(credential).then((
+                              value) {
+                            FirebaseUser user = value.user;
+                            if (user != null) {
+                              ToastUtils.showCustomToast(
+                                  context, "Code Confirmed", true);
+                              Navigator.of(context).pop();
 
-                          FirebaseUser user = value.user;
-                          if (user != null) {
-                            ToastUtils.showCustomToast(context, "Code Confirmed",true);
-                            Navigator.of(context).pop();
+                              Navigator.of(context).pushReplacement(
+                                  MaterialPageRoute(
+                                      builder: (context) => SplashScreen()));
+                            } else {
+                              _controllerCode.clear();
+                              ToastUtils.showCustomToast(
+                                  context, "Code Mismatched", false);
+                            }
+                            return null;
+                          });
+                        }catch(e){
+                          print(e);
+                          _controllerCode.clear();
 
-//                            FirebaseDatabase database = new FirebaseDatabase();
-//                            DatabaseReference _userRef = database.reference()
-//                                .child('User Orders').child(user.uid);
-//
-//                            _userRef.set(<dynamic, dynamic>{
-//                              'name': '',
-//                              'email': '',
-//                              'phone': '',
-//                              'orders': '',
-//
-//                            });
+                          ToastUtils.showCustomToast(context, "Error! try again",false);
+                          Navigator.of(context).pop();
 
+                        }
 
-
-                            Navigator.of(context).pushReplacement(MaterialPageRoute(builder: (context) => Home()));
-
-                          } else {
-
-                            _controllerCode.clear();
-                            ToastUtils.showCustomToast(context, "Code Mismatched",false);
-
-                          }
-                          return null;
-                        });
 
                       },
                     )

@@ -7,12 +7,12 @@ class Cart {
   String cardid;
   String cardname;
   String cardimage;
-  String town;
+  String unit;
   String shopcatagory;
   String shopid;
   int cardprice;
 
-   Cart(this.key,this.no_of_items,this.cardid,this.cardname,this.cardimage,this.cardprice,this.shopcatagory,this.shopid,this.town);
+   Cart(this.key,this.no_of_items,this.cardid,this.cardname,this.cardimage,this.cardprice,this.shopcatagory,this.shopid,this.unit);
 
 
   Cart.fromSnapshot(DataSnapshot snapshot):
@@ -24,7 +24,7 @@ class Cart {
         no_of_items = snapshot.value["no_of_items"],
         shopcatagory = snapshot.value["shopcatagory"],
         shopid = snapshot.value["shopid"],
-        town = snapshot.value["town"];
+        unit = snapshot.value["unit"];
 
 
   toJson() {
@@ -38,7 +38,7 @@ class Cart {
 
       "shopcatagory": shopcatagory,
       "shopid": shopid,
-      "town": town,
+      "unit": unit,
 
     };
   }

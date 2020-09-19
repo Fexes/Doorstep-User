@@ -424,8 +424,7 @@ class _SingleProductState extends State<SingleProduct> {
                             'cardname': product.cardname.toString(),
                             'cardimage': product.cardimage.toString(),
                             'cardprice': product.cardprice,
-
-                          //  'town':"Bahria Town Phase 4",
+                            'unit':product.unit,
                             'shopcatagory': DataStream.ShopCatagory,
                             'shopid': DataStream.ShopId,
 

@@ -752,9 +752,10 @@ class _CheckOutScreenState extends State<CheckOutScreen> {
                                       'no_of_items': carts[i].no_of_items,
                                       'cardid': carts[i].cardid.toString(),
                                       'cardname': carts[i].cardname.toString(),
+                                      'unit':carts[i].unit,
+
                                       'cardimage': carts[i].cardimage.toString(),
                                       'cardprice': carts[i].cardprice,
-                                      'town':carts[i].town,
                                       'shopcatagory':carts[i].shopcatagory,
                                       'shopid': carts[i].shopid,
 
@@ -791,10 +792,11 @@ class _CheckOutScreenState extends State<CheckOutScreen> {
                                         'no_of_items': carts[i].no_of_items,
                                         'cardid': carts[i].cardid.toString(),
                                         'cardname': carts[i].cardname.toString(),
+                                        'unit':carts[i].unit,
+
                                         'cardimage': carts[i].cardimage.toString(),
                                         'cardprice': carts[i].cardprice,
-                                        'town':carts[i].town,
-                                        'shopcatagory':carts[i].shopcatagory,
+                                         'shopcatagory':carts[i].shopcatagory,
                                         'shopid': carts[i].shopid,
 
                                       }
@@ -830,7 +832,7 @@ class _CheckOutScreenState extends State<CheckOutScreen> {
                                           'cardname': carts[i].cardname.toString(),
                                           'cardimage': carts[i].cardimage.toString(),
                                           'cardprice': carts[i].cardprice,
-                                          'town':carts[i].town,
+                                          'unit':carts[i].unit,
                                           'shopcatagory':carts[i].shopcatagory,
                                           'shopid': carts[i].shopid,
 
@@ -848,7 +850,7 @@ class _CheckOutScreenState extends State<CheckOutScreen> {
                                 'cardname': carts[i].cardname.toString(),
                                 'cardimage': carts[i].cardimage.toString(),
                                 'cardprice': carts[i].cardprice,
-                                'town':carts[i].town,
+                                'unit':carts[i].unit,
                                 'shopcatagory':carts[i].shopcatagory,
                                 'shopid': carts[i].shopid,
 

@@ -412,8 +412,9 @@ class HomePage extends State<Home> {
                                   borderRadius: BorderRadius.all(Radius.circular(15.0)),
                                   gradient: new LinearGradient(
                                       colors: [
-                                        Colors.black,
-                                        const Color(0x10000000),
+                                        Colors.black.withOpacity(0.75)
+,
+                                            const Color(0x10000000),
                                       ],
                                       begin: const FractionalOffset(0.0, 0.0),
                                       end: const FractionalOffset(0.0, 1.0),
@@ -480,7 +481,8 @@ class HomePage extends State<Home> {
                                       borderRadius: BorderRadius.all(Radius.circular(15.0)),
                                       gradient: new LinearGradient(
                                           colors: [
-                                            Colors.black,
+                                            Colors.black.withOpacity(0.75)
+,
                                             const Color(0x10000000),
                                           ],
                                           begin: const FractionalOffset(0.0, 0.0),
@@ -543,7 +545,8 @@ class HomePage extends State<Home> {
                                       borderRadius: BorderRadius.all(Radius.circular(15.0)),
                                       gradient: new LinearGradient(
                                           colors: [
-                                            Colors.black,
+                                            Colors.black.withOpacity(0.75)
+,
                                             const Color(0x10000000),
                                           ],
                                           begin: const FractionalOffset(0.0, 0.0),
@@ -604,8 +607,9 @@ class HomePage extends State<Home> {
                                   borderRadius: BorderRadius.all(Radius.circular(15.0)),
                                   gradient: new LinearGradient(
                                       colors: [
-                                        Colors.black,
-                                        const Color(0x10000000),
+                                        Colors.black.withOpacity(0.75)
+,
+                                            const Color(0x10000000),
                                       ],
                                       begin: const FractionalOffset(0.0, 0.0),
                                       end: const FractionalOffset(0.0, 1.0),
@@ -671,7 +675,8 @@ class HomePage extends State<Home> {
                                       borderRadius: BorderRadius.all(Radius.circular(15.0)),
                                       gradient: new LinearGradient(
                                           colors: [
-                                            Colors.black,
+                                            Colors.black.withOpacity(0.75)
+,
                                             const Color(0x10000000),
                                           ],
                                           begin: const FractionalOffset(0.0, 0.0),
@@ -733,7 +738,8 @@ class HomePage extends State<Home> {
                                       borderRadius: BorderRadius.all(Radius.circular(15.0)),
                                       gradient: new LinearGradient(
                                           colors: [
-                                            Colors.black,
+                                            Colors.black.withOpacity(0.75)
+,
                                             const Color(0x10000000),
                                           ],
                                           begin: const FractionalOffset(0.0, 0.0),
@@ -864,7 +870,7 @@ class HomePage extends State<Home> {
                           ),
                           boxShadow: [
                             BoxShadow(
-                              color: Colors.grey.withOpacity(0.5),
+                              color: Colors.grey.withOpacity(0.75),
                               spreadRadius: 5,
                               blurRadius: 7,
                               offset: Offset(0, 3), // changes position of shadow
@@ -1047,6 +1053,7 @@ class HomePage extends State<Home> {
                                               'cardname': Cart.fromSnapshot(event.snapshot).cardname.toString(),
                                               'cardimage': Cart.fromSnapshot(event.snapshot).cardimage.toString(),
                                               'cardprice': Cart.fromSnapshot(event.snapshot).cardprice,
+                                              'unit': Cart.fromSnapshot(event.snapshot).unit,
                                               'shopcatagory': Cart.fromSnapshot(event.snapshot).shopcatagory,
                                               'shopid': Cart.fromSnapshot(event.snapshot).shopid,
 
@@ -1168,6 +1175,8 @@ class HomePage extends State<Home> {
                                                  'cardname': Cart.fromSnapshot(event.snapshot).cardname.toString(),
                                                  'cardimage': Cart.fromSnapshot(event.snapshot).cardimage.toString(),
                                                  'cardprice': Cart.fromSnapshot(event.snapshot).cardprice,
+                                                 'unit': Cart.fromSnapshot(event.snapshot).unit.toString(),
+
                                                  'shopcatagory': Cart.fromSnapshot(event.snapshot).shopcatagory,
                                                  'shopid': Cart.fromSnapshot(event.snapshot).shopid,
 
@@ -1305,7 +1314,7 @@ class HomePage extends State<Home> {
                           ),
                           boxShadow: [
                             BoxShadow(
-                              color: Colors.grey.withOpacity(0.5),
+                              color: Colors.grey.withOpacity(0.75),
                               spreadRadius: 5,
                               blurRadius: 7,
                               offset: Offset(0, 3), // changes position of shadow
@@ -1560,126 +1569,136 @@ class HomePage extends State<Home> {
                               SizedBox(height: 5,),
 
 
-//
-//                 Column(
-//                   children: [
-//                     SizedBox(height: 5,),
-//
-//                     Padding(
-//                       padding: const EdgeInsets.all(15.0),
-//                       child: Container(
-//                         decoration: BoxDecoration(
-//                           color: Colors.white,
-//                           borderRadius: BorderRadius.only(
-//                               topLeft: Radius.circular(10),
-//                               topRight: Radius.circular(10),
-//                               bottomLeft: Radius.circular(10),
-//                               bottomRight: Radius.circular(10)
-//                           ),
-//                           boxShadow: [
-//                             BoxShadow(
-//                               color: Colors.grey.withOpacity(0.5),
-//                               spreadRadius: 5,
-//                               blurRadius: 7,
-//                               offset: Offset(0, 3),
-//                             ),
-//                           ],
-//                         ),
-//                         width: screenWidth(context)-10,
-//                         child: Padding(
-//                           padding: EdgeInsets.all(20),
-//                           child: Column(
-//                             crossAxisAlignment:CrossAxisAlignment.start,
-//                             children: [
-//
-//                               Row(
-//                                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
-//                                 children: [
-//                                   Text(
-//                                     'Contact info ',
-//                                     style: TextStyle(fontSize: 16, fontWeight: FontWeight.w500,color: Colors.black),
-//                                   ),
-//                                   Text(
-//                                     'Edit',
-//                                     style: TextStyle(fontSize: 16, fontWeight: FontWeight.w600,color: Colors.green),
-//                                   ),
-//
-//                                 ],
-//                               ),
-//                               SizedBox(height: 20,),
-//
-//                               Row(
-//                                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
-//                                 children: [
-//                                   Text(
-//                                     'Username ',
-//                                     style: TextStyle(fontSize: 16, fontWeight: FontWeight.w300,color: Colors.black),
-//                                   ),
-//                                   Text(
-//                                     'Farhan',
-//                                     style: TextStyle(fontSize: 16, fontWeight: FontWeight.w300,color: Colors.black),
-//                                   ),
-//
-//                                 ],
-//                               ),
-//
-//                               SizedBox(height: 8,),
-//
-//                               Row(
-//                                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
-//                                 children: [
-//                                   Text(
-//                                     'Phone Number ',
-//                                     style: TextStyle(fontSize: 16, fontWeight: FontWeight.w300,color: Colors.black),
-//                                   ),
-//                                   Text(
-//                                     DataStream.PhoneNumber,
-//                                     style: TextStyle(fontSize: 16, fontWeight: FontWeight.w300,color: Colors.black),
-//                                   ),
-//
-//                                 ],
-//                               ),
-//
-//
-//                               SizedBox(height: 8,),
-//
-//                               Row(
-//                                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
-//                                 children: [
-//                                   Text(
-//                                     'E-mail Address ',
-//                                     style: TextStyle(fontSize: 16, fontWeight: FontWeight.w300,color: Colors.black),
-//                                   ),
-//                                   Text(
-//                                     'farhanfida10@gmail.com',
-//                                     style: TextStyle(fontSize: 16, fontWeight: FontWeight.w300,color: Colors.black),
-//                                   ),
-//
-//                                 ],
-//                               ),
-//                             ],
-//                           ),
-//                         ),
-//
-//                       ),
-//                     ),
-//                   ],
-//                 ),
-//
-//
+
+                Column(
+                  children: [
+
+
+                    Padding(
+                      padding: const EdgeInsets.all(15.0),
+                      child: Container(
+                        decoration: BoxDecoration(
+                          color: Colors.white,
+                          borderRadius: BorderRadius.only(
+                              topLeft: Radius.circular(10),
+                              topRight: Radius.circular(10),
+                              bottomLeft: Radius.circular(10),
+                              bottomRight: Radius.circular(10)
+                          ),
+                          boxShadow: [
+                            BoxShadow(
+                              color: Colors.grey.withOpacity(0.75),
+                              spreadRadius: 5,
+                              blurRadius: 7,
+                              offset: Offset(0, 3),
+                            ),
+                          ],
+                        ),
+                        width: screenWidth(context)-10,
+                        child: Padding(
+                          padding: EdgeInsets.all(20),
+                          child: Column(
+                            crossAxisAlignment:CrossAxisAlignment.start,
+                            children: [
+
+                              Row(
+                                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                                children: [
+                                  Text(
+                                    'Contact info ',
+                                    style: TextStyle(fontSize: 16, fontWeight: FontWeight.w500,color: Colors.black),
+                                  ),
+                                  Text(
+                                    'Edit',
+                                    style: TextStyle(fontSize: 16, fontWeight: FontWeight.w600,color: Colors.green),
+                                  ),
+
+                                ],
+                              ),
+                              SizedBox(height: 20,),
+
+                              Row(
+                                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                                children: [
+                                  Text(
+                                    'Username ',
+                                    style: TextStyle(fontSize: 16, fontWeight: FontWeight.w300,color: Colors.black),
+                                  ),
+                                  Text(
+                                    'Farhan',
+                                    style: TextStyle(fontSize: 16, fontWeight: FontWeight.w300,color: Colors.black),
+                                  ),
+
+                                ],
+                              ),
+
+                              SizedBox(height: 8,),
+
+                              Row(
+                                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                                children: [
+                                  Text(
+                                    'Phone Number ',
+                                    style: TextStyle(fontSize: 16, fontWeight: FontWeight.w300,color: Colors.black),
+                                  ),
+                                  Text(
+                                    DataStream.PhoneNumber,
+                                    style: TextStyle(fontSize: 16, fontWeight: FontWeight.w300,color: Colors.black),
+                                  ),
+
+                                ],
+                              ),
+
+
+                              SizedBox(height: 8,),
+
+                              Row(
+                                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                                children: [
+                                  Text(
+                                    'E-mail Address ',
+                                    style: TextStyle(fontSize: 16, fontWeight: FontWeight.w300,color: Colors.black),
+                                  ),
+                                  Text(
+                                    'farhanfida10@gmail.com',
+                                    style: TextStyle(fontSize: 16, fontWeight: FontWeight.w300,color: Colors.black),
+                                  ),
+
+                                ],
+                              ),
+                            ],
+                          ),
+                        ),
+
+                      ),
+                    ),
+                  ],
+                ),
+
+
 
                Column(
                  children: [
-                   Padding(
-                     padding: const EdgeInsets.fromLTRB(0, 10, 0, 0),
-                     child: Text('Privacy Policy',
-                       style: TextStyle(fontSize: 16, fontWeight: FontWeight.w300,color: Colors.black,),),
+                   GestureDetector(
+                     onTap: (){
+                       //https://doorsteppolicy.web.app/
+
+                       UrlLauncher.launch('https://doorsteppolicy.web.app');
+
+                     },
+                     child: Padding(
+                       padding: const EdgeInsets.fromLTRB(0, 10, 0, 0),
+                       child: Text('Privacy Policy',
+                         style: TextStyle(fontSize: 14, fontWeight: FontWeight.w500,color: Colors.blue[500], decoration: TextDecoration.underline,
+                         ),
+                       ),
+                     ),
                    ),
-                   Padding(
-                     padding: const EdgeInsets.fromLTRB(0, 5, 0, 20),
-                     child: Text('Terms and Conditions',
-                       style: TextStyle(fontSize: 16, fontWeight: FontWeight.w300,color: Colors.black,),),
-                   ),
+                   // Padding(
+                   //   padding: const EdgeInsets.fromLTRB(0, 5, 0, 20),
+                   //   child: Text('Terms and Conditions',
+                   //     style: TextStyle(fontSize: 16, fontWeight: FontWeight.w300,color: Colors.black,),),
+                   // ),
                    Container(
                      height: 40,
                      decoration: BoxDecoration(
@@ -1806,7 +1825,7 @@ class HomePage extends State<Home> {
           ),
           boxShadow: [
             BoxShadow(
-              color: Colors.grey.withOpacity(0.5),
+              color: Colors.grey.withOpacity(0.75),
               spreadRadius: 5,
               blurRadius: 7,
               offset: Offset(0, 3), // changes position of shadow
@@ -1817,8 +1836,8 @@ class HomePage extends State<Home> {
 
           items: const <BottomNavigationBarItem>[
             BottomNavigationBarItem(
-              icon: Icon(Icons.home),
-              title: Text('Home'),
+              icon: Icon(Icons.shopping_basket),
+              title: Text('Market'),
             ),
             BottomNavigationBarItem(
               icon: Icon(Icons.airport_shuttle),
@@ -1844,8 +1863,7 @@ class HomePage extends State<Home> {
   }
   _launchCaller() async {
     print("call");
-    UrlLauncher.launch('tel://0512714414}');
-
-  }
+    UrlLauncher.launch('tel://0512714414');
+   }
 }
 
