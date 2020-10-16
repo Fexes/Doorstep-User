@@ -5,6 +5,7 @@ import 'package:Doorstep/models/Shops.dart';
 import 'package:Doorstep/screens/auth/sign-in.dart';
 import 'package:Doorstep/screens/first-screen.dart';
 import 'package:Doorstep/utilts/UI/DataStream.dart';
+import 'package:cache_image/cache_image.dart';
 import 'package:firebase_auth/firebase_auth.dart';
  import 'package:firebase_database/firebase_database.dart';
 import 'package:firebase_database/ui/firebase_animated_list.dart';
@@ -316,7 +317,7 @@ class _CartScreenState extends State<CartScreen> {
                                 shape: BoxShape.rectangle,
                                 borderRadius: BorderRadius.all(Radius.circular(15.0)),
                                 image: DecorationImage(
-                                  image: NetworkImage(carts[index].cardimage),
+                                  image: CacheImage(carts[index].cardimage),
                                   fit: BoxFit.cover,
                                 ),
                               ),
@@ -499,19 +500,92 @@ class _CartScreenState extends State<CartScreen> {
                           ),
                           color: Colors.redAccent,
                           onPressed: (){
-                            FirebaseDatabase database = new FirebaseDatabase();
-
-                            DatabaseReference del = database.reference();
 
 
-                            del = database.reference()
-                                .child("Cart").child(DataStream.UserId);
-                            del.remove().then((value) {
-                              carts.clear();
-                              setState(() {
+                            Dialog errorDialog = Dialog(
+                              shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12.0)), //this right here
+                              child: Container(
+                                height: 180.0,
+                                width: screenWidth(context),
 
-                              });
-                            });
+                                child: Column(
+                                  mainAxisAlignment: MainAxisAlignment.center,
+                                  children: <Widget>[
+                                    SizedBox(height: 20,),
+
+                                    Padding(
+                                      padding:  EdgeInsets.all(1.0),
+                                      child: Text('Clear Cart', style: TextStyle(color: Colors.red,fontSize: 18,fontWeight: FontWeight.w500),),
+                                    ),
+                                    // SizedBox(height: 20,),
+
+
+                                    Padding(
+                                      padding:  EdgeInsets.all(20.0),
+                                      child: Text('Are yoy sure you want to clear your Cart ?', style: TextStyle(color: Colors.black,fontSize: 14),),
+                                    ),
+
+
+
+                                    SizedBox(height: 10,),
+                                    Row(
+                                      mainAxisAlignment: MainAxisAlignment.end,
+                                      crossAxisAlignment: CrossAxisAlignment.end,
+                                      children: [
+                                        FlatButton(
+
+                                            onPressed: (){
+                                              Navigator.of(context).pop();
+
+                                            },
+                                            child: Text('Dismiss', style: TextStyle(color: Colors.grey, fontSize: 14.0),)),
+
+                                        FlatButton(onPressed: (){
+
+
+                                          FirebaseDatabase database = new FirebaseDatabase();
+
+                                          DatabaseReference del = database.reference();
+
+
+                                          del = database.reference()
+                                              .child("Cart").child(DataStream.UserId);
+                                          del.remove().then((value) {
+                                            carts.clear();
+                                            Navigator.of(context).pop();
+
+                                            setState(() {
+
+                                            });
+                                          });
+
+
+
+
+                                        },
+                                            child: Text('Clear', style: TextStyle(color: Colors.redAccent, fontSize: 14.0),)),
+                                      ],
+                                    )
+                                  ],
+                                ),
+                              ),
+                            );
+
+
+
+                              showDialog(context: context,
+                                  builder: (
+                                      BuildContext context) => errorDialog);
+
+
+
+
+
+
+
+
+
+
 
 
                           },
@@ -546,7 +620,7 @@ class _CartScreenState extends State<CartScreen> {
                           color: Colors.green,
                           onPressed: (){
 
-                            if(calSubtotal() >= 200) {
+                            if(calSubtotal() >= 200 ||  DataStream.order_count>3) {
                               Navigator.of(context).pushReplacement(
                                   MaterialPageRoute(
                                       builder: (context) => CheckOutScreen())).then((value) {setupCart();});

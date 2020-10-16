@@ -3,6 +3,7 @@ import 'dart:math';
 
  import 'package:Doorstep/models/Shops.dart';
 import 'package:Doorstep/utilts/UI/DataStream.dart';
+import 'package:cache_image/cache_image.dart';
  import 'package:firebase_database/firebase_database.dart';
 import 'package:firebase_database/ui/firebase_animated_list.dart';
 import 'package:flutter_spinkit/flutter_spinkit.dart';
@@ -151,7 +152,7 @@ class _ShopsScreenState extends State<ShopsScreen> {
     final endTime = DateTime(currentTime.year, currentTime.month, currentTime.day,int.parse(close.split(":")[0]) , int.parse(close.split(":")[1]));
 
     if(startTime.isBefore(endTime)) {
-      print("day shop");
+     // print("day shop");
 
       if (currentTime.isBefore(startTime) || currentTime.isAfter(endTime)) {
         return false;
@@ -163,7 +164,7 @@ class _ShopsScreenState extends State<ShopsScreen> {
       }
     }else{
 
-      print("night shop");
+     // print("night shop");
 
       if (currentTime.isAfter(startTime) || currentTime.isBefore(endTime)) {
 
@@ -234,7 +235,6 @@ class _ShopsScreenState extends State<ShopsScreen> {
                      if(map!=null) {
                       shops.clear();
 
-
                       map.forEach((dynamic, v)  {
 
                         //  Shops(this.key,this.shopid,this.shopcategory,this.shopdiscription,this.shopimage,this.shopname,this.location);
@@ -304,7 +304,7 @@ class _ShopsScreenState extends State<ShopsScreen> {
                                 shape: BoxShape.rectangle,
                                 borderRadius: BorderRadius.all(Radius.circular(15.0)),
                                 image: DecorationImage(
-                                  image: NetworkImage(shops[index].shopimage),
+                                  image: CacheImage(shops[index].shopimage),
                                   fit: BoxFit.cover,
                                 ),
                               ),
@@ -328,6 +328,7 @@ class _ShopsScreenState extends State<ShopsScreen> {
                                         tileMode: TileMode.clamp),
 
                                   ),
+
                                   child: Padding(
                                     padding: EdgeInsets.all(10),
                                     child: Column(
@@ -336,11 +337,11 @@ class _ShopsScreenState extends State<ShopsScreen> {
                                       children: [
                                         Text(
                                           shops[index].shopname,
-                                          style: TextStyle(fontSize: 30, fontWeight: FontWeight.w500,color: Colors.white),
+                                          style: TextStyle(fontSize: 24, fontWeight: FontWeight.w500,color: Colors.white),
                                         ),
                                         Text(
                                           shops[index].shopdiscription,
-                                          style: TextStyle(fontSize: 20, fontWeight: FontWeight.w300,color: Colors.white),
+                                          style: TextStyle(fontSize: 16, fontWeight: FontWeight.w200,color: Colors.white),
                                         ),
 
 

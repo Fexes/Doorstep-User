@@ -10,9 +10,10 @@ class Product {
   String carddiscription;
   String unit;
   String category;
+  String stock;
 
 
-  Product(this.key,this.cardid,this.cardname,this.cardimage,this.cardprice,this.carddiscription,this.unit,this.category);
+  Product(this.key,this.cardid,this.cardname,this.cardimage,this.cardprice,this.carddiscription,this.unit,this.category,this.stock);
 
 
   Product.fromSnapshot(DataSnapshot snapshot):
@@ -23,7 +24,9 @@ class Product {
         cardprice = snapshot.value["cardprice"],
         carddiscription = snapshot.value["carddiscription"],
         unit = snapshot.value["unit"],
-        category = snapshot.value["category"];
+        category = snapshot.value["category"],
+        stock = snapshot.value["stock"];
+
 
 
   toJson() {
@@ -36,6 +39,7 @@ class Product {
       "carddiscription": carddiscription,
       "unit": unit,
       "category": category,
+      "stock": stock,
 
     };
   }

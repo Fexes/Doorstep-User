@@ -1,3 +1,4 @@
+import 'package:Doorstep/models/AppUser.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 
@@ -11,7 +12,9 @@ class DataStream{
   static String googleAPIKey ="AIzaSyBoLgH-s1XnyhCQ2PZEUbIaH_Jj2RKhMSU";
 
    static LatLng userlocation;
+  static String userAddress="";
 
+  static AppUser appuser;
 
   static String ShopId;
   static String ShopCatagory;
@@ -21,6 +24,7 @@ class DataStream{
   static int Discount=0;
   static int MinOrder=0;
 
+  static int order_count=0;
 
 
 }

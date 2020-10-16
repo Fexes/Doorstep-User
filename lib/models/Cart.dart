@@ -35,7 +35,6 @@ class Cart {
       "cardimage": cardimage,
       "cardprice": cardprice,
       "no_of_items": no_of_items,
-
       "shopcatagory": shopcatagory,
       "shopid": shopid,
       "unit": unit,

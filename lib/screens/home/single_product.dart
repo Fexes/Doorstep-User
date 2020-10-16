@@ -204,13 +204,19 @@ class _SingleProductState extends State<SingleProduct> {
                 children: [
 
                   Padding(
-                    padding: EdgeInsets.all(10),
+                    padding: EdgeInsets.all(14),
                     child: Container(
                       height: 250,
                       width: double.infinity,
 
                       decoration: BoxDecoration(
-
+                        boxShadow: [
+                          BoxShadow(
+                            color:  Colors.grey.withOpacity(0.5),
+                            spreadRadius: 5,
+                            blurRadius: 7,
+                          ),
+                        ],
                         shape: BoxShape.rectangle,
                         borderRadius: BorderRadius.all(Radius.circular(15.0)),
                         image: DecorationImage(

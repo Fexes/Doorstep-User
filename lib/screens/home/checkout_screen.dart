@@ -91,23 +91,35 @@ class _CheckOutScreenState extends State<CheckOutScreen> {
 
 
   }
+  FocusNode _focusNode;
 
 
   @override
   void dispose() {
     super.dispose();
-   }
+    _focusNode.dispose();
+
+  }
   Dialog loadingdialog;
 
+  _onOnFocusNodeEvent() {
+    setState(() {
+      // Re-renders
+    });
+  }
 
   @override
     initState()   {
     super.initState();
     carts = new List();
 
+    _focusNode = new FocusNode();
+    _focusNode.addListener(_onOnFocusNodeEvent);
+    _add();
 
     getodercount();
   }
+
   void getodercount(){
     final locationDbRef = FirebaseDatabase.instance.reference().child("User Orders").child(DataStream.UserId).child("Order Count");
 
@@ -185,6 +197,7 @@ class _CheckOutScreenState extends State<CheckOutScreen> {
 
   }
 
+  String useraddress = "";
 
   _onEntryChanged(Event event) {
     var old = carts.singleWhere((entry) {
@@ -525,40 +538,112 @@ class _CheckOutScreenState extends State<CheckOutScreen> {
                                     ),
                                     SizedBox(height: 15,),
 
-                                    GestureDetector(
-                                      onTap:(){
-                                        addLocation();
-                                      },
-                                      child: Row(
-                                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                                    Center(
+                                      child: Column(
+                                        mainAxisAlignment: MainAxisAlignment.center,
                                         crossAxisAlignment:CrossAxisAlignment.center,
+
                                         children: [
-                                          Column(
-                                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                                            crossAxisAlignment:CrossAxisAlignment.start,
-
-                                            children: [
-                                              Text(
-                                                'Delivery Location',
-                                                style: TextStyle(fontSize: 16, fontWeight: FontWeight.w300,color: Colors.black),
-                                              ),
-                                              SizedBox(height: 5,),
-
-                                              Container(
-                                                width:screenWidth(context)/1.5,
-                                                child: Text(
-                                                  '${Useraddress}',
-                                                  maxLines:5,
-                                                  style: TextStyle(fontSize: 16, fontWeight: FontWeight.w300,color: Colors.black),
-                                                ),
-                                              ),
-
-                                            ],
+                                          Text(
+                                            'Delivery Location',
+                                            style: TextStyle(fontSize: 16, fontWeight: FontWeight.w300,color: Colors.black),
                                           ),
-                                          Icon(Icons.keyboard_arrow_right,color: Colors.redAccent,size: 40,)
+                                          SizedBox(height: 15,),
+
+
+                                          Container(
+                                            height:150,
+                                           // width:screenWidth(context)-0,
+                                            decoration: BoxDecoration(
+                                              color: Colors.white,
+
+                                              boxShadow: [
+                                                BoxShadow(
+                                                  color: Colors.grey.withOpacity(0.5),
+                                                  spreadRadius: 3,
+                                                  blurRadius: 5,
+                                                ),
+                                              ],
+                                            ),
+                                            child: GoogleMap(
+                                            //  myLocationEnabled: false,
+
+                                              //  compassEnabled: false,
+
+                                            //  tiltGesturesEnabled: false,
+                                              myLocationButtonEnabled: false,
+                                               mapType: MapType.normal,
+
+                                              initialCameraPosition:CameraPosition(target: DataStream.userlocation, zoom: 14),
+                                              onMapCreated: (GoogleMapController controller) {
+                                                onMapCreated(controller);
+                                              },
+                                               markers: Set<Marker>.of(markers.values),
+                                            ),
+                                          ),
+
                                         ],
                                       ),
                                     ),
+
+                                    SizedBox(height: 15,),
+
+                                    Form(
+                                      key: _formKey,
+
+                                      child: Container(
+                                        margin: EdgeInsets.only(bottom: 18.0),
+                                        child: Row(
+                                          children: <Widget>[
+                                            Icon(Icons.home),
+                                            //   Image.asset("assets/icons/user-grey.png", height: 16.0, width: 16.0,),
+                                            Container(
+                                              width: screenWidth(context)*0.7,
+                                              child: TextFormField(
+                                                cursorColor: primaryDark, cursorRadius: Radius.circular(1.0), cursorWidth: 1.0,
+                                                keyboardType: TextInputType.text,
+                                                 onSaved: (String value) => useraddress = value,
+                                                onChanged: (text) {
+
+                                                  if(text.length>5){
+                                                    isaddressaded=true;
+                                                  }else{
+                                                    isaddressaded=false;
+
+                                                  }
+
+                                                  useraddress = text.toString();
+
+                                                  setState(() {
+
+                                                  });
+                                                 },
+                                                validator: (String value) {
+                                                  if(value.isEmpty)
+                                                    return 'Please Enter Your Address';
+                                                  else
+                                                    return null;
+                                                },
+                                                decoration: InputDecoration(
+                                                  contentPadding: EdgeInsets.only(left: 10.0, right: 0.0, top: 10.0, bottom: 12.0),
+                                                  border: OutlineInputBorder(
+                                                      borderSide: BorderSide.none
+                                                  ),
+                                                  labelText: "House Address",
+                                                ),
+                                                focusNode: _focusNode,
+                                              ),
+                                            ),
+                                          ],
+                                        ),
+                                        decoration: new BoxDecoration(
+                                          border: new Border(
+                                            bottom: BorderSide(color: _focusNode.hasFocus ? primaryDark : border, style: BorderStyle.solid, width: 2.0),
+                                          ),
+                                        ),
+                                      ),
+                                    ),
+
                                     SizedBox(height: 15,),
                                     Container(
                                       height: 1,
@@ -717,7 +802,7 @@ class _CheckOutScreenState extends State<CheckOutScreen> {
                             'orderTime': time.format(now),
                             'phonenumber':DataStream.PhoneNumber,
                             'orderID': orderID,
-                            'address': Useraddress,
+                            'address': Useraddress+"\n"+useraddress,
                             'location':"${deliverylocation.latitude},${deliverylocation.longitude}",
 
                           }).then((value) {
@@ -738,7 +823,7 @@ class _CheckOutScreenState extends State<CheckOutScreen> {
                                 'orderTime': time.format(now),
                                 'phonenumber': DataStream.PhoneNumber,
                                 'orderID': orderID,
-                                'address': Useraddress,
+                                'address': Useraddress+"\n"+useraddress,
                                 'location': "${deliverylocation
                                     .latitude},${deliverylocation.longitude}",
 
@@ -780,7 +865,7 @@ class _CheckOutScreenState extends State<CheckOutScreen> {
                                   'orderTime': time.format(now),
                                   'phonenumber': DataStream.PhoneNumber,
                                   'orderID': orderID,
-                                  'address': Useraddress,
+                                  'address': Useraddress+"\n"+useraddress,
                                   'location': "${deliverylocation
                                       .latitude},${deliverylocation.longitude}",
 
@@ -818,7 +903,7 @@ class _CheckOutScreenState extends State<CheckOutScreen> {
                                     'orderTime': time.format(now),
                                     'phonenumber': DataStream.PhoneNumber,
                                     'orderID': orderID,
-                                    'address': Useraddress,
+                                    'address': Useraddress+"\n"+useraddress,
                                     'location': "${deliverylocation
                                         .latitude},${deliverylocation.longitude}",
 
@@ -879,7 +964,12 @@ class _CheckOutScreenState extends State<CheckOutScreen> {
                           });
 
                         }else{
-                          ToastUtils.showCustomToast(context, "Add Delivery Location", null);
+                          ToastUtils.showCustomToast(context, "Add House Address", null);
+                          final FormState form = _formKey.currentState;
+                          if (!form.validate()) {
+                            return;
+                          }
+
                         }
 
                       },
@@ -927,9 +1017,9 @@ class _CheckOutScreenState extends State<CheckOutScreen> {
 
   String getRandomString(int length) => String.fromCharCodes(Iterable.generate(
       length, (_) => _chars.codeUnitAt(_rnd.nextInt(_chars.length))));
-  String Useraddress="Add Location";
+  String Useraddress=DataStream.userAddress;
   bool isaddressaded=false;
-  LatLng deliverylocation;
+  LatLng deliverylocation=DataStream.userlocation;
   Future<void> addLocation() async {
 
 
@@ -953,10 +1043,32 @@ class _CheckOutScreenState extends State<CheckOutScreen> {
 
         });
       }
+  }
+  Completer<GoogleMapController> _controller = Completer();
+
+  void onMapCreated(GoogleMapController controller) {
+    _controller.complete(controller);
 
 
+  }
+  Map<MarkerId, Marker> markers = <MarkerId, Marker>{}; // CLASS MEMBER, MAP OF MARKS
+  final GlobalKey<FormState> _formKey = GlobalKey<FormState>();
 
+  void _add() {
+    var markerIdVal = "marker";
+    final MarkerId markerId = MarkerId(markerIdVal);
 
+    // creating a new MARKER
+    final Marker marker = Marker(
+      markerId: markerId,
+      position: DataStream.userlocation,
+
+    );
+
+    setState(() {
+      // adding a new marker to map
+      markers[markerId] = marker;
+    });
   }
 
 }

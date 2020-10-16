@@ -4,6 +4,7 @@ import 'package:Doorstep/models/Banners.dart';
 import 'package:Doorstep/models/Cart.dart';
 import 'package:Doorstep/models/Order.dart';
 import 'package:Doorstep/models/Shops.dart';
+import 'package:Doorstep/models/AppUser.dart';
 import 'package:Doorstep/screens/auth/sign-in.dart';
 import 'package:Doorstep/screens/home/shops_screen.dart';
 import 'package:Doorstep/utilts/UI/DataStream.dart';
@@ -17,6 +18,8 @@ import 'package:Doorstep/utilts/UI/toast_utility.dart';
 import 'package:flutter/material.dart';
 import 'package:Doorstep/styles/styles.dart';
 import 'package:Doorstep/screens/auth/sign-up.dart';
+import 'package:google_map_location_picker/google_map_location_picker.dart';
+import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:rate_my_app/rate_my_app.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'dart:async';
@@ -100,10 +103,17 @@ class HomePage extends State<Home> {
     super.dispose();
 
   }
+
+  bool profileedit =false;
   List<Cart> carts;
 
   Dialog loadingdialog;
   FirebaseUser user=null;
+
+  final firstname = TextEditingController();
+  final lasename = TextEditingController();
+   final email = TextEditingController();
+
   @override
   Future<void> initState()  {
     super.initState();
@@ -118,6 +128,8 @@ class HomePage extends State<Home> {
         setupCart();
         setupBanner();
         getodercount();
+
+         getUserDetails();
 
       }else{
          setupBanner();
@@ -135,9 +147,9 @@ class HomePage extends State<Home> {
       if(value.value!=null){
 
         print(value.value["no_of_orders"]);
-        order_count = value.value['no_of_orders'];
+        DataStream.order_count = value.value['no_of_orders'];
 
-        if (order_count < 3) {
+        if (DataStream.order_count < 3) {
           DataStream.DeliverCharges = 0;
           DataStream.Discount = 100;
           DataStream.MinOrder = 200;
@@ -155,7 +167,7 @@ class HomePage extends State<Home> {
           );
         }
       }else{
-        if (order_count < 3) {
+        if (DataStream.order_count < 3) {
           DataStream.DeliverCharges = 0;
           DataStream.Discount = 100;
           DataStream.MinOrder = 200;
@@ -177,8 +189,7 @@ class HomePage extends State<Home> {
     }
     );
   }
-  int order_count=0;
-  List<Order> orders;
+   List<Order> orders;
   List<Banners> banners;
 
   DatabaseReference volunteerRef;
@@ -206,6 +217,31 @@ class HomePage extends State<Home> {
     });
 
   }
+
+  AppUser appuser=DataStream.appuser;
+  void getUserDetails(){
+
+    appuser= new AppUser("","","","");
+
+    final locationDbRef = FirebaseDatabase.instance.reference().child("Users").child(DataStream.UserId);
+
+    locationDbRef.once().then((value) async {
+      if(value.value!=null){
+        appuser= new AppUser(value.value["first_name"], value.value["last_name"],value.value["phone"] , value.value["email"]);
+        setState(() {
+
+        });
+      }else{
+
+      }
+
+
+
+    }
+    );
+
+  }
+
   void setupCart(){
 
     orders = new List();
@@ -253,36 +289,56 @@ class HomePage extends State<Home> {
                     borderRadius: BorderRadius.all(Radius.circular(10.0)),
                     child: Stack(
                       children: <Widget>[
-                        Image.network(
-                            item, fit: BoxFit.cover, width: 1000.0),
-                        Positioned(
-                          bottom: 0.0,
-                          left: 0.0,
-                          right: 0.0,
+                        Padding(
+                          padding: const EdgeInsets.all(12.0),
                           child: Container(
                             decoration: BoxDecoration(
-                              gradient: LinearGradient(
-                                colors: [
-                                  Color.fromARGB(200, 0, 0, 0),
-                                  Color.fromARGB(0, 0, 0, 0)
-                                ],
-                                begin: Alignment.bottomCenter,
-                                end: Alignment.topCenter,
-                              ),
-
+                              boxShadow: [
+                                BoxShadow(
+                                  color:  Colors.grey.withOpacity(0.9),
+                                  spreadRadius: 5,
+                                  blurRadius: 7,
+                                ),
+                              ],
                             ),
-                            padding: EdgeInsets.symmetric(
-                                vertical: 10.0, horizontal: 20.0),
-                            //                    child: Text(
-                            //                      'No. ${imgList.indexOf(item)} image',
-                            //                      style: TextStyle(
-                            //                        color: Colors.white,
-                            //                        fontSize: 20.0,
-                            //                        fontWeight: FontWeight.bold,
-                            //                      ),
-                            //                    ),
+                                child: Image.network(
+                                  item, fit: BoxFit.cover, width: 1000.0),
+
                           ),
                         ),
+
+
+                        // Positioned(
+                        //   bottom: 0.0,
+                        //   left: 0.0,
+                        //   right: 0.0,
+                        //   child: Container(
+                        //     decoration: BoxDecoration(
+                        //
+                        //
+                        //
+                        //       // gradient: LinearGradient(
+                        //       //   colors: [
+                        //       //     Color.fromARGB(200, 0, 0, 0),
+                        //       //     Color.fromARGB(0, 0, 0, 0)
+                        //       //   ],
+                        //       //   begin: Alignment.bottomCenter,
+                        //       //   end: Alignment.topCenter,
+                        //       // ),
+                        //
+                        //     ),
+                        //     padding: EdgeInsets.symmetric(
+                        //         vertical: 10.0, horizontal: 20.0),
+                        //     //                    child: Text(
+                        //     //                      'No. ${imgList.indexOf(item)} image',
+                        //     //                      style: TextStyle(
+                        //     //                        color: Colors.white,
+                        //     //                        fontSize: 20.0,
+                        //     //                        fontWeight: FontWeight.bold,
+                        //     //                      ),
+                        //     //                    ),
+                        //   ),
+                        // ),
                       ],
                     )
                 ),
@@ -384,6 +440,172 @@ class HomePage extends State<Home> {
                       ):
                      SizedBox(height: 5,),
 
+
+                      Padding(
+                        padding: const EdgeInsets.all(15.0),
+                        child: Container(
+                          decoration: BoxDecoration(
+                            color: Colors.white,
+                            borderRadius: BorderRadius.only(
+                                topLeft: Radius.circular(10),
+                                topRight: Radius.circular(10),
+                                bottomLeft: Radius.circular(10),
+                                bottomRight: Radius.circular(10)
+                            ),
+                            boxShadow: [
+                              BoxShadow(
+                                color: Colors.grey.withOpacity(0.75),
+                                spreadRadius: 5,
+                                blurRadius: 7,
+                                offset: Offset(0, 3),
+                              ),
+                            ],
+                          ),
+                          width: screenWidth(context)-10,
+                          child: Padding(
+                            padding: EdgeInsets.all(15),
+                            child: Column(
+                              crossAxisAlignment:CrossAxisAlignment.start,
+                              children: [
+
+                                Row(
+                                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                                  children: [
+
+                                    Row(
+                                      children: [
+                                        Icon(Icons.location_on),
+                                        SizedBox(width: 10,),
+
+                                        Container(
+                                          width: screenWidth(context)/1.7,
+                                          child: Text(
+
+                                            PickedAddress,
+                                            style: TextStyle(fontSize: 12, fontWeight: FontWeight.w300,color: Colors.black),
+                                            textAlign: TextAlign.left,
+                                            maxLines: 4,
+                                          ),
+                                        ),
+                                      ],
+                                    ),
+                                    GestureDetector(
+                                      onTap: (){
+
+                                        Dialog errorDialog = Dialog(
+                                          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12.0)), //this right here
+                                          child: Container(
+                                            height: 180.0,
+                                            width: screenWidth(context),
+
+                                            child: Column(
+                                              mainAxisAlignment: MainAxisAlignment.center,
+                                              children: <Widget>[
+                                                SizedBox(height: 20,),
+
+                                                Padding(
+                                                  padding:  EdgeInsets.all(1.0),
+                                                  child: Text('Change Location', style: TextStyle(color: Colors.red,fontSize: 18,fontWeight: FontWeight.w500),),
+                                                ),
+                                               // SizedBox(height: 20,),
+
+
+                                                Padding(
+                                                  padding:  EdgeInsets.all(20.0),
+                                                  child: Text('Changing your location will clear your Cart are you sure you want to change your Location ?', style: TextStyle(color: Colors.black,fontSize: 14),),
+                                                ),
+
+
+
+                                                SizedBox(height: 10,),
+                                                Row(
+                                                  mainAxisAlignment: MainAxisAlignment.end,
+                                                  crossAxisAlignment: CrossAxisAlignment.end,
+                                                  children: [
+                                                    FlatButton(
+
+                                                        onPressed: (){
+                                                          Navigator.of(context).pop();
+
+                                                        },
+                                                        child: Text('Dismiss', style: TextStyle(color: Colors.grey, fontSize: 14.0),)),
+
+                                                    FlatButton(onPressed: (){
+
+                                                        FirebaseDatabase database = new FirebaseDatabase();
+
+                                                        DatabaseReference del = database
+                                                            .reference();
+
+
+                                                        del =
+                                                            database.reference()
+                                                                .child("Cart")
+                                                                .child(
+                                                                DataStream
+                                                                    .UserId);
+                                                        del.remove().then((
+                                                            value) {
+                                                          carts.clear();
+                                                          Navigator.of(context)
+                                                              .pop();
+
+                                                          addLocation();
+
+                                                          setState(() {
+
+                                                          });
+                                                        });
+
+
+                                                    },
+                                                        child: Text('Change Location', style: TextStyle(color: Colors.redAccent, fontSize: 14.0),)),
+                                                  ],
+                                                )
+                                              ],
+                                            ),
+                                          ),
+                                        );
+
+
+                                              if(carts.length>0) {
+                                                showDialog(context: context,
+                                                    builder: (
+                                                        BuildContext context) => errorDialog);
+                                              }else{
+                                                addLocation();
+
+                                              }
+
+
+                                        setState(() {
+
+                                        });
+                                      },
+
+
+                                      child: Text(
+                                        'Change',
+                                        style: TextStyle(fontSize: 16, fontWeight: FontWeight.w600,color: Colors.green),
+                                      ),
+                                    ),
+
+                                  ],
+                                ),
+                                //SizedBox(height: 20,),
+
+
+
+
+
+                              ],
+                            ),
+                          ),
+
+                        ),
+                      ),
+
+
                       GestureDetector(
                         onTap: (){
                           DataStream.ShopCatagory="Supermarkets";
@@ -395,6 +617,13 @@ class HomePage extends State<Home> {
                           child: Container(
                             height: 170,
                             decoration: BoxDecoration(
+                              boxShadow: [
+                                BoxShadow(
+                                  color:  Colors.grey.withOpacity(0.9),
+                                  spreadRadius: 2,
+                                  blurRadius: 3,
+                                ),
+                              ],
                               shape: BoxShape.rectangle,
                               borderRadius: BorderRadius.all(Radius.circular(15.0)),
                               image: DecorationImage(
@@ -408,6 +637,7 @@ class HomePage extends State<Home> {
 
                                 height: 100,
                                 decoration: BoxDecoration(
+                                
                                   shape: BoxShape.rectangle,
                                   borderRadius: BorderRadius.all(Radius.circular(15.0)),
                                   gradient: new LinearGradient(
@@ -415,6 +645,7 @@ class HomePage extends State<Home> {
                                         Colors.black.withOpacity(0.75)
 ,
                                             const Color(0x10000000),
+
                                       ],
                                       begin: const FractionalOffset(0.0, 0.0),
                                       end: const FractionalOffset(0.0, 1.0),
@@ -462,7 +693,13 @@ class HomePage extends State<Home> {
                                 width: ((screenWidth(context)/2))-15,
 
                                 decoration: BoxDecoration(
-
+                                  boxShadow: [
+                                BoxShadow(
+                                  color:  Colors.grey.withOpacity(0.9),
+                                  spreadRadius: 2,
+                                  blurRadius: 3,
+                                ),
+                              ],
                                   shape: BoxShape.rectangle,
                                   borderRadius: BorderRadius.all(Radius.circular(15.0)),
                                   image: DecorationImage(
@@ -477,12 +714,12 @@ class HomePage extends State<Home> {
 
                                     height: 100,
                                     decoration: BoxDecoration(
+
                                       shape: BoxShape.rectangle,
                                       borderRadius: BorderRadius.all(Radius.circular(15.0)),
                                       gradient: new LinearGradient(
                                           colors: [
-                                            Colors.black.withOpacity(0.75)
-,
+                                            Colors.black.withOpacity(0.75),
                                             const Color(0x10000000),
                                           ],
                                           begin: const FractionalOffset(0.0, 0.0),
@@ -527,7 +764,13 @@ class HomePage extends State<Home> {
 
 
                                 decoration: BoxDecoration(
-
+                                  boxShadow: [
+                                BoxShadow(
+                                  color:  Colors.grey.withOpacity(0.9),
+                                  spreadRadius: 2,
+                                  blurRadius: 3,
+                                ),
+                              ],
                                   shape: BoxShape.rectangle,
                                   borderRadius: BorderRadius.all(Radius.circular(15.0)),
                                   image: DecorationImage(
@@ -541,6 +784,7 @@ class HomePage extends State<Home> {
 
                                     height: 100,
                                     decoration: BoxDecoration(
+
                                       shape: BoxShape.rectangle,
                                       borderRadius: BorderRadius.all(Radius.circular(15.0)),
                                       gradient: new LinearGradient(
@@ -590,6 +834,13 @@ class HomePage extends State<Home> {
                           child: Container(
                             height: 170,
                             decoration: BoxDecoration(
+                                boxShadow: [
+                                BoxShadow(
+                                  color:  Colors.grey.withOpacity(0.9),
+                                  spreadRadius: 2,
+                                  blurRadius: 3,
+                                ),
+                              ],
                               shape: BoxShape.rectangle,
                               borderRadius: BorderRadius.all(Radius.circular(15.0)),
                               image: DecorationImage(
@@ -657,7 +908,13 @@ class HomePage extends State<Home> {
 
 
                                 decoration: BoxDecoration(
-
+                                  boxShadow: [
+                                BoxShadow(
+                                  color:  Colors.grey.withOpacity(0.9),
+                                  spreadRadius: 2,
+                                  blurRadius: 3,
+                                ),
+                              ],
                                   shape: BoxShape.rectangle,
                                   borderRadius: BorderRadius.all(Radius.circular(15.0)),
                                   image: DecorationImage(
@@ -720,7 +977,13 @@ class HomePage extends State<Home> {
 
 
                                 decoration: BoxDecoration(
-
+                                  boxShadow: [
+                                BoxShadow(
+                                  color:  Colors.grey.withOpacity(0.9),
+                                  spreadRadius: 2,
+                                  blurRadius: 3,
+                                ),
+                              ],
                                   shape: BoxShape.rectangle,
                                   borderRadius: BorderRadius.all(Radius.circular(15.0)),
                                   image: DecorationImage(
@@ -794,15 +1057,13 @@ class HomePage extends State<Home> {
 //                      ),
 //                      child: FloatingActionButton(
 //                        onPressed: (){
-//                           Navigator.push( context, MaterialPageRoute( builder: (BuildContext context) => CartScreen(),),).then((value) {setupCart();});
-//
+//                           Navigator.push( context, MaterialPageRoute( builder: (BuildContext context) => CartScreen(),),).then((value) {setupCart();})
 //                        },
 //
 //                        child: Icon(Icons.shopping_cart),
 //                      ),
 //                    ),
 //                  ):SizedBox(height: 1,)
-
                 ],
               ),
             ),
@@ -1011,99 +1272,150 @@ class HomePage extends State<Home> {
                                       color: Colors.redAccent,
                                       onPressed: (){
 
-                                         FirebaseDatabase database = new FirebaseDatabase();
-                                        DatabaseReference _userRef = database.reference()
-                                            .child("User Orders").child(DataStream.UserId).child("History").child(orders[index].orderID);
-
-                                         DatabaseReference _adminRef = database.reference()
-                                             .child("Admin").child("Orders").child("History").child(orders[index].orderID);
-
-
-
-                                         _userRef.set(<dynamic, dynamic>{
-                                          'no_of_items': orders[index].no_of_items,
-                                          'userID':orders[index].userID,
-                                          'bill': orders[index].bill,
-                                          'status': 'cancelled',
-                                          'orderDate':orders[index].orderDate,
-                                          'orderTime': orders[index].orderTime,
-                                          'phonenumber' :orders[index].phonenumber,
-                                          'orderID': orders[index].orderID,
-                                          'address': orders[index].address,
-                                          'location':orders[index].location,
-
-                                        }).then((value) {
-
-                                          FirebaseDatabase database = new FirebaseDatabase();
-                                          DatabaseReference _userRef = database.reference()
-                                              .child("User Orders").child(DataStream.UserId).child("History").child(orders[index].orderID);
-
-
-
-                                          volunteerRef = database.reference().child("User Orders").child(DataStream.UserId).child("Active").child(orders[index].orderID).child("items");
-                                          volunteerRef.onChildAdded.listen((event) {
-
-                                           // ordereditems.add(Cart.fromSnapshot(event.snapshot));
-
-                                         //   print("Shops."+Cart.fromSnapshot(event.snapshot).town+"."+Cart.fromSnapshot(event.snapshot).shopcatagory+"."+Cart.fromSnapshot(event.snapshot).shopid+" orders."+"active."+orders[index].orderID);
-
-                                            _userRef.child("items").push().set(<dynamic, dynamic>{
-                                              'no_of_items': Cart.fromSnapshot(event.snapshot).no_of_items,
-                                              'cardid': Cart.fromSnapshot(event.snapshot).cardid.toString(),
-                                              'cardname': Cart.fromSnapshot(event.snapshot).cardname.toString(),
-                                              'cardimage': Cart.fromSnapshot(event.snapshot).cardimage.toString(),
-                                              'cardprice': Cart.fromSnapshot(event.snapshot).cardprice,
-                                              'unit': Cart.fromSnapshot(event.snapshot).unit,
-                                              'shopcatagory': Cart.fromSnapshot(event.snapshot).shopcatagory,
-                                              'shopid': Cart.fromSnapshot(event.snapshot).shopid,
-
-                                            }).then((value) {
-                                              try{
-
-                                                DatabaseReference del = database.reference();
-                                                del = database.reference()
-                                                    .child("Shops")
-
-                                                    .child(Cart.fromSnapshot(event.snapshot).shopcatagory)
-                                                    .child(Cart.fromSnapshot(event.snapshot).shopid)
-                                                    .child("Orders").child(
-                                                    "Active")
-                                                    .child(orders[index].orderID);
-                                                del.remove().then((value) {
-                                                  DatabaseReference cancel = database.reference();
-                                                  cancel = database.reference()
-                                                      .child("Shops")
-
-                                                      .child(Cart.fromSnapshot(event.snapshot).shopcatagory)
-                                                      .child(Cart.fromSnapshot(event.snapshot).shopid)
-                                                      .child("Orders").child(
-                                                      "History")
-                                                      .child(orders[index].orderID);
-
-                                                  cancel.update(<String, dynamic>{
-                                                    'status': 'cancelled',
-
-                                                  });
-                                                });
-                                                print("removed");
-
-                                              }catch(e){
-                                                print(e);
-
-                                                print("err");
-                                              }
-                                            });
-
-
-
-                                          });
 
 
 
 
-                                        }).then((value) {
 
-                                          DatabaseReference del = database.reference();
+                                        Dialog errorDialog = Dialog(
+                                          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12.0)), //this right here
+                                          child: Container(
+                                            height: 200.0,
+                                            width: screenWidth(context),
+
+                                            child: Column(
+                                              mainAxisAlignment: MainAxisAlignment.center,
+                                              children: <Widget>[
+                                                SizedBox(height: 20,),
+
+                                                Padding(
+                                                  padding:  EdgeInsets.all(1.0),
+                                                  child: Text('Cancel Order  #${orders[index].orderID}', style: TextStyle(color: Colors.red,fontSize: 18,fontWeight: FontWeight.w500),),
+                                                ),
+                                                SizedBox(height: 20,),
+
+
+                                                Padding(
+                                                  padding:  EdgeInsets.all(1.0),
+                                                  child: Text('Are you sure you want to cancel this order', style: TextStyle(color: Colors.black,fontSize: 14),),
+                                                ),
+
+
+
+                                                 SizedBox(height: 40,),
+                                                 Row(
+                                                  mainAxisAlignment: MainAxisAlignment.end,
+                                                  crossAxisAlignment: CrossAxisAlignment.end,
+                                                  children: [
+                                                    FlatButton(
+
+                                                        onPressed: (){
+                                                        Navigator.of(context).pop();
+
+                                                        },
+                                                        child: Text('Dismiss', style: TextStyle(color: Colors.grey, fontSize: 14.0),)),
+
+                                                    FlatButton(onPressed: (){
+
+                                                    //  Navigator.of(context).pop();
+
+
+
+
+                                                      FirebaseDatabase database = new FirebaseDatabase();
+                                                      DatabaseReference _userRef = database.reference()
+                                                          .child("User Orders").child(DataStream.UserId).child("History").child(orders[index].orderID);
+
+                                                      DatabaseReference _adminRef = database.reference()
+                                                          .child("Admin").child("Orders").child("History").child(orders[index].orderID);
+
+
+
+                                                      _userRef.set(<dynamic, dynamic>{
+                                                        'no_of_items': orders[index].no_of_items,
+                                                        'userID':orders[index].userID,
+                                                        'bill': orders[index].bill,
+                                                        'status': 'cancelled',
+                                                        'orderDate':orders[index].orderDate,
+                                                        'orderTime': orders[index].orderTime,
+                                                        'phonenumber' :orders[index].phonenumber,
+                                                        'orderID': orders[index].orderID,
+                                                        'address': orders[index].address,
+                                                        'location':orders[index].location,
+
+                                                      }).then((value) {
+
+                                                        FirebaseDatabase database = new FirebaseDatabase();
+                                                        DatabaseReference _userRef = database.reference()
+                                                            .child("User Orders").child(DataStream.UserId).child("History").child(orders[index].orderID);
+
+
+
+                                                        volunteerRef = database.reference().child("User Orders").child(DataStream.UserId).child("Active").child(orders[index].orderID).child("items");
+                                                        volunteerRef.onChildAdded.listen((event) {
+
+                                                          // ordereditems.add(Cart.fromSnapshot(event.snapshot));
+
+                                                          //   print("Shops."+Cart.fromSnapshot(event.snapshot).town+"."+Cart.fromSnapshot(event.snapshot).shopcatagory+"."+Cart.fromSnapshot(event.snapshot).shopid+" orders."+"active."+orders[index].orderID);
+
+                                                          _userRef.child("items").push().set(<dynamic, dynamic>{
+                                                            'no_of_items': Cart.fromSnapshot(event.snapshot).no_of_items,
+                                                            'cardid': Cart.fromSnapshot(event.snapshot).cardid.toString(),
+                                                            'cardname': Cart.fromSnapshot(event.snapshot).cardname.toString(),
+                                                            'cardimage': Cart.fromSnapshot(event.snapshot).cardimage.toString(),
+                                                            'cardprice': Cart.fromSnapshot(event.snapshot).cardprice,
+                                                            'unit': Cart.fromSnapshot(event.snapshot).unit,
+                                                            'shopcatagory': Cart.fromSnapshot(event.snapshot).shopcatagory,
+                                                            'shopid': Cart.fromSnapshot(event.snapshot).shopid,
+
+                                                          }).then((value) {
+                                                            try{
+
+                                                              DatabaseReference del = database.reference();
+                                                              del = database.reference()
+                                                                  .child("Shops")
+
+                                                                  .child(Cart.fromSnapshot(event.snapshot).shopcatagory)
+                                                                  .child(Cart.fromSnapshot(event.snapshot).shopid)
+                                                                  .child("Orders").child(
+                                                                  "Active")
+                                                                  .child(orders[index].orderID);
+                                                              del.remove().then((value) {
+                                                                DatabaseReference cancel = database.reference();
+                                                                cancel = database.reference()
+                                                                    .child("Shops")
+
+                                                                    .child(Cart.fromSnapshot(event.snapshot).shopcatagory)
+                                                                    .child(Cart.fromSnapshot(event.snapshot).shopid)
+                                                                    .child("Orders").child(
+                                                                    "History")
+                                                                    .child(orders[index].orderID);
+
+                                                                cancel.update(<String, dynamic>{
+                                                                  'status': 'cancelled',
+
+                                                                });
+                                                                Navigator.of(context).pop();
+                                                              });
+                                                              print("removed");
+
+                                                            }catch(e){
+                                                              print(e);
+
+                                                              print("err");
+                                                            }
+                                                          });
+
+
+
+                                                        });
+
+
+
+
+                                                      }).then((value) {
+
+                                                        DatabaseReference del = database.reference();
 
 //                                          print(ordereditems.length.toString());
 //                                          for(int i=0;i<= ordereditems.length-1;i++){
@@ -1127,76 +1439,83 @@ class HomePage extends State<Home> {
 //                                            }
 //                                          }
 
-                                          del = database.reference()
-                                              .child("User Orders").child(DataStream.UserId).child("Active").child(orders[index].orderID);
-                                          del.remove();
+                                                        del = database.reference()
+                                                            .child("User Orders").child(DataStream.UserId).child("Active").child(orders[index].orderID);
+                                                        del.remove();
 
-                                            del = database.reference()
-                                              .child("Admin").child("Orders").child("Active")
-                                               // .child(DataStream.UserId)
-                                                .child(orders[index].orderID);
-                                          del.remove();
+                                                        del = database.reference()
+                                                            .child("Admin").child("Orders").child("Active")
+                                                        // .child(DataStream.UserId)
+                                                            .child(orders[index].orderID);
+                                                        del.remove();
 
-                                        }).then((value) {
-
-
-
-
-                                           _adminRef.set(<dynamic, dynamic>{
-                                             'no_of_items': orders[index].no_of_items,
-                                             'userID':orders[index].userID,
-                                             'bill': orders[index].bill,
-                                             'status': 'cancelled',
-                                             'orderDate':orders[index].orderDate,
-                                             'orderTime': orders[index].orderTime,
-                                             'phonenumber' :orders[index].phonenumber,
-                                             'orderID': orders[index].orderID,
-                                             'address': orders[index].address,
-                                             'location':orders[index].location,
-
-                                           }).then((value) {
-
-                                             FirebaseDatabase database = new FirebaseDatabase();
-                                             DatabaseReference _userRef = database.reference()
-                                                 .child("Admin").child("Orders").child("History").child(orders[index].orderID);
-
-
-
-                                             volunteerRef = database.reference().child("User Orders").child(DataStream.UserId).child("History").child(orders[index].orderID).child("items");
-                                             volunteerRef.onChildAdded.listen((event) {
-
-                                               // ordereditems.add(Cart.fromSnapshot(event.snapshot));
-
-                                               //   print("Shops."+Cart.fromSnapshot(event.snapshot).town+"."+Cart.fromSnapshot(event.snapshot).shopcatagory+"."+Cart.fromSnapshot(event.snapshot).shopid+" orders."+"active."+orders[index].orderID);
-
-                                               _userRef.child("items").push().set(<dynamic, dynamic>{
-                                                 'no_of_items': Cart.fromSnapshot(event.snapshot).no_of_items,
-                                                 'cardid': Cart.fromSnapshot(event.snapshot).cardid.toString(),
-                                                 'cardname': Cart.fromSnapshot(event.snapshot).cardname.toString(),
-                                                 'cardimage': Cart.fromSnapshot(event.snapshot).cardimage.toString(),
-                                                 'cardprice': Cart.fromSnapshot(event.snapshot).cardprice,
-                                                 'unit': Cart.fromSnapshot(event.snapshot).unit.toString(),
-
-                                                 'shopcatagory': Cart.fromSnapshot(event.snapshot).shopcatagory,
-                                                 'shopid': Cart.fromSnapshot(event.snapshot).shopid,
-
-                                               });
-
-
-
-                                             });
+                                                      }).then((value) {
 
 
 
 
-                                           });
+                                                        _adminRef.set(<dynamic, dynamic>{
+                                                          'no_of_items': orders[index].no_of_items,
+                                                          'userID':orders[index].userID,
+                                                          'bill': orders[index].bill,
+                                                          'status': 'cancelled',
+                                                          'orderDate':orders[index].orderDate,
+                                                          'orderTime': orders[index].orderTime,
+                                                          'phonenumber' :orders[index].phonenumber,
+                                                          'orderID': orders[index].orderID,
+                                                          'address': orders[index].address,
+                                                          'location':orders[index].location,
 
-                                         });
+                                                        }).then((value) {
+
+                                                          FirebaseDatabase database = new FirebaseDatabase();
+                                                          DatabaseReference _userRef = database.reference()
+                                                              .child("Admin").child("Orders").child("History").child(orders[index].orderID);
+
+
+
+                                                          volunteerRef = database.reference().child("User Orders").child(DataStream.UserId).child("History").child(orders[index].orderID).child("items");
+                                                          volunteerRef.onChildAdded.listen((event) {
+
+                                                            // ordereditems.add(Cart.fromSnapshot(event.snapshot));
+
+                                                            //   print("Shops."+Cart.fromSnapshot(event.snapshot).town+"."+Cart.fromSnapshot(event.snapshot).shopcatagory+"."+Cart.fromSnapshot(event.snapshot).shopid+" orders."+"active."+orders[index].orderID);
+
+                                                            _userRef.child("items").push().set(<dynamic, dynamic>{
+                                                              'no_of_items': Cart.fromSnapshot(event.snapshot).no_of_items,
+                                                              'cardid': Cart.fromSnapshot(event.snapshot).cardid.toString(),
+                                                              'cardname': Cart.fromSnapshot(event.snapshot).cardname.toString(),
+                                                              'cardimage': Cart.fromSnapshot(event.snapshot).cardimage.toString(),
+                                                              'cardprice': Cart.fromSnapshot(event.snapshot).cardprice,
+                                                              'unit': Cart.fromSnapshot(event.snapshot).unit.toString(),
+
+                                                              'shopcatagory': Cart.fromSnapshot(event.snapshot).shopcatagory,
+                                                              'shopid': Cart.fromSnapshot(event.snapshot).shopid,
+
+                                                            });
+
+
+
+                                                          });
 
 
 
 
+                                                        });
 
+                                                      });
+
+
+                                                    },
+                                                        child: Text('Cancel Order', style: TextStyle(color: Colors.redAccent, fontSize: 14.0),)),
+                                                  ],
+                                                )
+                                              ],
+                                            ),
+                                          ),
+                                        );
+
+                                        showDialog(context: context, builder: (BuildContext context) => errorDialog);
 
 
                                       },
@@ -1566,16 +1885,18 @@ class HomePage extends State<Home> {
           child: Column(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
              children: [
-                              SizedBox(height: 5,),
 
 
 
-                Column(
+
+               Column(
                   children: [
+                    appuser==null?
+                    SizedBox(height: 10,):
 
 
                     Padding(
-                      padding: const EdgeInsets.all(15.0),
+                      padding: const EdgeInsets.fromLTRB(15, 15, 15, 15),
                       child: Container(
                         decoration: BoxDecoration(
                           color: Colors.white,
@@ -1604,72 +1925,295 @@ class HomePage extends State<Home> {
                               Row(
                                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                                 children: [
-                                  Text(
-                                    'Contact info ',
-                                    style: TextStyle(fontSize: 16, fontWeight: FontWeight.w500,color: Colors.black),
+                                  Row(
+                                    children: [
+                                      Icon(Icons.account_box),
+                                      SizedBox(width: 5,),
+
+                                      Text(
+                                        'Contact Details ',
+                                        style: TextStyle(fontSize: 16, fontWeight: FontWeight.w500,color: Colors.black),
+                                      ),
+                                    ],
                                   ),
-                                  Text(
-                                    'Edit',
-                                    style: TextStyle(fontSize: 16, fontWeight: FontWeight.w600,color: Colors.green),
+                                  GestureDetector(
+                                    onTap: (){
+
+                                      firstname.text=appuser.first_name;
+                                      lasename.text=appuser.last_name;
+                                      email.text=appuser.email;
+
+
+                                      if(profileedit) {
+                                        profileedit = false;
+                                      }else{
+                                        profileedit = true;
+
+                                      }
+                                      setState(() {
+
+                                      });
+                                    },
+                                    child: Text(
+                                      profileedit?'':'Edit',
+                                      style: TextStyle(fontSize: 16, fontWeight: FontWeight.w600,color: Colors.green),
+                                    ),
                                   ),
 
                                 ],
                               ),
                               SizedBox(height: 20,),
+                              profileedit?
+                                  Column(children: [
+                                    Row(
+                                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
 
-                              Row(
-                                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                                      children: [
+                                        Container(
+                                          width: (screenWidth(context)/2)-70,
+
+                                          child: TextField(
+
+                                            controller: firstname,
+                                            decoration: InputDecoration(
+                                                border: InputBorder.none,
+                                                hintText: 'First Name',
+
+                                              enabledBorder: UnderlineInputBorder(
+                                                borderSide: BorderSide(color: Colors.green),
+                                              ),
+                                              focusedBorder: UnderlineInputBorder(
+                                                borderSide: BorderSide(color: Colors.green),
+                                              ),
+
+                                            ),
+                                          ),
+                                        ),
+                                         Container(
+                                          width: (screenWidth(context)/2)-70,
+
+                                          child: TextField(
+                                            controller: lasename,
+
+                                            decoration: InputDecoration(
+                                                border: InputBorder.none,
+                                                hintText: 'Last Name',
+                                                enabledBorder: UnderlineInputBorder(
+                                            borderSide: BorderSide(color: Colors.green),
+                                          ),
+                                          focusedBorder: UnderlineInputBorder(
+                                            borderSide: BorderSide(color: Colors.green),
+                                          ),
+
+                                        ),
+                                          ),
+                                        ),
+                                      ],
+                                    ),
+                                    SizedBox(height: 10,),
+
+                                    TextField(
+
+                                      decoration: InputDecoration(
+                                        border: InputBorder.none,
+                                        hintText: "(Phone)  "+DataStream.PhoneNumber,
+                                        enabled: false,
+
+                                        enabledBorder: UnderlineInputBorder(
+                                          borderSide: BorderSide(color: Colors.green),
+                                        ),
+                                        focusedBorder: UnderlineInputBorder(
+                                          borderSide: BorderSide(color: Colors.green),
+                                        ),
+
+                                      ),
+                                    ),
+                                    SizedBox(height: 10,),
+
+                                    TextField(
+                                      controller: email,
+
+                                      decoration: InputDecoration(
+                                        border: InputBorder.none,
+                                        hintText: 'E-mail',
+
+                                        enabledBorder: UnderlineInputBorder(
+                                          borderSide: BorderSide(color: Colors.green),
+                                        ),
+                                        focusedBorder: UnderlineInputBorder(
+                                          borderSide: BorderSide(color: Colors.green),
+                                        ),
+
+                                      ),
+                                    ),
+
+                                    SizedBox(height: 20,),
+
+
+                                    Row(
+                                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                                      children: [
+                                        SizedBox(width: 20,),
+
+                                        FlatButton(
+                                          shape: RoundedRectangleBorder(
+                                              borderRadius: BorderRadius.circular(8)),
+                                          child: Padding(
+                                              padding: EdgeInsets.fromLTRB(15, 7, 15, 7),
+                                              child: Text("Save")),
+                                          textColor: Colors.white,
+                                          color: Colors.green,
+                                          onPressed: () async {
+
+
+                                             FirebaseDatabase database = new FirebaseDatabase();
+                                            DatabaseReference db = database.reference()
+                                                .child('Users').child(DataStream.UserId);
+
+                                            db.set(<dynamic, dynamic>{
+                                              'first_name': firstname.text,
+                                              'last_name': lasename.text,
+                                              'phone':DataStream.PhoneNumber,
+                                              'email': email.text,
+
+
+                                            }).then((value) {
+
+                                              getUserDetails();
+
+                                              if(profileedit) {
+                                                profileedit = false;
+                                              }else{
+                                                profileedit = true;
+
+                                              }
+                                              setState(() {
+
+                                              });
+                                              ToastUtils.showCustomToast(
+                                                  context, "Saved", true);
+
+                                            });
+
+
+                                          },
+                                        ),
+                                      ],
+                                    )
+                                  ],)
+
+                             :
+                              Column(
                                 children: [
-                                  Text(
-                                    'Username ',
-                                    style: TextStyle(fontSize: 16, fontWeight: FontWeight.w300,color: Colors.black),
-                                  ),
-                                  Text(
-                                    'Farhan',
-                                    style: TextStyle(fontSize: 16, fontWeight: FontWeight.w300,color: Colors.black),
+                                  Row(
+                                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                                    children: [
+                                      Text(
+                                        'Username ',
+                                        style: TextStyle(fontSize: 16, fontWeight: FontWeight.w300,color: Colors.black),
+                                      ),
+                                      Text(
+                                        appuser.first_name+" "+appuser.last_name,
+                                        style: TextStyle(fontSize: 16, fontWeight: FontWeight.w300,color: Colors.black),
+                                      ),
+
+                                    ],
                                   ),
 
+                                  SizedBox(height: 8,),
+
+                                  Row(
+                                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                                    children: [
+                                      Text(
+                                        'Phone ',
+                                        style: TextStyle(fontSize: 16, fontWeight: FontWeight.w300,color: Colors.black),
+                                      ),
+                                      Text(
+                                        DataStream.PhoneNumber+"",
+                                        style: TextStyle(fontSize: 16, fontWeight: FontWeight.w300,color: Colors.black),
+                                      ),
+
+                                    ],
+                                  ),
+
+
+                                  SizedBox(height: 8,),
+
+                                  Row(
+                                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                                    children: [
+                                      Text(
+                                        'E-mail ',
+                                        style: TextStyle(fontSize: 16, fontWeight: FontWeight.w300,color: Colors.black),
+                                      ),
+                                      Text(
+                                        appuser.email+"",
+                                        style: TextStyle(fontSize: 16, fontWeight: FontWeight.w300,color: Colors.black),
+                                      ),
+
+                                    ],
+                                  ),
                                 ],
                               ),
 
-                              SizedBox(height: 8,),
-
-                              Row(
-                                mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                                children: [
-                                  Text(
-                                    'Phone Number ',
-                                    style: TextStyle(fontSize: 16, fontWeight: FontWeight.w300,color: Colors.black),
-                                  ),
-                                  Text(
-                                    DataStream.PhoneNumber,
-                                    style: TextStyle(fontSize: 16, fontWeight: FontWeight.w300,color: Colors.black),
-                                  ),
-
-                                ],
-                              ),
 
 
-                              SizedBox(height: 8,),
-
-                              Row(
-                                mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                                children: [
-                                  Text(
-                                    'E-mail Address ',
-                                    style: TextStyle(fontSize: 16, fontWeight: FontWeight.w300,color: Colors.black),
-                                  ),
-                                  Text(
-                                    'farhanfida10@gmail.com',
-                                    style: TextStyle(fontSize: 16, fontWeight: FontWeight.w300,color: Colors.black),
-                                  ),
-
-                                ],
-                              ),
                             ],
                           ),
                         ),
 
+                      ),
+                    ),
+                    Container(
+                      height: 40,
+                      decoration: BoxDecoration(
+                        color: Colors.redAccent,
+                        borderRadius: BorderRadius.only(
+                            topLeft: Radius.circular(10),
+                            topRight: Radius.circular(10),
+                            bottomLeft: Radius.circular(10),
+                            bottomRight: Radius.circular(10)
+                        ),
+
+                        boxShadow: [
+                          BoxShadow(
+                            color: Colors.redAccent[100],
+                            spreadRadius: 3,
+                            blurRadius: 4,
+                            offset: Offset(0, 3),
+                          ),
+                        ],
+                      ),
+                      width: screenWidth(context)-40,
+                      child: FlatButton(
+                        shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(8.0),
+                        ),
+                        color: Colors.redAccent,
+                        onPressed: (){
+
+
+                          FirebaseAuth.instance.currentUser().then((firebaseUser) async {
+                            if(firebaseUser != null){
+                              await FirebaseAuth.instance.signOut();
+
+                              Navigator.of(context).pushReplacement(MaterialPageRoute(builder: (context) => SignIn()));
+
+                            }
+
+                          });
+
+                        },
+                        child: Row(
+                          mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+
+                          children: [
+
+                            Text('Logout',style: TextStyle(color: Colors.white,fontWeight: FontWeight.w500, fontSize: 18),),
+
+                          ],
+                        ),
                       ),
                     ),
                   ],
@@ -1679,76 +2223,12 @@ class HomePage extends State<Home> {
 
                Column(
                  children: [
-                   GestureDetector(
-                     onTap: (){
-                       //https://doorsteppolicy.web.app/
 
-                       UrlLauncher.launch('https://doorsteppolicy.web.app');
-
-                     },
-                     child: Padding(
-                       padding: const EdgeInsets.fromLTRB(0, 10, 0, 0),
-                       child: Text('Privacy Policy',
-                         style: TextStyle(fontSize: 14, fontWeight: FontWeight.w500,color: Colors.blue[500], decoration: TextDecoration.underline,
-                         ),
-                       ),
-                     ),
-                   ),
                    // Padding(
                    //   padding: const EdgeInsets.fromLTRB(0, 5, 0, 20),
                    //   child: Text('Terms and Conditions',
                    //     style: TextStyle(fontSize: 16, fontWeight: FontWeight.w300,color: Colors.black,),),
                    // ),
-                   Container(
-                     height: 40,
-                     decoration: BoxDecoration(
-                       color: Colors.redAccent,
-                       borderRadius: BorderRadius.only(
-                           topLeft: Radius.circular(10),
-                           topRight: Radius.circular(10),
-                           bottomLeft: Radius.circular(10),
-                           bottomRight: Radius.circular(10)
-                       ),
-                       boxShadow: [
-                         BoxShadow(
-                           color: Colors.redAccent[100],
-                           spreadRadius: 3,
-                           blurRadius: 4,
-                           offset: Offset(0, 3),
-                         ),
-                       ],
-                     ),
-                     width: screenWidth(context)-40,
-                     child: FlatButton(
-                       shape: RoundedRectangleBorder(
-                         borderRadius: BorderRadius.circular(8.0),
-                       ),
-                       color: Colors.redAccent,
-                       onPressed: (){
-
-
-                         FirebaseAuth.instance.currentUser().then((firebaseUser) async {
-                           if(firebaseUser != null){
-                             await FirebaseAuth.instance.signOut();
-
-                             Navigator.of(context).pushReplacement(MaterialPageRoute(builder: (context) => SignIn()));
-
-                           }
-
-                         });
-
-                       },
-                       child: Row(
-                         mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-
-                         children: [
-
-                           Text('Logout',style: TextStyle(color: Colors.white,fontWeight: FontWeight.w500, fontSize: 18),),
-
-                         ],
-                       ),
-                     ),
-                   ),
 
                    SizedBox(height: 20,),
                    GestureDetector(
@@ -1757,12 +2237,45 @@ class HomePage extends State<Home> {
 
                      },
                      child: Padding(
-                       padding: const EdgeInsets.fromLTRB(0, 5, 0, 20),
+                       padding: const EdgeInsets.fromLTRB(0, 5, 0, 5),
                        child: Text('Contact Us',
-                         style: TextStyle(fontSize: 14, fontWeight: FontWeight.w500,color: Colors.blue[500], decoration: TextDecoration.underline,
+                         style: TextStyle(fontSize: 14, fontWeight: FontWeight.w300,color: Colors.blue[500], decoration: TextDecoration.underline,
                          ),),
                      ),
                    ),
+                   GestureDetector(
+                     onTap: (){
+                       //https://doorsteppolicy.web.app/
+
+                       UrlLauncher.launch('https://doorsteppolicy.web.app');
+
+                     },
+
+                     child: Padding(
+                       padding: const EdgeInsets.fromLTRB(0, 0, 0, 0),
+                       child: Text('Privacy Policy',
+                         style: TextStyle(fontSize: 14, fontWeight: FontWeight.w300,color: Colors.blue[500], decoration: TextDecoration.underline,
+                         ),
+                       ),
+                     ),
+                   ),
+                   // GestureDetector(
+                   //   onTap: (){
+                   //     //https://doorsteppolicy.web.app/
+                   //
+                   //     UrlLauncher.launch('https://doorsteppolicy.web.app');
+                   //   },
+                   //   child: Padding(
+                   //     padding: const EdgeInsets.fromLTRB(0, 5, 0, 5),
+                   //     child: Text('Terms & Conditions',
+                   //       style: TextStyle(fontSize: 14, fontWeight: FontWeight.w300,color: Colors.blue[500], decoration: TextDecoration.underline,
+                   //       ),
+                   //     ),
+                   //   ),
+                   // ),
+                 //  SizedBox(height: 5,),
+
+
                    SizedBox(height: 10,),
                  ],
                )
@@ -1856,6 +2369,43 @@ class HomePage extends State<Home> {
     );
   }
 
+  String PickedAddress="Current Location";
+  LatLng PickedLocation;
+
+  Dialog errorDialog;
+  Future<void> addLocation() async {
+
+
+    LocationResult result = await showLocationPicker(
+        context,
+        DataStream.googleAPIKey,
+
+        // appBarColor: Colors.green,
+        initialCenter: DataStream.userlocation,
+        myLocationButtonEnabled: true,
+        automaticallyAnimateToCurrentLocation: true
+
+    );
+    print("result = $result");
+    if(result!=null){
+
+    //  Navigator.of(context).pop();
+
+      //   errorDialog.p
+
+      PickedAddress=result.address;
+      PickedLocation=result.latLng;
+
+      DataStream.userlocation=PickedLocation;
+      DataStream.userAddress=PickedAddress;
+
+      print(result.address);
+
+      setState(() {
+
+      });
+    }
+  }
   void onItemTapped(int index) {
     setState(() {
       _selectedIndex = index;

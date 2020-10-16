@@ -1,3 +1,4 @@
+import 'dart:collection';
 import 'dart:io';
 
 import 'package:Doorstep/models/Product.dart';
@@ -5,6 +6,7 @@ import 'package:Doorstep/models/Shops.dart';
 import 'package:Doorstep/screens/home/shops_screen.dart';
 import 'package:Doorstep/screens/home/single_product.dart';
 import 'package:Doorstep/utilts/UI/DataStream.dart';
+import 'package:cache_image/cache_image.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_database/firebase_database.dart';
 import 'package:firebase_database/ui/firebase_animated_list.dart';
@@ -382,7 +384,8 @@ class _ProductCatalogState extends State<ProductCatalog> {
                                 child: GestureDetector(
                                     onTap: (){
                                        search="";
-                                      _searchTextController.clear();
+                                       filterProducts(search);
+                                       _searchTextController.clear();
                                       setState(() {
 
                                       });
@@ -428,6 +431,13 @@ class _ProductCatalogState extends State<ProductCatalog> {
                                   padding: const EdgeInsets.all(6.0),
                                   child: FlatButton(
                                     onPressed: (){
+                                      search="";
+                                      filterProducts(search);
+                                      _searchTextController.clear();
+                                      setState(() {
+
+                                      });
+
                                       selectfilter=char;
                                       filterProductCatagory(char);
                                       setState(() {
@@ -438,7 +448,8 @@ class _ProductCatalogState extends State<ProductCatalog> {
 
                                         borderRadius: BorderRadius.circular(18.0),
                                         side: BorderSide(color: Colors.green[400])),
-                                    color:selectfilter==char? Colors.green[100]: Colors.white,
+                                    color:selectfilter==char? Colors.green[100]: Colors.white ,
+
 
                                     textColor: Colors.green[600],
                                     padding: EdgeInsets.all(8.0),
@@ -471,76 +482,189 @@ class _ProductCatalogState extends State<ProductCatalog> {
                     child:
 
                     GridView.builder(
+                      //SliverGridDelegateWithFixedCrossAxisCount
                       gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
-                          crossAxisCount: 3),
+                        crossAxisCount: 3,
+                        childAspectRatio: 0.710,
+                        mainAxisSpacing: 3.0,
+                        crossAxisSpacing: 4.0,
+                      ),
                       itemCount: products.length,
-                      padding: EdgeInsets.all(2.0),
+                      padding: EdgeInsets.all(8.0),
                       itemBuilder: (BuildContext context, int index) {
-                        return     GestureDetector(
+
+                        return
+                          GestureDetector(
+
                           onTap: (){
-                            Navigator.push( context, MaterialPageRoute( builder: (BuildContext context) => SingleProduct(products[index]),),);
+                            products[index].stock!="out_of_stock"?
+
+                            Navigator.push( context, MaterialPageRoute( builder: (BuildContext context) => SingleProduct(products[index]),),):
+                            ToastUtils.showCustomToast(context, "Item Out of Stock",null);
+
 
                           },
-                          child: Padding(
-                            padding: EdgeInsets.all(5),
+                          child:
+
+                          Padding(
+                            padding: const EdgeInsets.all(4.0),
                             child: Container(
 
-                              width: (screenWidth(context)/2)-15,
-                              height: 150,
-                              decoration: BoxDecoration(
-
-                                shape: BoxShape.rectangle,
-                                borderRadius: BorderRadius.all(Radius.circular(15.0)),
-                                image: DecorationImage(
-                                  image: NetworkImage(products[index].cardimage),
-                                  fit: BoxFit.cover,
-                                ),
-                              ),
-                              child:  Padding(
-                                padding: EdgeInsets.all(0),
-                                child: Container(
-
                                   decoration: BoxDecoration(
+
                                     shape: BoxShape.rectangle,
-                                    borderRadius: BorderRadius.all(Radius.circular(15.0)),
-                                    gradient: new LinearGradient(
+                                    borderRadius: BorderRadius.all(Radius.circular(5.0)),
 
-                                        colors: [
-                                          Colors.black.withOpacity(0.7),
-                                          const Color(0x19000000),
-                                        ],
-
-                                        begin: const FractionalOffset(0.0, 1.0),
-                                        end: const FractionalOffset(0.0, 0.0),
-                                        stops: [0.0, 1.0],
-                                        tileMode: TileMode.clamp),
                                   ),
-                                  child: Padding(
-                                    padding: EdgeInsets.all(10),
+                              child: Column(
+                                crossAxisAlignment: CrossAxisAlignment.start,
+                                mainAxisAlignment: MainAxisAlignment.start,
+                                children: [
+
+
+                                  Stack(
+                                    children: [
+
+                                      Container(
+                                            height: 90,
+                                           width:  190,
+                                            decoration: BoxDecoration(
+                                              boxShadow: [
+                                                BoxShadow(
+                                                  color:  Colors.grey.withOpacity(0.5),
+                                                  spreadRadius: 2,
+                                                  blurRadius: 4,
+                                                ),
+                                              ],
+                                              shape: BoxShape.rectangle,
+                                              borderRadius: BorderRadius.all(Radius.circular(5.0)),
+                                              image: DecorationImage(
+                                                image: CacheImage(products[index].cardimage),
+                                                fit: BoxFit.cover,
+                                              ),
+                                            ),
+                                      ),
+                                      products[index].stock=="out_of_stock"?
+
+                                      Container(
+                                        height: 90,
+                                        width:  190,
+                                        decoration: BoxDecoration(
+
+                                          shape: BoxShape.rectangle,
+                                          borderRadius: BorderRadius.all(Radius.circular(5.0)),
+
+                                          color: Colors.grey.withOpacity(0.7),
+                                        ),
+                                        child:  Center(
+                                          child: Text(
+                                            "Out of Stock",
+                                            style: TextStyle(fontSize: 15, fontWeight: FontWeight.w700,color: Colors.black,shadows: outlinedText(strokeColor: Colors.white)),
+                                          ),
+                                        ),
+                                      ):SizedBox(),
+
+                                    ],
+                                  ),
+
+                                  Padding(
+                                    padding: const EdgeInsets.fromLTRB(5, 5, 0, 0),
                                     child: Column(
                                       crossAxisAlignment: CrossAxisAlignment.start,
-                                      mainAxisAlignment: MainAxisAlignment.end,
+                                      mainAxisAlignment: MainAxisAlignment.start,
                                       children: [
+
                                         Text(
                                           products[index].cardname,
-                                          style: TextStyle(fontSize: 14, fontWeight: FontWeight.w500,color: Colors.white),
+                                          style: TextStyle(fontSize: 11, fontWeight: FontWeight.w500,color: Colors.black),
                                         ),
                                         Text('Rs. ${products[index].cardprice} / ${products[index].unit}'
                                           ,
-                                          style: TextStyle(fontSize: 12, fontWeight: FontWeight.w300,color: Colors.white),
+                                          style: TextStyle(fontSize: 10, fontWeight: FontWeight.w400,color: Colors.black),
                                         ),
 
-                                        Text('${products[index].category} '
-                                          ,
-                                          style: TextStyle(fontSize: 10, fontWeight: FontWeight.w300,color: Colors.white),
-                                        ),
+
                                       ],
                                     ),
                                   ),
-                                ),
-                              ), /* add child content here */
+                                  SizedBox(height: 5,),
+
+                                  Row(
+                                    mainAxisAlignment: MainAxisAlignment.center,
+                                    children: [
+                                      Text('${products[index].category} '
+                                        ,
+                                        style: TextStyle(fontSize: 7, fontWeight: FontWeight.w300,color: Colors.black),
+                                      ),
+                                    ],
+                                  ),
+                                ],
+                              ),
                             ),
                           ),
+
+                          // Padding(
+                          //   padding: EdgeInsets.all(5),
+                          //   child: Container(
+                          //
+                          //     height: double.infinity,
+                          //     width: double.infinity,
+                          //     decoration: BoxDecoration(
+                          //
+                          //       shape: BoxShape.rectangle,
+                          //       borderRadius: BorderRadius.all(Radius.circular(15.0)),
+                          //       image: DecorationImage(
+                          //         image: CacheImage(products[index].cardimage),
+                          //         fit: BoxFit.cover,
+                          //       ),
+                          //     ),
+                          //     child:  Padding(
+                          //       padding: EdgeInsets.all(0),
+                          //       child: Container(
+                          //
+                          //         decoration: BoxDecoration(
+                          //           shape: BoxShape.rectangle,
+                          //           borderRadius: BorderRadius.all(Radius.circular(15.0)),
+                          //           gradient: new LinearGradient(
+                          //
+                          //               colors: [
+                          //                 Colors.black.withOpacity(0.7),
+                          //                 const Color(0x19000000),
+                          //               ],
+                          //
+                          //               begin: const FractionalOffset(0.0, 1.0),
+                          //               end: const FractionalOffset(0.0, 0.0),
+                          //               stops: [0.0, 1.0],
+                          //               tileMode: TileMode.clamp),
+                          //         ),
+                          //         child: Padding(
+                          //           padding: EdgeInsets.all(10),
+                          //           child: Column(
+                          //             crossAxisAlignment: CrossAxisAlignment.start,
+                          //             mainAxisAlignment: MainAxisAlignment.end,
+                          //             children: [
+                          //
+                          //
+                          //               Text(
+                          //                 products[index].cardname,
+                          //                 style: TextStyle(fontSize: 10, fontWeight: FontWeight.w500,color: Colors.white),
+                          //               ),
+                          //               Text('Rs. ${products[index].cardprice} / ${products[index].unit}'
+                          //                 ,
+                          //                 style: TextStyle(fontSize: 8, fontWeight: FontWeight.w300,color: Colors.white),
+                          //               ),
+                          //
+                          //               Text('${products[index].category} '
+                          //                 ,
+                          //                 style: TextStyle(fontSize: 8, fontWeight: FontWeight.w300,color: Colors.white),
+                          //               ),
+                          //             ],
+                          //           ),
+                          //         ),
+                          //       ),
+                          //     ), /* add child content here */
+                          //   ),
+                          // ),
                         );
                       },
                     ),
@@ -553,8 +677,22 @@ class _ProductCatalogState extends State<ProductCatalog> {
         ),
       );
   }
-
+  static List<Shadow> outlinedText({double strokeWidth = 0.4, Color strokeColor = Colors.black, int precision = 5}) {
+    Set<Shadow> result = HashSet();
+    for (int x = 1; x < strokeWidth + precision; x++) {
+      for(int y = 1; y < strokeWidth + precision; y++) {
+        double offsetX = x.toDouble();
+        double offsetY = y.toDouble();
+        result.add(Shadow(offset: Offset(-strokeWidth / offsetX, -strokeWidth / offsetY), color: strokeColor));
+        result.add(Shadow(offset: Offset(-strokeWidth / offsetX, strokeWidth / offsetY), color: strokeColor));
+        result.add(Shadow(offset: Offset(strokeWidth / offsetX, -strokeWidth / offsetY), color: strokeColor));
+        result.add(Shadow(offset: Offset(strokeWidth / offsetX, strokeWidth / offsetY), color: strokeColor));
+      }
+    }
+    return result.toList();
+  }
 }
+
 /*
 
  return ;

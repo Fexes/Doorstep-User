@@ -1,6 +1,7 @@
 import 'dart:convert';
 import 'dart:io';
 
+import 'package:Doorstep/models/AppUser.dart';
 import 'package:Doorstep/screens/home/home_screen.dart';
 import 'package:Doorstep/styles/styles.dart';
 import 'package:Doorstep/utilts/UI/DataStream.dart';
@@ -12,6 +13,7 @@ import 'package:flutter_spinkit/flutter_spinkit.dart';
 import 'package:Doorstep/styles/styles.dart';
 import 'package:geolocator/geolocator.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
+import 'package:lottie/lottie.dart';
 import 'package:package_info/package_info.dart';
 import 'package:permission_handler/permission_handler.dart';
 import 'package:shared_preferences/shared_preferences.dart';
@@ -19,7 +21,8 @@ import 'dart:async';
 import 'auth/sign-in.dart';
 import 'package:location/location.dart' as loc;
 import 'package:launch_review/launch_review.dart';
-
+import 'package:flutter/material.dart';
+import 'package:lottie/lottie.dart';
 void main() {
   runApp(MaterialApp(
     home: SplashScreen(),
@@ -42,6 +45,13 @@ class SplashScreenState extends State<SplashScreen> {
   Future<void> initState()  {
     super.initState();
 
+
+
+    // for(int i=901;i<=1050;i++){
+    //   //Code128
+    //   print("Doorstep0000$i");
+    // }
+
    start();
 
   }
@@ -56,9 +66,12 @@ class SplashScreenState extends State<SplashScreen> {
     getLocation().then((value) async {
 
       DataStream.userlocation=value;
+     // DataStream.userAddress=value.;
+
       Navigator.of(context).pushReplacement(
           MaterialPageRoute(
               builder: (context) => Home()));
+
     });
 
 
@@ -119,12 +132,35 @@ class SplashScreenState extends State<SplashScreen> {
 
 
 
+
         if(firebaseUser != null){
 
           DataStream.UserId=firebaseUser.uid;
           DataStream.PhoneNumber=firebaseUser.phoneNumber;
 
 
+
+
+          final locationDbRef = FirebaseDatabase.instance.reference().child("Users").child(DataStream.UserId);
+
+          locationDbRef.once().then((value) async {
+            if(value.value!=null){
+
+              DataStream.appuser= new AppUser(value.value["first_name"], value.value["last_name"],value.value["phone"] , value.value["email"]);
+
+            //  print(value.value["first_name"]);
+
+              setState(() {
+
+              });
+            }else{
+
+            }
+
+
+
+          }
+          );
         }
 
         _checkGps().then((value) {
@@ -139,6 +175,7 @@ class SplashScreenState extends State<SplashScreen> {
             }
 
         }).whenComplete(() {
+
 
           addLocation();
 
@@ -162,6 +199,13 @@ class SplashScreenState extends State<SplashScreen> {
         //    });
 
 }
+
+  void getUserDetails(){
+
+
+
+
+  }
   loc.Location location = loc.Location();//explicit reference to the Location class
 
   Future _checkGps() async {
@@ -182,132 +226,143 @@ bool error=false;
       color: Colors.white,
       child: Container(
            child: Column(
-            mainAxisAlignment: MainAxisAlignment.center,
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: <Widget>[
-              Padding(
-                padding: EdgeInsets.fromLTRB(100,100,100,30),
-                child: Image.asset("assets/icons/logo.png", ),
-              ),
-              Padding(
-                padding: EdgeInsets.fromLTRB(70,30,70,30),
-                child: Image.asset("assets/imgs/tag.png", ),
-              ),
+              SizedBox(height: 10,),
 
-//              Column(
-//                children: [
-//                  Text( "DOORSTEP",style: TextStyle(color: Colors.black,fontSize: 42,fontWeight: FontWeight.w700,
-//                  ),),
-//                  SizedBox(height: 5,),
-//
-//                  Text( "Everything at your Doorstep",style: TextStyle(color: Colors.black,fontSize: 18,fontWeight: FontWeight.w300),),
-//                ],
-//              ),
-
-              SizedBox(height: 100,),
-              error?
-              SizedBox(
-                width:200,
-                child: RaisedButton(
-                  shape: RoundedRectangleBorder(
-                    borderRadius: new BorderRadius.circular(18.0),
-
-                  ),
-
-                  color: primaryDark,
-                  onPressed: () async {
-                    error=false;
-                    loadData();
-                    setState(() {
-
-                    });
-                  },
-                  child: Text( "Retry",style: TextStyle(color: Colors.white),),
-                ),
-              ):
-
-
-              updateavail?
               Column(
                 children: [
-                  SizedBox(
-                    width:300,
-                    child: FlatButton(
+                  Padding(
+                    padding: EdgeInsets.fromLTRB(100,0,100,10),
+                    child: Container(
+                        height: 200,
+                        width: 200,
+                        child:  Lottie.asset('assets/logo.json',repeat: false),
 
-                      color: Colors.white,
 
-                      child: Text( "A new version of Doorstep is available. Please Update the App" ,textAlign: TextAlign.center,style: TextStyle(color: Colors.black,fontSize: 16,fontWeight: FontWeight.w300,
-                      ),),
+
                     ),
+
+                    //Image.asset("assets/icons/logo.png", ),
                   ),
-                  SizedBox(height: 10,),
-
-
-                   SizedBox(
-                    width:200,
-                    child: RaisedButton(
-                      shape: RoundedRectangleBorder(
-                        borderRadius: new BorderRadius.circular(18.0),
-
-                      ),
-
-                      color: primaryDark,
-                      onPressed: () async {
-
-                        LaunchReview.launch(androidAppId:"com.doorstep.app",
-                            iOSAppId: "1:391131119962:ios:7800a1fb8c2e8cfcdcf363");
-
-                        setState(() {
-
-                        });
-                      },
-                      child: Text( "Update App",style: TextStyle(color: Colors.white),),
-                    ),
+                  Padding(
+                    padding: EdgeInsets.fromLTRB(70,10,70,10),
+                    child: Image.asset("assets/imgs/tag.png", ),
                   ),
                 ],
-              ):
+              ),
 
-              SpinKitFadingCircle(
-                itemBuilder: (BuildContext context, int index) {
-                  return DecoratedBox(
-                    decoration: BoxDecoration(
-                      color: index==1 ? Colors.green[900] :index==2 ?Colors.green[800] : index==3 ?Colors.green[700] : index==4 ?
-                      Colors.green[600] :index==5 ?Colors.green[500] : index==6 ?Colors.green[400]:
-                      index==1 ?Colors.green[300] : index==1 ?Colors.green[200] : index==1 ?Colors.green[100] : index==1 ?
-                      Colors.green[100] :index==1 ?Colors.green[100] :Colors.green[900]
-                      ,
-                      borderRadius: BorderRadius.all(Radius.circular(30.0)),
+
+              Column(children: [
+                error?
+                SizedBox(
+                  width:200,
+                  child: RaisedButton(
+                    shape: RoundedRectangleBorder(
+                      borderRadius: new BorderRadius.circular(18.0),
+
                     ),
-                  );
-                },
-              ),
-              // SizedBox(
-              //   width:300,
-              //   child: FlatButton(
-              //
-              //     color: Colors.white,
-              //
-              //     child: Text( "The App is Under Maintenance" ,textAlign: TextAlign.center,style: TextStyle(color: Colors.black,fontSize: 16,fontWeight: FontWeight.w300,
-              //     ),),
-              //   ),
-              // ),
 
-              SizedBox(height: 5,),
-              SizedBox(
-                width:300,
-                child: FlatButton(
+                    color: primaryDark,
+                    onPressed: () async {
+                      error=false;
+                      loadData();
+                      setState(() {
 
-                  color: Colors.white,
-                  onPressed: () async {
-                    error=false;
-                    loadData();
-                    setState(() {
+                      });
+                    },
+                    child: Text( "Retry",style: TextStyle(color: Colors.white),),
+                  ),
+                ):
 
-                    });
+
+                updateavail?
+                Column(
+                  children: [
+                    SizedBox(
+                      width:300,
+                      child: FlatButton(
+
+                        color: Colors.white,
+
+                        child: Text( "A new version of Doorstep is available. Please Update the App" ,textAlign: TextAlign.center,style: TextStyle(color: Colors.black,fontSize: 16,fontWeight: FontWeight.w300,
+                        ),),
+                      ),
+                    ),
+                    SizedBox(height: 10,),
+
+
+                    SizedBox(
+                      width:200,
+                      child: RaisedButton(
+                        shape: RoundedRectangleBorder(
+                          borderRadius: new BorderRadius.circular(18.0),
+
+                        ),
+
+                        color: primaryDark,
+                        onPressed: () async {
+
+                          LaunchReview.launch(androidAppId:"com.doorstep.app",
+                              iOSAppId: "1:391131119962:ios:7800a1fb8c2e8cfcdcf363");
+
+                          setState(() {
+
+                          });
+                        },
+                        child: Text( "Update App",style: TextStyle(color: Colors.white),),
+                      ),
+                    ),
+                  ],
+                ):
+
+                SpinKitFadingCircle(
+                  itemBuilder: (BuildContext context, int index) {
+                    return DecoratedBox(
+                      decoration: BoxDecoration(
+                        color: index==1 ? Colors.green[900] :index==2 ?Colors.green[800] : index==3 ?Colors.green[700] : index==4 ?
+                        Colors.green[600] :index==5 ?Colors.green[500] : index==6 ?Colors.green[400]:
+                        index==1 ?Colors.green[300] : index==1 ?Colors.green[200] : index==1 ?Colors.green[100] : index==1 ?
+                        Colors.green[100] :index==1 ?Colors.green[100] :Colors.green[900]
+                        ,
+                        borderRadius: BorderRadius.all(Radius.circular(30.0)),
+                      ),
+                    );
                   },
-                  child: Text( "Version    $appVersion" ,textAlign: TextAlign.center,style: TextStyle(color: Colors.black,fontSize: 12,fontWeight: FontWeight.w200,
-                  ),),
                 ),
-              ),
+                // SizedBox(
+                //   width:300,
+                //   child: FlatButton(
+                //
+                //     color: Colors.white,
+                //
+                //     child: Text( "The App is Under Maintenance" ,textAlign: TextAlign.center,style: TextStyle(color: Colors.black,fontSize: 16,fontWeight: FontWeight.w300,
+                //     ),),
+                //   ),
+                // ),
+
+                SizedBox(height: 5,),
+                SizedBox(
+                  width:300,
+                  child: FlatButton(
+
+                    color: Colors.white,
+                    onPressed: () async {
+                      error=false;
+                      loadData();
+                      setState(() {
+
+                      });
+                    },
+                    child: Text( "Version    $appVersion" ,textAlign: TextAlign.center,style: TextStyle(color: Colors.black,fontSize: 12,fontWeight: FontWeight.w200,
+                    ),),
+                  ),
+                ),
+                SizedBox(height: 15,),
+
+              ],),
+
+
 
             ],
           )),
@@ -390,7 +445,5 @@ bool error=false;
 
 
 }
-
-
 
 

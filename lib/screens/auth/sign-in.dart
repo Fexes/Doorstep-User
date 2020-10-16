@@ -358,6 +358,18 @@ class _SignInState extends State<SignIn> {
           ToastUtils.showCustomToast(context, "Phone Verified",true);
 
 
+          FirebaseDatabase database = new FirebaseDatabase();
+          DatabaseReference db = database.reference()
+              .child('Users').child(DataStream.UserId);
+
+          db.set(<dynamic, dynamic>{
+            'first_name': "",
+            'last_name': "",
+            'phone': user.phoneNumber,
+            'email': "",
+
+
+          });
           Navigator.of(context).pushReplacement(MaterialPageRoute(builder: (context) => SplashScreen()));
 
 
@@ -436,9 +448,25 @@ class _SignInState extends State<SignIn> {
                                   context, "Code Confirmed", true);
                               Navigator.of(context).pop();
 
-                              Navigator.of(context).pushReplacement(
-                                  MaterialPageRoute(
-                                      builder: (context) => SplashScreen()));
+                              DataStream.user=user;
+                              DataStream.UserId=user.uid;
+                              DataStream.PhoneNumber=user.phoneNumber;
+
+                              FirebaseDatabase database = new FirebaseDatabase();
+                              DatabaseReference db = database.reference()
+                                  .child('Users').child(DataStream.UserId);
+
+                              db.set(<dynamic, dynamic>{
+                                'first_name': "",
+                                'last_name': "",
+                                'phone': user.phoneNumber,
+                                'email': "",
+
+
+                              });
+                              Navigator.of(context).pushReplacement(MaterialPageRoute(builder: (context) => SplashScreen()));
+
+
                             } else {
                               _controllerCode.clear();
                               ToastUtils.showCustomToast(
