@@ -1,7 +1,7 @@
 name: Doorstep
 description: A new Flutter application.
 
-version: 1.0.0+1
+version: 2.1.0+2
 
 environment:
   sdk: ">=2.1.0 <3.0.0"
@@ -82,6 +82,8 @@ flutter:
     - assets/imgs/grocery_store.jpg
     - assets/imgs/bbq.jpg
     - assets/imgs/tag.png
+    - assets/location.json
+    - assets/update.json
     - assets/logo.json
     - assets/imgs/bk.jpg
 

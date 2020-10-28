@@ -546,6 +546,7 @@ class _ProductCatalogState extends State<ProductCatalog> {
                                       ),
                                       products[index].stock=="out_of_stock"?
 
+
                                       Container(
                                         height: 90,
                                         width:  190,
@@ -554,12 +555,12 @@ class _ProductCatalogState extends State<ProductCatalog> {
                                           shape: BoxShape.rectangle,
                                           borderRadius: BorderRadius.all(Radius.circular(5.0)),
 
-                                          color: Colors.grey.withOpacity(0.7),
+                                          color: Colors.black.withOpacity(0.7),
                                         ),
                                         child:  Center(
                                           child: Text(
                                             "Out of Stock",
-                                            style: TextStyle(fontSize: 15, fontWeight: FontWeight.w700,color: Colors.black,shadows: outlinedText(strokeColor: Colors.white)),
+                                            style: TextStyle(fontSize: 10, fontWeight: FontWeight.w700,color: Colors.white,),
                                           ),
                                         ),
                                       ):SizedBox(),
@@ -567,7 +568,7 @@ class _ProductCatalogState extends State<ProductCatalog> {
                                     ],
                                   ),
 
-                                  Padding(
+                                   Padding(
                                     padding: const EdgeInsets.fromLTRB(5, 5, 0, 0),
                                     child: Column(
                                       crossAxisAlignment: CrossAxisAlignment.start,
@@ -677,23 +678,6 @@ class _ProductCatalogState extends State<ProductCatalog> {
         ),
       );
   }
-  static List<Shadow> outlinedText({double strokeWidth = 0.4, Color strokeColor = Colors.black, int precision = 5}) {
-    Set<Shadow> result = HashSet();
-    for (int x = 1; x < strokeWidth + precision; x++) {
-      for(int y = 1; y < strokeWidth + precision; y++) {
-        double offsetX = x.toDouble();
-        double offsetY = y.toDouble();
-        result.add(Shadow(offset: Offset(-strokeWidth / offsetX, -strokeWidth / offsetY), color: strokeColor));
-        result.add(Shadow(offset: Offset(-strokeWidth / offsetX, strokeWidth / offsetY), color: strokeColor));
-        result.add(Shadow(offset: Offset(strokeWidth / offsetX, -strokeWidth / offsetY), color: strokeColor));
-        result.add(Shadow(offset: Offset(strokeWidth / offsetX, strokeWidth / offsetY), color: strokeColor));
-      }
-    }
-    return result.toList();
-  }
+
 }
 
-/*
-
- return ;
- */

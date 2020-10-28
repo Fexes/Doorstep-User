@@ -293,6 +293,7 @@ class HomePage extends State<Home> {
                           padding: const EdgeInsets.all(12.0),
                           child: Container(
                             decoration: BoxDecoration(
+
                               boxShadow: [
                                 BoxShadow(
                                   color:  Colors.grey.withOpacity(0.9),
@@ -308,37 +309,6 @@ class HomePage extends State<Home> {
                         ),
 
 
-                        // Positioned(
-                        //   bottom: 0.0,
-                        //   left: 0.0,
-                        //   right: 0.0,
-                        //   child: Container(
-                        //     decoration: BoxDecoration(
-                        //
-                        //
-                        //
-                        //       // gradient: LinearGradient(
-                        //       //   colors: [
-                        //       //     Color.fromARGB(200, 0, 0, 0),
-                        //       //     Color.fromARGB(0, 0, 0, 0)
-                        //       //   ],
-                        //       //   begin: Alignment.bottomCenter,
-                        //       //   end: Alignment.topCenter,
-                        //       // ),
-                        //
-                        //     ),
-                        //     padding: EdgeInsets.symmetric(
-                        //         vertical: 10.0, horizontal: 20.0),
-                        //     //                    child: Text(
-                        //     //                      'No. ${imgList.indexOf(item)} image',
-                        //     //                      style: TextStyle(
-                        //     //                        color: Colors.white,
-                        //     //                        fontSize: 20.0,
-                        //     //                        fontWeight: FontWeight.bold,
-                        //     //                      ),
-                        //     //                    ),
-                        //   ),
-                        // ),
                       ],
                     )
                 ),
@@ -365,8 +335,8 @@ class HomePage extends State<Home> {
                  child: Badge(
                    badgeColor: Colors.redAccent,
                    badgeContent: Container(
-                     height: 13,
-                     width: 13,
+                     height: 17,
+                     width: 17,
                      child: Column(
                        mainAxisAlignment: MainAxisAlignment.center,
                        crossAxisAlignment: CrossAxisAlignment.center,
@@ -445,13 +415,10 @@ class HomePage extends State<Home> {
                         padding: const EdgeInsets.all(15.0),
                         child: Container(
                           decoration: BoxDecoration(
+                            shape: BoxShape.rectangle,
+                            borderRadius: BorderRadius.all(Radius.circular(10.0)),
                             color: Colors.white,
-                            borderRadius: BorderRadius.only(
-                                topLeft: Radius.circular(10),
-                                topRight: Radius.circular(10),
-                                bottomLeft: Radius.circular(10),
-                                bottomRight: Radius.circular(10)
-                            ),
+
                             boxShadow: [
                               BoxShadow(
                                 color: Colors.grey.withOpacity(0.75),
@@ -461,6 +428,7 @@ class HomePage extends State<Home> {
                               ),
                             ],
                           ),
+
                           width: screenWidth(context)-10,
                           child: Padding(
                             padding: EdgeInsets.all(15),
@@ -478,7 +446,7 @@ class HomePage extends State<Home> {
                                         SizedBox(width: 10,),
 
                                         Container(
-                                          width: screenWidth(context)/1.7,
+                                          width: screenWidth(context)/2,
                                           child: Text(
 
                                             PickedAddress,
@@ -1394,8 +1362,10 @@ class HomePage extends State<Home> {
                                                                 cancel.update(<String, dynamic>{
                                                                   'status': 'cancelled',
 
+                                                                }).then((value) {
+                                                                  Navigator.of(context).pop();
+
                                                                 });
-                                                                Navigator.of(context).pop();
                                                               });
                                                               print("removed");
 

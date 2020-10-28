@@ -536,6 +536,53 @@ class _CheckOutScreenState extends State<CheckOutScreen> {
                                       height: 1,
                                       color: Colors.grey[400],
                                     ),
+
+                                    SizedBox(height: 15,),
+
+                                    Row(
+                                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                                      children: [
+                                        Text(
+                                          'Delivery Time ',
+                                          style: TextStyle(fontSize: 16, fontWeight: FontWeight.w300,color: Colors.black),
+                                        ),
+                                        Column(
+                                          children: [
+                                            //
+                                            Text(
+                                              '30 - 60 min',
+                                              style: TextStyle(fontSize: 16, fontWeight: FontWeight.w300,color: Colors.black),
+                                            ),
+                                            Text(
+                                              'Depending on your location',
+                                              style: TextStyle(fontSize: 10, fontWeight: FontWeight.w200,color: Colors.black),
+                                            ),
+                                          ],
+                                        ),
+
+                                      ],
+                                    ),
+                                    SizedBox(height: 5,),
+
+                                    Row(
+                                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                                      children: [
+                                        Text(
+                                          'Payment Method ',
+                                          style: TextStyle(fontSize: 16, fontWeight: FontWeight.w300,color: Colors.black),
+                                        ),
+                                        Text(
+                                          'Cash on delivery',
+                                          style: TextStyle(fontSize: 16, fontWeight: FontWeight.w300,color: Colors.black),
+                                        ),
+
+                                      ],
+                                    ),
+                                    SizedBox(height: 15,),
+                                    Container(
+                                      height: 1,
+                                      color: Colors.grey[400],
+                                    ),
                                     SizedBox(height: 15,),
 
                                     Center(
@@ -629,7 +676,7 @@ class _CheckOutScreenState extends State<CheckOutScreen> {
                                                   border: OutlineInputBorder(
                                                       borderSide: BorderSide.none
                                                   ),
-                                                  labelText: "House Address",
+                                                  labelText: "Delivery Address",
                                                 ),
                                                 focusNode: _focusNode,
                                               ),
@@ -644,52 +691,7 @@ class _CheckOutScreenState extends State<CheckOutScreen> {
                                       ),
                                     ),
 
-                                    SizedBox(height: 15,),
-                                    Container(
-                                      height: 1,
-                                      color: Colors.grey[400],
-                                    ),
-                                    SizedBox(height: 15,),
 
-                                    Row(
-                                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                                      children: [
-                                        Text(
-                                          'Delivery Time ',
-                                          style: TextStyle(fontSize: 16, fontWeight: FontWeight.w300,color: Colors.black),
-                                        ),
-                                        Column(
-                                          children: [
-                                            //
-                                            Text(
-                                              '30 - 60 min',
-                                              style: TextStyle(fontSize: 16, fontWeight: FontWeight.w300,color: Colors.black),
-                                            ),
-                                            Text(
-                                              'Depending on your location',
-                                              style: TextStyle(fontSize: 10, fontWeight: FontWeight.w200,color: Colors.black),
-                                            ),
-                                          ],
-                                        ),
-
-                                      ],
-                                    ),
-                                    SizedBox(height: 5,),
-
-                                    Row(
-                                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                                      children: [
-                                        Text(
-                                          'Payment Method ',
-                                          style: TextStyle(fontSize: 16, fontWeight: FontWeight.w300,color: Colors.black),
-                                        ),
-                                        Text(
-                                          'Cash on delivery',
-                                          style: TextStyle(fontSize: 16, fontWeight: FontWeight.w300,color: Colors.black),
-                                        ),
-
-                                      ],
-                                    ),
                                   ],
                                 ),
                               ),
@@ -964,7 +966,7 @@ class _CheckOutScreenState extends State<CheckOutScreen> {
                           });
 
                         }else{
-                          ToastUtils.showCustomToast(context, "Add House Address", null);
+                          ToastUtils.showCustomToast(context, "Add Delivery Address", null);
                           final FormState form = _formKey.currentState;
                           if (!form.validate()) {
                             return;
@@ -981,8 +983,8 @@ class _CheckOutScreenState extends State<CheckOutScreen> {
                             decoration: BoxDecoration(
                                 shape: BoxShape.circle,
                                 color: Colors.white),
-                            height: 22,
-                            width: 22,
+                            height: 27,
+                            width: 27,
                             child: Column(
                               mainAxisAlignment: MainAxisAlignment.center,
                               crossAxisAlignment: CrossAxisAlignment.center,
