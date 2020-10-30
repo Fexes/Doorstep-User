@@ -7,7 +7,7 @@
 	<key>REVERSED_CLIENT_ID</key>
 	<string>com.googleusercontent.apps.391131119962-38mf18kgck7i6cbulqrak326nqgn4rpe</string>
 	<key>ANDROID_CLIENT_ID</key>
-	<string>391131119962-k8tnqddsen2jahrm5a720lpt2bm8t483.apps.googleusercontent.com</string>
+	<string>391131119962-qd3ljbjpgilr00gb2pu999i38d7vnujo.apps.googleusercontent.com</string>
 	<key>API_KEY</key>
 	<string>AIzaSyCJPa2Cf3f__gOrC16ln1pmEJEMFThAkWI</string>
 	<key>GCM_SENDER_ID</key>
@@ -21,17 +21,17 @@
 	<key>STORAGE_BUCKET</key>
 	<string>doorstep-fdb26.appspot.com</string>
 	<key>IS_ADS_ENABLED</key>
-	<false></false>
+	<false/>
 	<key>IS_ANALYTICS_ENABLED</key>
-	<false></false>
+	<false/>
 	<key>IS_APPINVITE_ENABLED</key>
-	<true></true>
+	<true/>
 	<key>IS_GCM_ENABLED</key>
-	<true></true>
+	<true/>
 	<key>IS_SIGNIN_ENABLED</key>
-	<true></true>
+	<true/>
 	<key>GOOGLE_APP_ID</key>
-	<string>1:391131119962:ios:7800a1fb8c2e8cfcdcf363</string>
+	<string>1:391131119962:ios:b95e555525c0d009dcf363</string>
 	<key>DATABASE_URL</key>
 	<string>https://doorstep-fdb26.firebaseio.com</string>
 </dict>

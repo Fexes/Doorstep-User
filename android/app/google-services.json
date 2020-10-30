@@ -8,7 +8,43 @@
   "client": [
     {
       "client_info": {
-        "mobilesdk_app_id": "1:391131119962:android:8a725968d12020bfdcf363",
+        "mobilesdk_app_id": "1:391131119962:android:81d26a60842744a1dcf363",
+        "android_client_info": {
+          "package_name": "com.doorstep.adminapp"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "391131119962-rnj7svvhp9nk84mgum5m71o14an0dmrp.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyB0HoBHMzu9-vg2gHzkmZXp8t7zCkXQNL4"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "391131119962-rnj7svvhp9nk84mgum5m71o14an0dmrp.apps.googleusercontent.com",
+              "client_type": 3
+            },
+            {
+              "client_id": "391131119962-2oviteeps9t2cou528mrq1oo947n5k7a.apps.googleusercontent.com",
+              "client_type": 2,
+              "ios_info": {
+                "bundle_id": "com.doorstep.userapp"
+              }
+            }
+          ]
+        }
+      }
+    },
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:391131119962:android:210e3a522753cf6edcf363",
         "android_client_info": {
           "package_name": "com.doorstep.app"
         }
@@ -30,6 +66,13 @@
             {
               "client_id": "391131119962-rnj7svvhp9nk84mgum5m71o14an0dmrp.apps.googleusercontent.com",
               "client_type": 3
+            },
+            {
+              "client_id": "391131119962-2oviteeps9t2cou528mrq1oo947n5k7a.apps.googleusercontent.com",
+              "client_type": 2,
+              "ios_info": {
+                "bundle_id": "com.doorstep.userapp"
+              }
             }
           ]
         }
@@ -67,43 +110,13 @@
             {
               "client_id": "391131119962-rnj7svvhp9nk84mgum5m71o14an0dmrp.apps.googleusercontent.com",
               "client_type": 3
-            }
-          ]
-        }
-      }
-    },
-    {
-      "client_info": {
-        "mobilesdk_app_id": "1:391131119962:android:21604420f44d33cfdcf363",
-        "android_client_info": {
-          "package_name": "com.doorstep.userapp"
-        }
-      },
-      "oauth_client": [
-        {
-          "client_id": "391131119962-r4df16igmiib5gok09iuj75u3g8ol6i5.apps.googleusercontent.com",
-          "client_type": 1,
-          "android_info": {
-            "package_name": "com.doorstep.userapp",
-            "certificate_hash": "e371af1bf066fab4ed2e3ed944d6d3f9fdb27f6b"
-          }
-        },
-        {
-          "client_id": "391131119962-rnj7svvhp9nk84mgum5m71o14an0dmrp.apps.googleusercontent.com",
-          "client_type": 3
-        }
-      ],
-      "api_key": [
-        {
-          "current_key": "AIzaSyB0HoBHMzu9-vg2gHzkmZXp8t7zCkXQNL4"
-        }
-      ],
-      "services": {
-        "appinvite_service": {
-          "other_platform_oauth_client": [
+            },
             {
-              "client_id": "391131119962-rnj7svvhp9nk84mgum5m71o14an0dmrp.apps.googleusercontent.com",
-              "client_type": 3
+              "client_id": "391131119962-2oviteeps9t2cou528mrq1oo947n5k7a.apps.googleusercontent.com",
+              "client_type": 2,
+              "ios_info": {
+                "bundle_id": "com.doorstep.userapp"
+              }
             }
           ]
         }
