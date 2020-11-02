@@ -217,7 +217,6 @@ class _ShopsScreenState extends State<ShopsScreen> {
 //
 //              },
 //            ),
-
 //      shops = new List();
 //        final FirebaseDatabase database = FirebaseDatabase.instance;
 //        volunteerRef = database.reference().child("Shops").child(DataStream.ShopCatagory);
@@ -225,7 +224,7 @@ class _ShopsScreenState extends State<ShopsScreen> {
             StreamBuilder(
                 stream: FirebaseDatabase.instance
                     .reference()
-                    .child("Shops").child(DataStream.ShopCatagory)
+                    .child("shopuser")
                     .onValue
                 ,
                 builder: (BuildContext context, AsyncSnapshot<Event> snapshot) {
@@ -247,11 +246,19 @@ class _ShopsScreenState extends State<ShopsScreen> {
                         if(distanceInMeters< DataStream.OrderRadius){
                          // print(distanceInMeters);
 
-                          shops.add(new Shops(
-                              v["key"], v["shopid"], v["shopcategory"],
-                              v["shopdiscription"],
-                              v["shopimage"], v["shopname"], v["location"],
-                              v["openTime"], v["closeTime"], v["ShopStatus"]));
+                          if(DataStream.ShopCatagory== v["shopcategory"]) {
+                            shops.add(new Shops(
+                                v["key"],
+                                v["shopid"],
+                                v["shopcategory"],
+                                v["shopdiscription"],
+                                v["shopimage"],
+                                v["shopname"],
+                                v["location"],
+                                v["openTime"],
+                                v["closeTime"],
+                                v["ShopStatus"]));
+                          }
                         }
 
                       }

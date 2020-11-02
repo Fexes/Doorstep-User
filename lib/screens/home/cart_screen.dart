@@ -173,14 +173,18 @@ class _CartScreenState extends State<CartScreen> {
       }
       else{
 
+        try {
+          userid = firebaseUser.uid;
+          final FirebaseDatabase database = FirebaseDatabase.instance;
+          volunteerRef =
+              database.reference().child("Cart").child(firebaseUser.uid);
+          volunteerRef.onChildAdded.listen(_onEntryAdded);
+       //   volunteerRef.onChildChanged.listen(_onEntryChanged);
+          volunteerRef.onChildRemoved.listen(_onEntryRemoved);
+        }catch(e){
 
+        }
 
-        userid=firebaseUser.uid;
-        final FirebaseDatabase database = FirebaseDatabase.instance;
-        volunteerRef = database.reference().child("Cart").child(firebaseUser.uid);
-        volunteerRef.onChildAdded.listen(_onEntryAdded);
-        volunteerRef.onChildChanged.listen(_onEntryChanged);
-        volunteerRef.onChildRemoved.listen(_onEntryRemoved);
        }
     });
 
@@ -266,6 +270,13 @@ class _CartScreenState extends State<CartScreen> {
                   itemBuilder: (BuildContext context, DataSnapshot snapshot,
                       Animation<double> animation, int index) {
 
+
+                    if(carts[index].no_of_items==0){
+                      final FirebaseDatabase _databaseCustom = FirebaseDatabase.instance;
+                      _databaseCustom.reference().child("Cart").child(DataStream.UserId).child( carts[index].cardid +carts[index].shopid).remove();
+                    }
+
+
                  //   Subtotal=Subtotal+carts[index].cardprice;
                     return GestureDetector(
                       onTap: (){
@@ -317,7 +328,9 @@ class _CartScreenState extends State<CartScreen> {
                                 shape: BoxShape.rectangle,
                                 borderRadius: BorderRadius.all(Radius.circular(15.0)),
                                 image: DecorationImage(
-                                  image: CacheImage(carts[index].cardimage),
+                               //   image: CacheImage(carts[index].cardimage),
+                                  image: NetworkImage(carts[index].cardimage.length>10?carts[index].cardimage:"https://firebasestorage.googleapis.com/v0/b/doorstep-fdb26.appspot.com/o/images%2Fimg_missing.png?alt=media&token=60b4508f-9d43-41db-a85d-5e16240a4466"),
+
                                   fit: BoxFit.cover,
                                 ),
                               ),
@@ -329,9 +342,15 @@ class _CartScreenState extends State<CartScreen> {
                                 crossAxisAlignment: CrossAxisAlignment.start,
                                 mainAxisAlignment: MainAxisAlignment.start,
                                 children: [
-                                  Text(
-                                    '${carts[index].cardname}',
-                                    style: TextStyle(fontSize: 14, fontWeight: FontWeight.w300,color: Colors.black),
+
+                                  Container(
+                                    width: screenWidth(context)/2,
+
+                                    child: Text(
+                                      '${carts[index].cardname}',
+                                      maxLines: 3,
+                                      style: TextStyle(fontSize: 14, fontWeight: FontWeight.w300,color: Colors.black),
+                                    ),
                                   ),
                                   Text(
                                     'Rs. ${carts[index].cardprice} ',
@@ -341,6 +360,7 @@ class _CartScreenState extends State<CartScreen> {
                                     'Items: ${carts[index].no_of_items}',
                                     style: TextStyle(fontSize: 14, fontWeight: FontWeight.w300,color: Colors.black),
                                   ),
+
                                   Text(
                                     'Rs. ${carts[index].no_of_items*carts[index].cardprice}',
                                     style: TextStyle(fontSize: 14, fontWeight: FontWeight.w300,color: Colors.redAccent),

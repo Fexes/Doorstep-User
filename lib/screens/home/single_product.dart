@@ -8,6 +8,7 @@ import 'package:Doorstep/screens/home/cart_screen.dart';
 import 'package:Doorstep/screens/home/shops_screen.dart';
 import 'package:Doorstep/utilts/UI/DataStream.dart';
 import 'package:badges/badges.dart';
+import 'package:cache_image/cache_image.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_database/firebase_database.dart';
@@ -32,13 +33,14 @@ import 'home_screen.dart';
 
 class SingleProduct extends StatefulWidget {
   Product product;
-
-  SingleProduct(Product key){
+  int count;
+  SingleProduct(Product key,int cot){
     product=key;
+    count=cot;
   }
   
   @override
-  _SingleProductState createState() => _SingleProductState(product);
+  _SingleProductState createState() => _SingleProductState(product,count);
 }
 
 class _SingleProductState extends State<SingleProduct> {
@@ -48,8 +50,11 @@ class _SingleProductState extends State<SingleProduct> {
   bool isLoadingError=false;
 
   Product product;
-  _SingleProductState(Product p){
+  int count;
+
+  _SingleProductState(Product p,int c){
     product=p;
+    count=c;
   }
   hideLoadingDialogue(){
 
@@ -117,6 +122,8 @@ class _SingleProductState extends State<SingleProduct> {
   initState()   {
     super.initState();
 
+
+
     FirebaseAuth.instance.currentUser().then((firebaseUser){
 
 
@@ -168,7 +175,6 @@ class _SingleProductState extends State<SingleProduct> {
 
 
   int val=0;
-   int itemcount=0;
 
    String UserId;
 
@@ -220,7 +226,9 @@ class _SingleProductState extends State<SingleProduct> {
                         shape: BoxShape.rectangle,
                         borderRadius: BorderRadius.all(Radius.circular(15.0)),
                         image: DecorationImage(
-                          image: NetworkImage(product.cardimage),
+                        //  image: NetworkImage(product.cardimage),
+                          image: CacheImage(product.cardimage.length>10?product.cardimage:"https://firebasestorage.googleapis.com/v0/b/doorstep-fdb26.appspot.com/o/images%2Fimg_missing.png?alt=media&token=60b4508f-9d43-41db-a85d-5e16240a4466"),
+
                           fit: BoxFit.cover,
                         ),
                       ),
@@ -300,7 +308,7 @@ class _SingleProductState extends State<SingleProduct> {
                         height: 80,
                         child: Center(
                           child: StepperSwipe(
-                            initialValue:0,
+                            initialValue:count,
 
 
                             speedTransitionLimitCount: 1,
@@ -311,14 +319,14 @@ class _SingleProductState extends State<SingleProduct> {
                             iconsColor: Colors.black,
                             withSpring: false,
                             maxValue:50,
-                            stepperValue:itemcount,
+                            stepperValue:count,
                             withNaturalNumbers: true,
                             withPlusMinus: true,
                             withFastCount: true,
 
                             onChanged: (int val) {
 
-                                itemcount=val;
+                              count=val;
                                 setState(() {
 
                                 });
@@ -391,7 +399,7 @@ class _SingleProductState extends State<SingleProduct> {
                     height: 60,
 
                     decoration: BoxDecoration(
-                      color: itemcount==0?Colors.grey[600]: Colors.white,
+                      color: count==0?Colors.grey[600]: Colors.white,
                       borderRadius: BorderRadius.only(
                           topLeft: Radius.circular(10),
                           topRight: Radius.circular(10),
@@ -412,20 +420,19 @@ class _SingleProductState extends State<SingleProduct> {
                       shape: RoundedRectangleBorder(
                         borderRadius: BorderRadius.circular(18.0),
                       ),
-                      color: itemcount==0?Colors.grey[600]: Colors.white,
+                      color: count==0?Colors.grey[600]: Colors.white,
                       onPressed: () async {
 
-                        if(itemcount>0) {
+                        if(count>0) {
                           setState(() {
 
                           });
                           FirebaseDatabase database = new FirebaseDatabase();
                           DatabaseReference _userRef = database.reference()
-                              .child('Cart').child(DataStream.UserId)
-                              .push();
+                              .child('Cart').child(DataStream.UserId).child(product.cardid+DataStream.ShopId);
 
                           _userRef.set(<dynamic, dynamic>{
-                            'no_of_items': itemcount,
+                            'no_of_items': count,
                             'cardid': product.cardid.toString(),
                             'cardname': product.cardname.toString(),
                             'cardimage': product.cardimage.toString(),
@@ -437,7 +444,7 @@ class _SingleProductState extends State<SingleProduct> {
 
                           }).then((_) {
                             setState(() {
-                              itemcount=0;
+                             // count=0;
 
                             });
                             ToastUtils.showCustomToast(
@@ -450,7 +457,7 @@ class _SingleProductState extends State<SingleProduct> {
                           ToastUtils.showCustomToast(context, "Select Quantity", null);
                         }
                       },
-                      child: Text('Add to Cart',style: TextStyle(color: itemcount==0?Colors.grey[400]: Colors.black,fontWeight: FontWeight.w500, fontSize: 16),),
+                      child: Text('Add to Cart',style: TextStyle(color: count==0?Colors.grey[400]: Colors.black,fontWeight: FontWeight.w500, fontSize: 16),),
                     ),
                   ),
                   SizedBox(width: 20,),

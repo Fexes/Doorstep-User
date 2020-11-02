@@ -252,7 +252,7 @@ class HomePage extends State<Home> {
     final FirebaseDatabase database = FirebaseDatabase.instance;
     volunteerRef = database.reference().child("Cart").child(DataStream.UserId);
     volunteerRef.onChildAdded.listen(_onEntryAdded);
-    volunteerRef.onChildChanged.listen(_onEntryChanged);
+  //  volunteerRef.onChildChanged.listen(_onEntryChanged);
 
   }
   _onEntryChanged(Event event) {
