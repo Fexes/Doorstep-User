@@ -8,7 +8,7 @@ import 'package:flutter_spinkit/flutter_spinkit.dart';
 import 'package:Doorstep/utilts/UI/toast_utility.dart';
 import 'package:flutter/material.dart';
 import 'package:Doorstep/styles/styles.dart';
-import 'package:Doorstep/screens/auth/sign-up.dart';
+ 
 import 'package:google_sign_in/google_sign_in.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'dart:async';
@@ -276,7 +276,7 @@ class _SignInState extends State<SignIn> {
                      //   await loginUser();
                         signin();
                       },
-                      child: Text( "SIGN IN",style: TextStyle(color: Colors.white),),
+                      child: Text( " Sign In",style: TextStyle(color: Colors.white),),
                     ),
                   ),
 

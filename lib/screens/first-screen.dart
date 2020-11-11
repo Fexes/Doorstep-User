@@ -69,7 +69,7 @@ class SplashScreenState extends State<SplashScreen> with TickerProviderStateMixi
                     child: Container(
                         height: 200 ,
                         width: 200,
-                        child:  Lottie.asset('assets/logo.json',repeat: true,  controller: _controller,
+                        child:  Lottie.asset('assets/logo.json',repeat: true,  frameRate: FrameRate.max,controller: _controller,
                           onLoaded: (composition) {
                             _controller
                               ..duration = composition.duration

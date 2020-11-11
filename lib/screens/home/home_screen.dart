@@ -17,7 +17,7 @@ import 'package:flutter_spinkit/flutter_spinkit.dart';
 import 'package:Doorstep/utilts/UI/toast_utility.dart';
 import 'package:flutter/material.dart';
 import 'package:Doorstep/styles/styles.dart';
-import 'package:Doorstep/screens/auth/sign-up.dart';
+ 
 import 'package:google_map_location_picker/google_map_location_picker.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:rate_my_app/rate_my_app.dart';
@@ -252,7 +252,7 @@ class HomePage extends State<Home> {
     final FirebaseDatabase database = FirebaseDatabase.instance;
     volunteerRef = database.reference().child("Cart").child(DataStream.UserId);
     volunteerRef.onChildAdded.listen(_onEntryAdded);
-  //  volunteerRef.onChildChanged.listen(_onEntryChanged);
+    volunteerRef.onChildChanged.listen(_onEntryChanged);
 
   }
   _onEntryChanged(Event event) {
@@ -1538,7 +1538,7 @@ class HomePage extends State<Home> {
                 MaterialPageRoute(
                     builder: (context) => SignIn()));
           },
-          child: Text( "SIGN IN",style: TextStyle(color: Colors.white),),
+          child: Text( " Sign In",style: TextStyle(color: Colors.white),),
         ),
       ),
     );
@@ -1765,7 +1765,7 @@ class HomePage extends State<Home> {
                MaterialPageRoute(
                    builder: (context) => SignIn()));
          },
-         child: Text( "SIGN IN",style: TextStyle(color: Colors.white),),
+         child: Text( " Sign In",style: TextStyle(color: Colors.white),),
        ),
      ),
     );
@@ -2271,7 +2271,7 @@ class HomePage extends State<Home> {
                     MaterialPageRoute(
                         builder: (context) => SignIn()));
               },
-              child: Text( "SIGN IN",style: TextStyle(color: Colors.white),),
+              child: Text( " Sign In",style: TextStyle(color: Colors.white),),
             ),
           ),
         ),

@@ -18,7 +18,7 @@ import 'package:flutter_spinkit/flutter_spinkit.dart';
 import 'package:Doorstep/utilts/UI/toast_utility.dart';
 import 'package:flutter/material.dart';
 import 'package:Doorstep/styles/styles.dart';
-import 'package:Doorstep/screens/auth/sign-up.dart';
+ 
 import 'package:shared_preferences/shared_preferences.dart';
 import 'dart:async';
 import 'dart:convert' show jsonDecode, utf8;
@@ -33,12 +33,13 @@ import 'home_screen.dart';
 
 class SingleProduct extends StatefulWidget {
   Product product;
-  int count;
+   int count;
   SingleProduct(Product key,int cot){
     product=key;
     count=cot;
   }
-  
+
+
   @override
   _SingleProductState createState() => _SingleProductState(product,count);
 }
@@ -530,7 +531,7 @@ class _SingleProductState extends State<SingleProduct> {
                         MaterialPageRoute(
                             builder: (context) => SignIn()));
                   },
-                  child: Text( "SIGN IN",style: TextStyle(color: Colors.white),),
+                  child: Text( " Sign In",style: TextStyle(color: Colors.white),),
                 ),
               ),
             ),

@@ -133,7 +133,7 @@ class _ForgotPasswordState extends State<ForgotPassword> {
                   onPressed: () async {
                     await resetPassword();
                   },
-                  child: Text( "SIGN IN"),
+                  child: Text( " Sign In"),
                 ),
               ],
             ),

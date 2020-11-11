@@ -10,7 +10,7 @@ import 'package:flutter_spinkit/flutter_spinkit.dart';
 import 'package:Doorstep/utilts/UI/toast_utility.dart';
 import 'package:flutter/material.dart';
 import 'package:Doorstep/styles/styles.dart';
-import 'package:Doorstep/screens/auth/sign-up.dart';
+ 
 import 'package:geolocator/geolocator.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'dart:async';
@@ -403,7 +403,27 @@ class _ShopsScreenState extends State<ShopsScreen> {
                       },
                     );
                   } else {
-                    return Center(child: CircularProgressIndicator());
+                    return Center(child: Column(
+                              mainAxisAlignment: MainAxisAlignment.center,
+                              crossAxisAlignment: CrossAxisAlignment.center,
+                              children: <Widget>[
+                                SpinKitFadingCircle(
+                                  itemBuilder: (BuildContext context, int index) {
+                                    return DecoratedBox(
+                                      decoration: BoxDecoration(
+                                        color: index==1 ? Colors.green[900] :index==2 ?Colors.green[800] : index==3 ?Colors.green[700] : index==4 ?
+                                        Colors.green[600] :index==5 ?Colors.green[500] : index==6 ?Colors.green[400]:
+                                        index==1 ?Colors.green[300] : index==1 ?Colors.green[200] : index==1 ?Colors.green[100] : index==1 ?
+                                        Colors.green[100] :index==1 ?Colors.green[100] :Colors.green[900]
+                                        ,
+                                        borderRadius: BorderRadius.all(Radius.circular(30.0)),
+                                      ),
+                                    );
+                                  },
+                                ),
+                                Text("Loading", style: TextStyle(fontSize: 12,color: Colors.white),),
+                              ],
+                            ));
                   }
                 }),
           ),

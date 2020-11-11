@@ -4,6 +4,7 @@ import 'dart:io';
 import 'package:Doorstep/models/Cart.dart';
 import 'package:Doorstep/models/Product.dart';
 import 'package:Doorstep/models/Shops.dart';
+import 'package:Doorstep/screens/auth/sign-in.dart';
 import 'package:Doorstep/screens/home/shops_screen.dart';
 import 'package:Doorstep/screens/home/single_product.dart';
 import 'package:Doorstep/utilts/UI/DataStream.dart';
@@ -17,7 +18,7 @@ import 'package:flutter_spinkit/flutter_spinkit.dart';
 import 'package:Doorstep/utilts/UI/toast_utility.dart';
 import 'package:flutter/material.dart';
 import 'package:Doorstep/styles/styles.dart';
-import 'package:Doorstep/screens/auth/sign-up.dart';
+ 
 import 'package:intl/intl.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'dart:async';
@@ -57,6 +58,7 @@ class _ProductCatalogState extends State<ProductCatalog> {
     shop=s;
 
   }
+  bool isLoaded=false;
   hideLoadingDialogue(){
 
     if(isloadingDialogueShowing) {
@@ -263,6 +265,7 @@ class _ProductCatalogState extends State<ProductCatalog> {
 
   _onEntryAdded(Event event) {
 
+    isLoaded=true;
     products.add(Product.fromSnapshot(event.snapshot));
     productsItemcount.add(0);
     productscat.add(Product.fromSnapshot(event.snapshot));
@@ -539,9 +542,6 @@ class _ProductCatalogState extends State<ProductCatalog> {
                                 );
 
 
-
-
-
                             }).toList(),
                           ),
                         ),
@@ -554,6 +554,7 @@ class _ProductCatalogState extends State<ProductCatalog> {
                       child: Container(
                         child:
 
+                            isLoaded?
                         GridView.builder(
                           //SliverGridDelegateWithFixedCrossAxisCount
                           gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
@@ -579,8 +580,8 @@ class _ProductCatalogState extends State<ProductCatalog> {
 
 
 
-                            return
-                              Stack(
+
+                            return Stack(
                                 children: [
 
                                   GestureDetector(
@@ -598,6 +599,11 @@ class _ProductCatalogState extends State<ProductCatalog> {
                                     },
                                   onTap: (){
 
+
+                                      if(user==null){
+                                        ToastUtils.showCustomToast(context, "Long Press to View Details", null);
+
+                                      }else{
 
                                       if(products[index].stock=="out_of_stock") {
                                         ToastUtils.showCustomToast(context, "Item Out of Stock",null);
@@ -632,6 +638,7 @@ class _ProductCatalogState extends State<ProductCatalog> {
                                         });
                                       }
 
+                                      }
 
                                   },
                                   child:
@@ -897,8 +904,30 @@ class _ProductCatalogState extends State<ProductCatalog> {
                                   SizedBox(),
                                 ],
                               );
+
                           },
-                        ),
+                        ):
+                            Center(child: Column(
+                              mainAxisAlignment: MainAxisAlignment.center,
+                              crossAxisAlignment: CrossAxisAlignment.center,
+                              children: <Widget>[
+                                SpinKitFadingCircle(
+                                  itemBuilder: (BuildContext context, int index) {
+                                    return DecoratedBox(
+                                      decoration: BoxDecoration(
+                                        color: index==1 ? Colors.green[900] :index==2 ?Colors.green[800] : index==3 ?Colors.green[700] : index==4 ?
+                                        Colors.green[600] :index==5 ?Colors.green[500] : index==6 ?Colors.green[400]:
+                                        index==1 ?Colors.green[300] : index==1 ?Colors.green[200] : index==1 ?Colors.green[100] : index==1 ?
+                                        Colors.green[100] :index==1 ?Colors.green[100] :Colors.green[900]
+                                        ,
+                                        borderRadius: BorderRadius.all(Radius.circular(30.0)),
+                                      ),
+                                    );
+                                  },
+                                ),
+                                Text("Loading", style: TextStyle(fontSize: 12,color: Colors.white),),
+                              ],
+                            ))
                       ),
 
 
@@ -940,11 +969,17 @@ class _ProductCatalogState extends State<ProductCatalog> {
                   //   Navigator.push( context, MaterialPageRoute( builder: (BuildContext context) => CartScreen(),),);
 
 
-                  Navigator.of(context).pushReplacement(
-                      MaterialPageRoute(
-                          builder: (context) => CartScreen()));
+                  if(user!=null) {
+                    Navigator.of(context).pushReplacement(
+                        MaterialPageRoute(
+                            builder: (context) => CartScreen()));
+                  }else{
+                    Navigator.of(context).pushReplacement(
+                        MaterialPageRoute(
+                            builder: (context) => SignIn()));
+                  }
                 },
-                child: Text('My Cart',style: TextStyle(color: Colors.white,fontWeight: FontWeight.w500, fontSize: 16),),
+                child: Text(user!=null?'My Cart':'Sign In',style: TextStyle(color: Colors.white,fontWeight: FontWeight.w500, fontSize: 16),),
               ),
             ),
           ),

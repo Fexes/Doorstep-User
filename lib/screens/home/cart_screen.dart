@@ -1,6 +1,7 @@
 import 'dart:io';
 
  import 'package:Doorstep/models/Cart.dart';
+import 'package:Doorstep/models/Product.dart';
 import 'package:Doorstep/models/Shops.dart';
 import 'package:Doorstep/screens/auth/sign-in.dart';
 import 'package:Doorstep/screens/first-screen.dart';
@@ -14,9 +15,11 @@ import 'package:flutter_spinkit/flutter_spinkit.dart';
 import 'package:Doorstep/utilts/UI/toast_utility.dart';
 import 'package:flutter/material.dart';
 import 'package:Doorstep/styles/styles.dart';
-import 'package:Doorstep/screens/auth/sign-up.dart';
+ 
 import 'package:shared_preferences/shared_preferences.dart';
 import 'dart:async';
+import 'package:Doorstep/screens/home/single_product.dart';
+
 import 'dart:convert' show jsonDecode, utf8;
 import 'package:progress_dialog/progress_dialog.dart';
 
@@ -282,6 +285,9 @@ class _CartScreenState extends State<CartScreen> {
                       onTap: (){
 
 
+                     //   Product product = new Product(carts[index].key, carts[index].cardid, carts[index].cardname, carts[index].cardimage, carts[index].cardprice, carts[index].carddiscription, carts[index].unit, "", "");
+                   //     Navigator.push( context, MaterialPageRoute( builder: (BuildContext context) => SingleProduct(product,productsItemcount[index]),),);
+
                       },
                       child: Padding(
                         padding: EdgeInsets.all(10),
@@ -353,7 +359,7 @@ class _CartScreenState extends State<CartScreen> {
                                     ),
                                   ),
                                   Text(
-                                    'Rs. ${carts[index].cardprice} ',
+                                    'Rs. ${carts[index].cardprice} / ${carts[index].unit}',
                                     style: TextStyle(fontSize: 14, fontWeight: FontWeight.w300,color: Colors.black),
                                   ),
                                   Text(

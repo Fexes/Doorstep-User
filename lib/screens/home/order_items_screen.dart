@@ -15,7 +15,7 @@ import 'package:flutter_spinkit/flutter_spinkit.dart';
 import 'package:Doorstep/utilts/UI/toast_utility.dart';
 import 'package:flutter/material.dart';
 import 'package:Doorstep/styles/styles.dart';
-import 'package:Doorstep/screens/auth/sign-up.dart';
+ 
 import 'package:geolocator/geolocator.dart';
 import 'package:google_map_location_picker/google_map_location_picker.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
@@ -622,7 +622,7 @@ class _OrderItemsScreenState extends State<OrderItemsScreen> {
 
                     //  print("Shops."+Cart.fromSnapshot(event.snapshot).town+"."+Cart.fromSnapshot(event.snapshot).shopcatagory+"."+Cart.fromSnapshot(event.snapshot).shopid+" orders."+"active."+orders[index].orderID);
 
-                      _userRef.push().set(<dynamic, dynamic>{
+                      _userRef.child(Cart.fromSnapshot(event.snapshot).cardid.toString()+Cart.fromSnapshot(event.snapshot).shopid).set(<dynamic, dynamic>{
                         'no_of_items': Cart.fromSnapshot(event.snapshot).no_of_items,
                         'cardid': Cart.fromSnapshot(event.snapshot).cardid.toString(),
                         'cardname': Cart.fromSnapshot(event.snapshot).cardname.toString(),
