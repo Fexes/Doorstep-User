@@ -301,7 +301,6 @@ bool error=false;
                     ),
                     SizedBox(height: 10,),
 
-
                     SizedBox(
                       width:200,
                       child: RaisedButton(
