@@ -13,7 +13,8 @@ import 'package:carousel_slider/carousel_options.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_database/firebase_database.dart';
 import 'package:flutter/cupertino.dart';
-import 'package:flutter_spinkit/flutter_spinkit.dart';
+import 'package:flutter_open_whatsapp/flutter_open_whatsapp.dart';
+ import 'package:flutter_spinkit/flutter_spinkit.dart';
 import 'package:Doorstep/utilts/UI/toast_utility.dart';
 import 'package:flutter/material.dart';
 import 'package:Doorstep/styles/styles.dart';
@@ -117,7 +118,12 @@ class HomePage extends State<Home> {
   @override
   Future<void> initState()  {
     super.initState();
+
+
+    haswhatsapp();
+
     FirebaseAuth.instance.currentUser().then((firebaseUser){
+
 
 
       user=firebaseUser;
@@ -138,6 +144,15 @@ class HomePage extends State<Home> {
 
     });
 
+  }
+
+  haswhatsapp() async {
+ //   whatsapp = await FlutterLaunch.hasApp(name: "whatsapp");
+
+    whatsapp=true;
+    setState(() {
+
+    });
   }
 
     void getodercount(){
@@ -191,7 +206,7 @@ class HomePage extends State<Home> {
   }
    List<Order> orders;
   List<Banners> banners;
-
+  bool whatsapp=false;
   DatabaseReference volunteerRef;
   List<String> imgList;
 
@@ -321,7 +336,23 @@ class HomePage extends State<Home> {
          title:  Row(
            mainAxisAlignment: MainAxisAlignment.spaceBetween,
            children: [
-              Text('     '),
+             user!=null?
+             GestureDetector(
+               onTap: () async {
+
+              //   FlutterOpenWhatsapp.sendSingleMessage("+923125212919", "");
+
+                 UrlLauncher.launch('whatsapp://send/?phone=+923125212919&text=');
+
+
+              //   print("asdasd");
+
+               },
+                child:   Image.asset("assets/icons/whatsapp.png",height: 33,width: 33, ),
+
+
+             )
+                 :SizedBox(height: 1,),
 
              Text('Doorstep'),
            //  Image.asset("assets/icons/logo.png",height: 40,width: 40, ),

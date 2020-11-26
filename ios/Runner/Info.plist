@@ -16,26 +16,6 @@
 	<string>$(FLUTTER_BUILD_NAME)</string>
 	<key>CFBundleSignature</key>
 	<string>????</string>
-    <key>NSAppleMusicUsageDescription</key>
-        <string>Your permission is required to use apple music service in your app</string>
-        <key>NSCalendarsUsageDescription</key>
-        <string>Your permission is required to use calender in your app</string>
-        <key>NSContactsUsageDescription</key>
-        <string>Your permission is required to use contacts in your app</string>
-        <key>NSLocationAlwaysAndWhenInUseUsageDescription</key>
-        <string>Your permission is required to use location services for delivering your orders to your door step</string>
-        <key>NSLocationAlwaysUsageDescription</key>
-        <string>Your permission is required to use location services for delivering your orders to your door step</string>
-        <key>NSLocationUsageDescription</key>
-        <string>Your permission is required to use location services for delivering your orders to your door step</string>
-        <key>NSLocationWhenInUseUsageDescription</key>
-        <string>Your permission is required to use location services for delivering your orders to your door step</string>
-        <key>NSMotionUsageDescription</key>
-        <string>Your permission is required to use motion service in your app</string>
-        <key>NSPhotoLibraryUsageDescription</key>
-        <string>Your permission is required to use photo library in your app</string>
-        <key>NSSpeechRecognitionUsageDescription</key>
-        <string>Your permission is required to use speech recognition service in your app</string>
 	<key>CFBundleURLTypes</key>
 	<array>
 		<dict>
@@ -51,6 +31,12 @@
 	<string>$(FLUTTER_BUILD_NUMBER)</string>
 	<key>LSRequiresIPhoneOS</key>
 	<true/>
+	<key>NSAppleMusicUsageDescription</key>
+	<string>Your permission is required to use apple music service in your app</string>
+	<key>NSCalendarsUsageDescription</key>
+	<string>Your permission is required to use calender in your app</string>
+	<key>NSContactsUsageDescription</key>
+	<string>Your permission is required to use contacts in your app</string>
 	<key>NSLocationAlwaysAndWhenInUseUsageDescription</key>
 	<string>Location</string>
 	<key>NSLocationAlwaysUsageDescription</key>
@@ -59,8 +45,12 @@
 	<string>Location</string>
 	<key>NSLocationWhenInUseUsageDescription</key>
 	<string> location description.</string>
+	<key>NSMotionUsageDescription</key>
+	<string>Your permission is required to use motion service in your app</string>
 	<key>NSPhotoLibraryUsageDescription</key>
 	<string> photos description.</string>
+	<key>NSSpeechRecognitionUsageDescription</key>
+	<string>Your permission is required to use speech recognition service in your app</string>
 	<key>UIBackgroundModes</key>
 	<array>
 		<string>remote-notification</string>

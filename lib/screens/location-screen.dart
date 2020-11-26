@@ -314,7 +314,7 @@ bool error=false;
                         onPressed: () async {
 
                           LaunchReview.launch(androidAppId:"com.doorstep.app",
-                              iOSAppId: "1:391131119962:ios:7800a1fb8c2e8cfcdcf363");
+                              iOSAppId: "1538598183");
 
                           setState(() {
 
@@ -326,19 +326,27 @@ bool error=false;
                   ],
                 ):
 
-                SpinKitFadingCircle(
-                  itemBuilder: (BuildContext context, int index) {
-                    return DecoratedBox(
-                      decoration: BoxDecoration(
-                        color: index==1 ? Colors.green[900] :index==2 ?Colors.green[800] : index==3 ?Colors.green[700] : index==4 ?
-                        Colors.green[600] :index==5 ?Colors.green[500] : index==6 ?Colors.green[400]:
-                        index==1 ?Colors.green[300] : index==1 ?Colors.green[200] : index==1 ?Colors.green[100] : index==1 ?
-                        Colors.green[100] :index==1 ?Colors.green[100] :Colors.green[900]
-                        ,
-                        borderRadius: BorderRadius.all(Radius.circular(30.0)),
-                      ),
-                    );
-                  },
+                Stack(
+                  alignment: Alignment.center,
+                  children: [
+                    Image.asset("assets/icons/logo.png",height: 23,width: 23, ),
+
+                    SpinKitFadingCircle(
+                      size: 60,
+                      itemBuilder: (BuildContext context, int index) {
+                        return DecoratedBox(
+                          decoration: BoxDecoration(
+                            color: index==1 ? Colors.green[900] :index==2 ?Colors.green[800] : index==3 ?Colors.green[700] : index==4 ?
+                            Colors.green[600] :index==5 ?Colors.green[500] : index==6 ?Colors.green[400]:
+                            index==1 ?Colors.green[300] : index==1 ?Colors.green[200] : index==1 ?Colors.green[100] : index==1 ?
+                            Colors.green[100] :index==1 ?Colors.green[100] :Colors.green[900]
+                            ,
+                            borderRadius: BorderRadius.all(Radius.circular(30.0)),
+                          ),
+                        );
+                      },
+                    ),
+                  ],
                 ),
                 // SizedBox(
                 //   width:300,

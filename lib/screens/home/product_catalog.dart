@@ -1,3 +1,5 @@
+
+
 import 'dart:collection';
 import 'dart:io';
 
@@ -18,7 +20,7 @@ import 'package:flutter_spinkit/flutter_spinkit.dart';
 import 'package:Doorstep/utilts/UI/toast_utility.dart';
 import 'package:flutter/material.dart';
 import 'package:Doorstep/styles/styles.dart';
- 
+
 import 'package:intl/intl.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'dart:async';
@@ -85,7 +87,7 @@ class _ProductCatalogState extends State<ProductCatalog> {
               SpinKitFadingCircle(
                 itemBuilder: (BuildContext context, int index) {
                   return DecoratedBox(
-                     decoration: BoxDecoration(
+                    decoration: BoxDecoration(
                       color: index==1 ? Colors.green[900] :index==2 ?Colors.green[800] : index==3 ?Colors.green[700] : index==4 ?
                       Colors.green[600] :index==5 ?Colors.green[500] : index==6 ?Colors.green[400]:
                       index==1 ?Colors.green[300] : index==1 ?Colors.green[200] : index==1 ?Colors.green[100] : index==1 ?
@@ -122,7 +124,7 @@ class _ProductCatalogState extends State<ProductCatalog> {
 
   String img;
 
-   @override
+  @override
   initState()   {
     super.initState();
     _focusNode = new FocusNode();
@@ -137,7 +139,7 @@ class _ProductCatalogState extends State<ProductCatalog> {
 
     img=     "https://firebasestorage.googleapis.com/v0/b/doorstep-fdb26.appspot.com/o/images%2Fimg_missing.png?alt=media&token=60b4508f-9d43-41db-a85d-5e16240a4466";
 
-     setuplist();
+    setuplist();
 
 
 
@@ -151,7 +153,7 @@ class _ProductCatalogState extends State<ProductCatalog> {
 
     });
 
-     //  filterProductCatagory("fruit");
+    //  filterProductCatagory("fruit");
 
 
     FirebaseAuth.instance.currentUser().then((firebaseUser){
@@ -161,7 +163,7 @@ class _ProductCatalogState extends State<ProductCatalog> {
       if(firebaseUser != null) {
 
         try {
-           final FirebaseDatabase database = FirebaseDatabase.instance;
+          final FirebaseDatabase database = FirebaseDatabase.instance;
           volunteerRef =
               database.reference().child("Cart").child(firebaseUser.uid);
           volunteerRef.onChildAdded.listen(_onEntryAddedcart);
@@ -176,22 +178,22 @@ class _ProductCatalogState extends State<ProductCatalog> {
 
     });
 
-   }
+  }
 
 
   _onEntryChangedcart(Event event) {
-     try {
-       var old = carts.singleWhere((entry) {
-         return entry.key == event.snapshot.key;
-       });
+    try {
+      var old = carts.singleWhere((entry) {
+        return entry.key == event.snapshot.key;
+      });
 
 
-       setState(() {
-         carts[carts.indexOf(old)] = Cart.fromSnapshot(event.snapshot);
-       });
-     }catch(e){
+      setState(() {
+        carts[carts.indexOf(old)] = Cart.fromSnapshot(event.snapshot);
+      });
+    }catch(e){
 
-     }
+    }
   }
 
   _onEntryAddedcart(Event event) {
@@ -204,18 +206,18 @@ class _ProductCatalogState extends State<ProductCatalog> {
 
   filterProducts(String filter) {
 
-     products.clear();
-     productsItemcount.clear();
-     for(int i=0;i<=productscat.length-1;i++){
-       if(productscat[i].cardname.toLowerCase().contains(filter.toLowerCase())){
-         products.add(productscat[i]);
-         productsItemcount.add(0);
-       }
+    products.clear();
+    productsItemcount.clear();
+    for(int i=0;i<=productscat.length-1;i++){
+      if(productscat[i].cardname.toLowerCase().contains(filter.toLowerCase())){
+        products.add(productscat[i]);
+        productsItemcount.add(0);
+      }
 
-     }
-     setState(() {
+    }
+    setState(() {
 
-     });
+    });
 
   }
 
@@ -223,30 +225,30 @@ class _ProductCatalogState extends State<ProductCatalog> {
 
   filterProductCatagory(String filter) {
 
-     if(filter=="All"){
-       products.clear();
-       productsItemcount.clear();
+    if(filter=="All"){
+      products.clear();
+      productsItemcount.clear();
 
-       for (int i = 0; i <= productscat.length - 1; i++) {
+      for (int i = 0; i <= productscat.length - 1; i++) {
 
-           products.add(productscat[i]);
-           productsItemcount.add(0);
-       }
-      }else {
-       products.clear();
-       productsItemcount.clear();
+        products.add(productscat[i]);
+        productsItemcount.add(0);
+      }
+    }else {
+      products.clear();
+      productsItemcount.clear();
 
-       for (int i = 0; i <= productscat.length - 1; i++) {
-         if (productscat[i].category.toLowerCase().contains(
-             filter.toLowerCase())) {
-           products.add(productscat[i]);
-           productsItemcount.add(0);
-         }
-       }
-     }
-     setState(() {
+      for (int i = 0; i <= productscat.length - 1; i++) {
+        if (productscat[i].category.toLowerCase().contains(
+            filter.toLowerCase())) {
+          products.add(productscat[i]);
+          productsItemcount.add(0);
+        }
+      }
+    }
+    setState(() {
 
-     });
+    });
 
   }
   Future<void> setuplist() async {
@@ -254,9 +256,9 @@ class _ProductCatalogState extends State<ProductCatalog> {
     products.clear();
     productsItemcount.clear();
 
-        final FirebaseDatabase database = FirebaseDatabase.instance;
-        volunteerRef = database.reference().child("Shops").child(DataStream.ShopCatagory).child(SHOP_KEY).child("Products");
-        volunteerRef.onChildAdded.listen(_onEntryAdded);
+    final FirebaseDatabase database = FirebaseDatabase.instance;
+    volunteerRef = database.reference().child("Shops").child(DataStream.ShopCatagory).child(SHOP_KEY).child("Products");
+    volunteerRef.onChildAdded.listen(_onEntryAdded);
 
   }
 
@@ -305,7 +307,7 @@ class _ProductCatalogState extends State<ProductCatalog> {
   final TextEditingController _searchTextController =
   TextEditingController();
 
-   String search="";
+  String search="";
   String catsearch="";
 
   bool searchVisiblity=false;
@@ -325,78 +327,78 @@ class _ProductCatalogState extends State<ProductCatalog> {
                   SliverAppBar(
                     expandedHeight: 230.0,
 
-                     floating: false,
+                    floating: false,
                     pinned: true,
                     flexibleSpace: FlexibleSpaceBar(
-                        centerTitle: true,
-                        title: Text( shop.shopname,
-                            style: TextStyle(
-                              color: Colors.white,
-                            )),
-                        background:Container(
-                           width: double.infinity,
+                      centerTitle: true,
+                      title: Text( shop.shopname,
+                          style: TextStyle(
+                            color: Colors.white,
+                          )),
+                      background:Container(
+                        width: double.infinity,
 
-                          decoration: BoxDecoration(
+                        decoration: BoxDecoration(
 
-                            shape: BoxShape.rectangle,
-                            borderRadius: BorderRadius.all(Radius.circular(0)),
-                            image: DecorationImage(
-                              image: NetworkImage(shop.shopimage),
-                              fit: BoxFit.cover,
-                            ),
+                          shape: BoxShape.rectangle,
+                          borderRadius: BorderRadius.all(Radius.circular(0)),
+                          image: DecorationImage(
+                            image: NetworkImage(shop.shopimage),
+                            fit: BoxFit.cover,
                           ),
-                          child:  Padding(
-                            padding: EdgeInsets.all(0),
-                            child: Container(
+                        ),
+                        child:  Padding(
+                          padding: EdgeInsets.all(0),
+                          child: Container(
 
-                              height: 150,
-                              decoration: BoxDecoration(
+                            height: 150,
+                            decoration: BoxDecoration(
 
-                                shape: BoxShape.rectangle,
-                                borderRadius: BorderRadius.all(Radius.circular(0)),
-                                gradient: new LinearGradient(
-                                    colors: [
-                                      Colors.black.withOpacity(0.7),
-                                      Colors.black.withOpacity(0.7),
-                                    ],
-                                    begin: const FractionalOffset(0.0, 0.0),
-                                    end: const FractionalOffset(0.0, 1.0),
-                                    stops: [0.0, 1.0],
-                                    tileMode: TileMode.clamp),
-
-                              ),
-
-                              child: Column(
-                                crossAxisAlignment: CrossAxisAlignment.center,
-                                mainAxisAlignment: MainAxisAlignment.center,
-                                children: [
-
-                                  DateFormat("h:mma").format(DateFormat("hh:mm").parse(shop.openTime)) == DateFormat("h:mma").format(DateFormat("hh:mm").parse(shop.closeTime))?
-                                  Text(
-                                   "24 / 7 Open",
-                                    style: TextStyle(fontSize: 28, fontWeight: FontWeight.w400,color: Colors.white),
-                                  ):
-                                  Text(
-                                    DateFormat("h:mma").format(DateFormat("hh:mm").parse(shop.openTime))  +"  -  "+ DateFormat("h:mma").format(DateFormat("hh:mm").parse(shop.closeTime)),
-                                    style: TextStyle(fontSize: 28, fontWeight: FontWeight.w400,color: Colors.white),
-                                  ),
-                                  Text(
-                                    "Delivery 30 - 60 min",
-                                    style: TextStyle(fontSize: 20, fontWeight: FontWeight.w300,color: Colors.white),
-                                  ),
-                                  Text(
-                                    "Depending on your location",
-                                    style: TextStyle(fontSize: 12, fontWeight: FontWeight.w200,color: Colors.white),
-                                  ),
-
-
-
-                                ],
-                              ),
+                              shape: BoxShape.rectangle,
+                              borderRadius: BorderRadius.all(Radius.circular(0)),
+                              gradient: new LinearGradient(
+                                  colors: [
+                                    Colors.black.withOpacity(0.7),
+                                    Colors.black.withOpacity(0.7),
+                                  ],
+                                  begin: const FractionalOffset(0.0, 0.0),
+                                  end: const FractionalOffset(0.0, 1.0),
+                                  stops: [0.0, 1.0],
+                                  tileMode: TileMode.clamp),
 
                             ),
-                          ), /* add child content here */
-                        ),
+
+                            child: Column(
+                              crossAxisAlignment: CrossAxisAlignment.center,
+                              mainAxisAlignment: MainAxisAlignment.center,
+                              children: [
+
+                                DateFormat("h:mma").format(DateFormat("hh:mm").parse(shop.openTime)) == DateFormat("h:mma").format(DateFormat("hh:mm").parse(shop.closeTime))?
+                                Text(
+                                  "24 / 7 Open",
+                                  style: TextStyle(fontSize: 28, fontWeight: FontWeight.w400,color: Colors.white),
+                                ):
+                                Text(
+                                  DateFormat("h:mma").format(DateFormat("hh:mm").parse(shop.openTime))  +"  -  "+ DateFormat("h:mma").format(DateFormat("hh:mm").parse(shop.closeTime)),
+                                  style: TextStyle(fontSize: 28, fontWeight: FontWeight.w400,color: Colors.white),
+                                ),
+                                Text(
+                                  "Delivery 30 - 60 min",
+                                  style: TextStyle(fontSize: 20, fontWeight: FontWeight.w300,color: Colors.white),
+                                ),
+                                Text(
+                                  "Depending on your location",
+                                  style: TextStyle(fontSize: 12, fontWeight: FontWeight.w200,color: Colors.white),
+                                ),
+
+
+
+                              ],
+                            ),
+
+                          ),
+                        ), /* add child content here */
+                      ),
 
                     ),
                   ),
@@ -404,157 +406,157 @@ class _ProductCatalogState extends State<ProductCatalog> {
               },
 
               body:
-                Column(
-                  children: [
+              Column(
+                children: [
 
-                //    SizedBox(height: 90,),
-                     Padding(
-                      padding: const EdgeInsets.fromLTRB(20, 15, 20, 15),
-                      child: Container(
+                  //    SizedBox(height: 90,),
+                  Padding(
+                    padding: const EdgeInsets.fromLTRB(20, 15, 20, 15),
+                    child: Container(
 
-                        child: Padding(
-                          padding: const EdgeInsets.fromLTRB(20, 5, 20, 5),
-                          child: Row(
+                      child: Padding(
+                        padding: const EdgeInsets.fromLTRB(20, 5, 20, 5),
+                        child: Row(
 
-                            mainAxisAlignment: MainAxisAlignment.start,
-                            children: <Widget>[
-                              Flexible(
-                                  flex: 1,
-                                  child: Icon(Icons.search)),
-                              SizedBox(width: 10,),
-                              Flexible(
-                                flex: 18,
-                                child: Container(
-                                  child: TextFormField(
-                                    cursorColor: Colors.black, cursorRadius: Radius.circular(1.0), cursorWidth: 1.0,
-                                    keyboardType: TextInputType.text,
+                          mainAxisAlignment: MainAxisAlignment.start,
+                          children: <Widget>[
+                            Flexible(
+                                flex: 1,
+                                child: Icon(Icons.search)),
+                            SizedBox(width: 10,),
+                            Flexible(
+                              flex: 18,
+                              child: Container(
+                                child: TextFormField(
+                                  cursorColor: Colors.black, cursorRadius: Radius.circular(1.0), cursorWidth: 1.0,
+                                  keyboardType: TextInputType.text,
 
-                                    controller: _searchTextController,
-                                    onChanged: (String value){
+                                  controller: _searchTextController,
+                                  onChanged: (String value){
 
-                                      search = value;
+                                    search = value;
 
-                                      filterProducts(search);
+                                    filterProducts(search);
 
 
-                                      // final FormState form = _formKey.currentState;
-                                      //   form.save();
-                                    },
-                                    validator: (String value) {
-                                      if(value.length != 10)
-                                        return 'Please enter correct Phone Number';
-                                      else
-                                        return null;
-                                    },
-                                    decoration: InputDecoration(
-                                      contentPadding: EdgeInsets.only(left: 10.0, right: 0.0, top: 10.0, bottom: 12.0),
-                                      border: OutlineInputBorder(
-                                          borderSide: BorderSide.none
-                                      ),
-                                      hintText: "Search",
+                                    // final FormState form = _formKey.currentState;
+                                    //   form.save();
+                                  },
+                                  validator: (String value) {
+                                    if(value.length != 10)
+                                      return 'Please enter correct Phone Number';
+                                    else
+                                      return null;
+                                  },
+                                  decoration: InputDecoration(
+                                    contentPadding: EdgeInsets.only(left: 10.0, right: 0.0, top: 10.0, bottom: 12.0),
+                                    border: OutlineInputBorder(
+                                        borderSide: BorderSide.none
                                     ),
-                                    focusNode: _focusNode,
+                                    hintText: "Search",
+                                  ),
+                                  focusNode: _focusNode,
+                                ),
+                              ),
+                            ),
+
+                            Flexible(
+                              flex: 1,
+                              child: Visibility(
+                                //         visible: true,
+                                  visible: search.length>0?true:false,
+                                  child: GestureDetector(
+                                      onTap: (){
+                                        search="";
+                                        filterProducts(search);
+                                        _searchTextController.clear();
+
+                                      },
+                                      child: Icon(Icons.cancel,color: Colors.redAccent,))),
+                            ),
+                            SizedBox(width: 5,),
+
+                          ],
+                        ),
+                      ),
+                      decoration: BoxDecoration(
+                        color: Colors.white,
+                        borderRadius: BorderRadius.only(
+                            topLeft: Radius.circular(10),
+                            topRight: Radius.circular(10),
+                            bottomLeft: Radius.circular(10),
+                            bottomRight: Radius.circular(10)
+                        ),
+                        boxShadow: [
+                          BoxShadow(
+                            color:  Colors.grey.withOpacity(0.5),
+                            spreadRadius: 5,
+                            blurRadius: 7,
+                            offset: Offset(0, 3),
+                          ),
+                        ],
+                      ),
+                    ),
+                  ),
+                  SizedBox(height: 10,),
+                  SingleChildScrollView(
+                    scrollDirection: Axis.horizontal,
+
+                    child: Row(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: tempcategory.map((String char){
+                        return
+                          Row(
+                            mainAxisAlignment: MainAxisAlignment.end,
+                            children: <Widget>[
+                              Padding(
+                                padding: const EdgeInsets.all(6.0),
+                                child: FlatButton(
+                                  onPressed: (){
+                                    search="";
+                                    filterProducts(search);
+                                    _searchTextController.clear();
+
+
+                                    selectfilter=char;
+                                    filterProductCatagory(char);
+
+                                  },
+                                  shape: RoundedRectangleBorder(
+
+                                      borderRadius: BorderRadius.circular(18.0),
+                                      side: BorderSide(color: Colors.green[400])),
+                                  color:selectfilter==char? Colors.green[100]: Colors.white ,
+
+
+                                  textColor: Colors.green[600],
+                                  padding: EdgeInsets.all(8.0),
+                                  child: Text(
+                                    char.toUpperCase(),
+                                    style: TextStyle(
+                                      fontSize: 14.0,
+                                    ),
                                   ),
                                 ),
                               ),
 
-                              Flexible(
-                                flex: 1,
-                                child: Visibility(
-                                  //         visible: true,
-                                    visible: search.length>0?true:false,
-                                    child: GestureDetector(
-                                        onTap: (){
-                                           search="";
-                                           filterProducts(search);
-                                           _searchTextController.clear();
-
-                                        },
-                                        child: Icon(Icons.cancel,color: Colors.redAccent,))),
-                              ),
-                              SizedBox(width: 5,),
-
                             ],
-                          ),
-                        ),
-                        decoration: BoxDecoration(
-                          color: Colors.white,
-                          borderRadius: BorderRadius.only(
-                              topLeft: Radius.circular(10),
-                              topRight: Radius.circular(10),
-                              bottomLeft: Radius.circular(10),
-                              bottomRight: Radius.circular(10)
-                          ),
-                          boxShadow: [
-                            BoxShadow(
-                              color:  Colors.grey.withOpacity(0.5),
-                              spreadRadius: 5,
-                              blurRadius: 7,
-                              offset: Offset(0, 3),
-                            ),
-                          ],
-                        ),
-                      ),
+                          );
+
+
+                      }).toList(),
                     ),
-                        SizedBox(height: 10,),
-                        SingleChildScrollView(
-                          scrollDirection: Axis.horizontal,
-
-                          child: Row(
-                            mainAxisAlignment: MainAxisAlignment.center,
-                            children: tempcategory.map((String char){
-                              return
-                                Row(
-                                  mainAxisAlignment: MainAxisAlignment.end,
-                                  children: <Widget>[
-                                    Padding(
-                                      padding: const EdgeInsets.all(6.0),
-                                      child: FlatButton(
-                                        onPressed: (){
-                                          search="";
-                                          filterProducts(search);
-                                          _searchTextController.clear();
-
-
-                                          selectfilter=char;
-                                          filterProductCatagory(char);
-
-                                        },
-                                        shape: RoundedRectangleBorder(
-
-                                            borderRadius: BorderRadius.circular(18.0),
-                                            side: BorderSide(color: Colors.green[400])),
-                                        color:selectfilter==char? Colors.green[100]: Colors.white ,
-
-
-                                        textColor: Colors.green[600],
-                                        padding: EdgeInsets.all(8.0),
-                                         child: Text(
-                                          char.toUpperCase(),
-                                          style: TextStyle(
-                                            fontSize: 14.0,
-                                          ),
-                                        ),
-                                      ),
-                                    ),
-
-                                  ],
-                                );
-
-
-                            }).toList(),
-                          ),
-                        ),
+                  ),
 
 
 
 
-                    Flexible(
-                      flex: 1,
-                      child: Container(
+                  Flexible(
+                    flex: 1,
+                    child: Container(
                         child:
 
-                            isLoaded?
+                        isLoaded?
                         GridView.builder(
                           //SliverGridDelegateWithFixedCrossAxisCount
                           gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
@@ -570,11 +572,11 @@ class _ProductCatalogState extends State<ProductCatalog> {
 
                             for(int i=0;i<=carts.length-1;i++){
 
-                                        for(int j=0;j<=products.length-1;j++) {
-                                          if (carts[i].cardid == products[j].cardid && carts[i].shopid == shop.shopid) {
-                                            productsItemcount[j] = carts[i].no_of_items;
-                                          }
-                                        }
+                              for(int j=0;j<=products.length-1;j++) {
+                                if (carts[i].cardid == products[j].cardid && carts[i].shopid == shop.shopid) {
+                                  productsItemcount[j] = carts[i].no_of_items;
+                                }
+                              }
 
                             }
 
@@ -582,28 +584,28 @@ class _ProductCatalogState extends State<ProductCatalog> {
 
 
                             return Stack(
-                                children: [
+                              children: [
 
-                                  GestureDetector(
+                                GestureDetector(
 
-                                    onLongPress: (){
-                                      products[index].stock!="out_of_stock"?
+                                  onLongPress: (){
+                                    products[index].stock!="out_of_stock"?
 
-                                      // Navigator.of(context).pushReplacement(
-                                      //     MaterialPageRoute(
-                                      //         builder: (context) => SingleProduct(products[index],productsItemcount[index]))):
-                                     Navigator.push( context, MaterialPageRoute( builder: (BuildContext context) => SingleProduct(products[index],productsItemcount[index]),),):
-                                      ToastUtils.showCustomToast(context, "Item Out of Stock",null);
+                                    // Navigator.of(context).pushReplacement(
+                                    //     MaterialPageRoute(
+                                    //         builder: (context) => SingleProduct(products[index],productsItemcount[index]))):
+                                    Navigator.push( context, MaterialPageRoute( builder: (BuildContext context) => SingleProduct(products[index],productsItemcount[index]),),):
+                                    ToastUtils.showCustomToast(context, "Item Out of Stock",null);
 
 
-                                    },
+                                  },
                                   onTap: (){
 
 
-                                      if(user==null){
-                                        ToastUtils.showCustomToast(context, "Long Press to View Details", null);
+                                    if(user==null){
+                                      ToastUtils.showCustomToast(context, "Long Press to View Details", null);
 
-                                      }else{
+                                    }else{
 
                                       if(products[index].stock=="out_of_stock") {
                                         ToastUtils.showCustomToast(context, "Item Out of Stock",null);
@@ -638,7 +640,7 @@ class _ProductCatalogState extends State<ProductCatalog> {
                                         });
                                       }
 
-                                      }
+                                    }
 
                                   },
                                   child:
@@ -648,16 +650,16 @@ class _ProductCatalogState extends State<ProductCatalog> {
                                     child: Container(
 
                                       decoration: BoxDecoration(
-                                        boxShadow: [
-                                          BoxShadow(
-                                            color:  Colors.grey.withOpacity(0.5),
-                                            spreadRadius: 2,
-                                            blurRadius: 4,
-                                          ),
-                                        ],
-                                        shape: BoxShape.rectangle,
-                                        borderRadius: BorderRadius.all(Radius.circular(5.0)),
-                                         color: Colors.white
+                                          boxShadow: [
+                                            BoxShadow(
+                                              color:  Colors.grey.withOpacity(0.5),
+                                              spreadRadius: 2,
+                                              blurRadius: 4,
+                                            ),
+                                          ],
+                                          shape: BoxShape.rectangle,
+                                          borderRadius: BorderRadius.all(Radius.circular(5.0)),
+                                          color: Colors.white
                                       ),
 
                                       child: Column(
@@ -712,9 +714,9 @@ class _ProductCatalogState extends State<ProductCatalog> {
                                             ],
                                           ),
 
-                                           Column(
-                                             children: [
-                                               Padding(
+                                          Column(
+                                            children: [
+                                              Padding(
                                                 padding: const EdgeInsets.fromLTRB(5, 5, 0, 0),
                                                 child: Column(
                                                   crossAxisAlignment: CrossAxisAlignment.start,
@@ -743,9 +745,9 @@ class _ProductCatalogState extends State<ProductCatalog> {
                                                     ),
                                                   ],
                                                 ),
+                                              ),
+                                            ],
                                           ),
-                                             ],
-                                           ),
 
                                         ],
                                       ),
@@ -814,127 +816,140 @@ class _ProductCatalogState extends State<ProductCatalog> {
                                   //     ), /* add child content here */
                                   //   ),
                                   // ),
-                            ),
+                                ),
 
-                                  productsItemcount[index]>0?
+                                productsItemcount[index]>0?
 
-                                   Positioned(
-                                   // top: 10.5,
-                                      child: InkWell(
-                                        onTap: () {
-
-
-                                          productsItemcount[index]--;
-
-                                            FirebaseDatabase database = new FirebaseDatabase();
-                                            DatabaseReference _userRef = database
-                                                .reference()
-                                                .child('Cart').child(
-                                                DataStream.UserId).child(
-                                                products[index].cardid + shop.shopid);
-
-                                            _userRef.set(<dynamic, dynamic>{
-                                              'no_of_items': productsItemcount[index],
-                                              'cardid': products[index].cardid
-                                                  .toString(),
-                                              'cardname': products[index].cardname
-                                                  .toString(),
-                                              'cardimage': products[index].cardimage
-                                                  .toString(),
-                                              'cardprice': products[index].cardprice,
-                                              'unit': products[index].unit,
-                                              'shopcatagory': DataStream.ShopCatagory,
-                                              'shopid': DataStream.ShopId,
+                                Positioned(
+                                  // top: 10.5,
+                                  child: InkWell(
+                                    onTap: () {
 
 
-                                            }).then((value) {
+                                      productsItemcount[index]--;
 
-                                            });
+                                      FirebaseDatabase database = new FirebaseDatabase();
+                                      DatabaseReference _userRef = database
+                                          .reference()
+                                          .child('Cart').child(
+                                          DataStream.UserId).child(
+                                          products[index].cardid + shop.shopid);
 
-                                          setState(() {
+                                      _userRef.set(<dynamic, dynamic>{
+                                        'no_of_items': productsItemcount[index],
+                                        'cardid': products[index].cardid
+                                            .toString(),
+                                        'cardname': products[index].cardname
+                                            .toString(),
+                                        'cardimage': products[index].cardimage
+                                            .toString(),
+                                        'cardprice': products[index].cardprice,
+                                        'unit': products[index].unit,
+                                        'shopcatagory': DataStream.ShopCatagory,
+                                        'shopid': DataStream.ShopId,
 
-                                          });
 
-                                        },
-                                        child: new Container(
-                                          width: 27,
-                                          height: 27,
-                                          decoration: new BoxDecoration(
-                                            color: Colors.red,
-                                            borderRadius: new BorderRadius.circular(20.0),
-                                          ),
-                                          child: new Center(child:
-                                          Container(
-                                            width: 10,
-                                            height: 1.8,
-                                            color: Colors.white,
-                                          ),),
-                                        ),
+                                      }).then((value) {
+
+                                      });
+
+                                      setState(() {
+
+                                      });
+
+                                    },
+                                    child: new Container(
+                                      width: 27,
+                                      height: 27,
+                                      decoration: new BoxDecoration(
+                                        color: Colors.red,
+                                        borderRadius: new BorderRadius.circular(20.0),
                                       ),
-                                    )
-                                  : SizedBox(),
+                                      child: new Center(child:
+                                      Container(
+                                        width: 10,
+                                        height: 1.8,
+                                        color: Colors.white,
+                                      ),),
+                                    ),
+                                  ),
+                                )
+                                    : SizedBox(),
 
 
 
-                                  productsItemcount[index]>0?
+                                productsItemcount[index]>0?
 
-                                  Positioned(
+                                Positioned(
                                   //  top: 10.5,
-                                    right:1,
-                                    child: InkWell(
+                                  right:1,
+                                  child: InkWell(
 
-                                      child: new Container(
-                                        width: 27,
-                                        height: 27,
-                                        decoration: new BoxDecoration(
-                                          color: Colors.green,
-                                          borderRadius: new BorderRadius.circular(20.0),
-                                        ),
-                                        child: new Center(child:
-                                        Text(productsItemcount[index].toString(),style: TextStyle(color: Colors.white,fontSize: 15),),
+                                    child: new Container(
+                                      width: 27,
+                                      height: 27,
+                                      decoration: new BoxDecoration(
+                                        color: Colors.green,
+                                        borderRadius: new BorderRadius.circular(20.0),
+                                      ),
+                                      child: new Center(child:
+                                      Text(productsItemcount[index].toString(),style: TextStyle(color: Colors.white,fontSize: 15),),
 
 
-                                        ),
                                       ),
                                     ),
-                                  )
-                                      :
+                                  ),
+                                )
+                                    :
 
 
-                                  SizedBox(),
-                                ],
-                              );
+                                SizedBox(),
+                              ],
+                            );
 
                           },
                         ):
-                            Center(child: Column(
-                              mainAxisAlignment: MainAxisAlignment.center,
-                              crossAxisAlignment: CrossAxisAlignment.center,
-                              children: <Widget>[
-                                SpinKitFadingCircle(
-                                  itemBuilder: (BuildContext context, int index) {
-                                    return DecoratedBox(
-                                      decoration: BoxDecoration(
-                                        color: index==1 ? Colors.green[900] :index==2 ?Colors.green[800] : index==3 ?Colors.green[700] : index==4 ?
-                                        Colors.green[600] :index==5 ?Colors.green[500] : index==6 ?Colors.green[400]:
-                                        index==1 ?Colors.green[300] : index==1 ?Colors.green[200] : index==1 ?Colors.green[100] : index==1 ?
-                                        Colors.green[100] :index==1 ?Colors.green[100] :Colors.green[900]
-                                        ,
-                                        borderRadius: BorderRadius.all(Radius.circular(30.0)),
-                                      ),
-                                    );
-                                  },
-                                ),
-                                Text("Loading", style: TextStyle(fontSize: 12,color: Colors.white),),
-                              ],
-                            ))
-                      ),
+                        Center(child: Column(
+                          mainAxisAlignment: MainAxisAlignment.center,
+                          crossAxisAlignment: CrossAxisAlignment.center,
+                          children: <Widget>[
+                            Stack(
+                  alignment: Alignment.center,
+                  children: [
+                    Image.asset("assets/icons/logo.png",height: 23,width: 23, ),
 
-
+                    SpinKitFadingCircle(
+                      size: 60,
+                      itemBuilder: (BuildContext context, int index) {
+                        return DecoratedBox(
+                          decoration: BoxDecoration(
+                            color: index==1 ? Colors.green[900] :index==2 ?Colors.green[800] : index==3 ?Colors.green[700] : index==4 ?
+                            Colors.green[600] :index==5 ?Colors.green[500] : index==6 ?Colors.green[400]:
+                            index==1 ?Colors.green[300] : index==1 ?Colors.green[200] : index==1 ?Colors.green[100] : index==1 ?
+                            Colors.green[100] :index==1 ?Colors.green[100] :Colors.green[900]
+                            ,
+                            borderRadius: BorderRadius.all(Radius.circular(30.0)),
+                          ),
+                        );
+                      },
                     ),
-
                   ],
                 ),
+                            SizedBox(height: 2,),
+
+                            Text("Loading", style: TextStyle(fontSize: 16,color: Colors.black),),
+                            SizedBox(height: 2,),
+                            Text("Please wait while we load all items", style: TextStyle(fontSize: 14,color: Colors.black,fontWeight: FontWeight.w300),),
+
+                          ],
+                        ))
+                    ),
+
+
+                  ),
+
+                ],
+              ),
             ),
           ),
           Positioned(
@@ -989,4 +1004,3 @@ class _ProductCatalogState extends State<ProductCatalog> {
   }
 
 }
-

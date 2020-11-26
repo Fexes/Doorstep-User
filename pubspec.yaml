@@ -1,13 +1,14 @@
 name: Doorstep
 description: A new Flutter application.
 
-version: 3.1.1+6
+version: 3.1.2+7
 
 environment:
   sdk: ">=2.1.0 <3.0.0"
 
 dependencies:
   lottie: ^0.6.0
+  flutter_open_whatsapp: ^0.1.2
   google_sign_in: ^4.4.4
   rate_my_app: ^0.6.1+6
   stepper_counter_swipe: ^0.0.6
@@ -67,6 +68,7 @@ flutter:
     - assets/icons/lock-grey.png
     - assets/icons/lock.png
     - assets/icons/logo.png
+    - assets/icons/whatsapp.png
     - assets/icons/not-show.png
     - assets/icons/show-grey.png
     - assets/icons/show.png
@@ -86,4 +88,5 @@ flutter:
     - assets/update.json
     - assets/logo.json
     - assets/imgs/bk.jpg
+
 
