@@ -85,6 +85,7 @@ flutter:
     - assets/imgs/bbq.jpg
     - assets/imgs/tag.png
     - assets/location.json
+    - assets/done.json
     - assets/update.json
     - assets/logo.json
     - assets/imgs/bk.jpg

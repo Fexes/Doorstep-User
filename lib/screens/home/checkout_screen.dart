@@ -5,6 +5,7 @@ import 'dart:math';
 import 'package:Doorstep/models/Shops.dart';
 import 'package:Doorstep/screens/auth/sign-in.dart';
 import 'package:Doorstep/screens/first-screen.dart';
+import 'package:Doorstep/styles/CustomDialogBox.dart';
 import 'package:Doorstep/utilts/UI/DataStream.dart';
 import 'package:firebase_auth/firebase_auth.dart';
  import 'package:firebase_database/firebase_database.dart';
@@ -69,7 +70,7 @@ class _CheckOutScreenState extends State<CheckOutScreen> {
                     Image.asset("assets/icons/logo.png",height: 23,width: 23, ),
 
                     SpinKitFadingCircle(
-                      size: 60,
+                      size: 70,
                       itemBuilder: (BuildContext context, int index) {
                         return DecoratedBox(
                           decoration: BoxDecoration(
@@ -776,8 +777,12 @@ class _CheckOutScreenState extends State<CheckOutScreen> {
                       color: isaddressaded?Colors.green:Colors.grey,
                       onPressed: (){
 
+
+
+
                         if(isaddressaded){
 
+                          showLoadingDialogue("Placing Order");
                           String orderID=getRandomString(4)+"-"+getRandomString(3);
                           FirebaseDatabase database = new FirebaseDatabase();
 
@@ -902,7 +907,7 @@ class _CheckOutScreenState extends State<CheckOutScreen> {
                                   shoporder.child(
                                       carts[i].shopcatagory).child(
                                       carts[i].shopid).child("Orders")
-                                      .child("History")
+                                      .child("Active")
                                       .child(orderID)
                                       .set(<dynamic, dynamic>{
                                     'no_of_items': '${carts.length}',
@@ -920,7 +925,7 @@ class _CheckOutScreenState extends State<CheckOutScreen> {
                                   }).then((value) {
 
                                     shoporder.child(carts[i].shopcatagory).child(carts[i].shopid).child("Orders")
-                                        .child("History").child(orderID).child("items").push().set(
+                                        .child("Active").child(orderID).child("items").push().set(
                                         <dynamic, dynamic>{
                                           'no_of_items': carts[i].no_of_items,
                                           'cardid': carts[i].cardid.toString(),
@@ -964,8 +969,24 @@ class _CheckOutScreenState extends State<CheckOutScreen> {
 
                               DataStream.DeliverCharges = value.value['delivery_charges'];
 
+                              hideLoadingDialogue();
+
+                              showDialog(context: context,
+                                  builder: (BuildContext context){
+                                    return CustomDialogBox(
+                                      title: "Order Placed",
+                                      descriptions: "Your Order has been placed tarck you order with the order ID",
+                                      orderId: "# "+orderID,
+                                      text: "Ok",
+
+                                    );
+                                  }
+                              );
                               ToastUtils.showCustomToast(context, "Order Placed", true);
-                              Navigator.of(context).pop();
+
+
+
+                            //  Navigator.of(context).pop();
                             }
                             );
 

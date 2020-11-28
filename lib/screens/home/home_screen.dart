@@ -1092,8 +1092,25 @@ class HomePage extends State<Home> {
             if (map!=null) {
 
               orders.clear();
-              map.forEach((dynamic, v) =>
-                  orders.add( new Order(v["key"],v['no_of_items'],v['bill'] , v["location"],v["orderDate"] ,v["address"] , v["orderTime"], v["phonenumber"], v["orderID"],v["status"],v["userID"]))
+              map.forEach((dynamic, v) {
+
+                if(v["status"]=="ready"||v["status"]=="pending") {
+
+                  orders.add(new Order(
+                      v["key"],
+                      v['no_of_items'],
+                      v['bill'],
+                      v["location"],
+                      v["orderDate"],
+                      v["address"],
+                      v["orderTime"],
+                      v["phonenumber"],
+                      v["orderID"],
+                      v["status"],
+                      v["userID"]));
+                }
+
+              }
               );
 
               orders.sort((a, b){
@@ -1317,7 +1334,9 @@ class HomePage extends State<Home> {
                                                         },
                                                         child: Text('Dismiss', style: TextStyle(color: Colors.grey, fontSize: 14.0),)),
 
-                                                    FlatButton(onPressed: (){
+                                                    FlatButton(
+
+                                                        onPressed: (){
 
                                                     //  Navigator.of(context).pop();
 
@@ -1326,188 +1345,40 @@ class HomePage extends State<Home> {
 
                                                       FirebaseDatabase database = new FirebaseDatabase();
                                                       DatabaseReference _userRef = database.reference()
-                                                          .child("User Orders").child(DataStream.UserId).child("History").child(orders[index].orderID);
+                                                          .child("User Orders").child(DataStream.UserId).child("Active").child(orders[index].orderID);
+                                                      _userRef.update(<String, String>{
+                                                        'status': 'cancelled',
+                                                      });
+
+
 
                                                       DatabaseReference _adminRef = database.reference()
-                                                          .child("Admin").child("Orders").child("History").child(orders[index].orderID);
-
-
-
-                                                      _userRef.set(<dynamic, dynamic>{
-                                                        'no_of_items': orders[index].no_of_items,
-                                                        'userID':orders[index].userID,
-                                                        'bill': orders[index].bill,
+                                                          .child("Admin").child("Orders").child("Active").child(orders[index].orderID);
+                                                      _adminRef.update(<String, String>{
                                                         'status': 'cancelled',
-                                                        'orderDate':orders[index].orderDate,
-                                                        'orderTime': orders[index].orderTime,
-                                                        'phonenumber' :orders[index].phonenumber,
-                                                        'orderID': orders[index].orderID,
-                                                        'address': orders[index].address,
-                                                        'location':orders[index].location,
-
-                                                      }).then((value) {
-
-                                                        FirebaseDatabase database = new FirebaseDatabase();
-                                                        DatabaseReference _userRef = database.reference()
-                                                            .child("User Orders").child(DataStream.UserId).child("History").child(orders[index].orderID);
+                                                      });
 
 
+                                                      DatabaseReference  _sref = database.reference().child("User Orders").child(DataStream.UserId).child("Active").child(orders[index].orderID).child("items");
+                                                      _sref.onChildAdded.listen((event) {
 
-                                                        volunteerRef = database.reference().child("User Orders").child(DataStream.UserId).child("Active").child(orders[index].orderID).child("items");
-                                                        volunteerRef.onChildAdded.listen((event) {
+                                                            DatabaseReference _shopRef = database.reference()
+                                                                .child("Shops").child(Cart.fromSnapshot(event.snapshot).shopcatagory)
+                                                                .child(Cart.fromSnapshot(event.snapshot).shopid)
+                                                                .child("Orders").child(
+                                                                "Active")
+                                                                .child(orders[index].orderID);
 
-                                                          // ordereditems.add(Cart.fromSnapshot(event.snapshot));
-
-                                                          //   print("Shops."+Cart.fromSnapshot(event.snapshot).town+"."+Cart.fromSnapshot(event.snapshot).shopcatagory+"."+Cart.fromSnapshot(event.snapshot).shopid+" orders."+"active."+orders[index].orderID);
-
-                                                          _userRef.child("items").push().set(<dynamic, dynamic>{
-                                                            'no_of_items': Cart.fromSnapshot(event.snapshot).no_of_items,
-                                                            'cardid': Cart.fromSnapshot(event.snapshot).cardid.toString(),
-                                                            'cardname': Cart.fromSnapshot(event.snapshot).cardname.toString(),
-                                                            'cardimage': Cart.fromSnapshot(event.snapshot).cardimage.toString(),
-                                                            'cardprice': Cart.fromSnapshot(event.snapshot).cardprice,
-                                                            'unit': Cart.fromSnapshot(event.snapshot).unit,
-                                                            'shopcatagory': Cart.fromSnapshot(event.snapshot).shopcatagory,
-                                                            'shopid': Cart.fromSnapshot(event.snapshot).shopid,
-
-                                                          }).then((value) {
-                                                            try{
-
-                                                              DatabaseReference del = database.reference();
-                                                              del = database.reference()
-                                                                  .child("Shops")
-
-                                                                  .child(Cart.fromSnapshot(event.snapshot).shopcatagory)
-                                                                  .child(Cart.fromSnapshot(event.snapshot).shopid)
-                                                                  .child("Orders").child(
-                                                                  "Active")
-                                                                  .child(orders[index].orderID);
-                                                              del.remove().then((value) {
-                                                                DatabaseReference cancel = database.reference();
-                                                                cancel = database.reference()
-                                                                    .child("Shops")
-
-                                                                    .child(Cart.fromSnapshot(event.snapshot).shopcatagory)
-                                                                    .child(Cart.fromSnapshot(event.snapshot).shopid)
-                                                                    .child("Orders").child(
-                                                                    "History")
-                                                                    .child(orders[index].orderID);
-
-                                                                cancel.update(<String, dynamic>{
-                                                                  'status': 'cancelled',
-
-                                                                }).then((value) {
-                                                                  Navigator.of(context).pop();
-
-                                                                });
-                                                              });
-                                                              print("removed");
-
-                                                            }catch(e){
-                                                              print(e);
-
-                                                              print("err");
-                                                            }
-                                                          });
-
-
-
-                                                        });
-
-
-
-
-                                                      }).then((value) {
-
-                                                        DatabaseReference del = database.reference();
-
-//                                          print(ordereditems.length.toString());
-//                                          for(int i=0;i<= ordereditems.length-1;i++){
-//
-//                                             print("Shops."+ordereditems[i].town+"."+ordereditems[i].shopcatagory+"."+ordereditems[i].shopid+" orders."+"active."+ordereditems[index].orderID);
-//
-//
-//                                            try {
-//                                              del = database.reference()
-//                                                  .child("Shops").child(ordereditems[i].town)
-//                                                  .child(ordereditems[i].shopcatagory)
-//                                                  .child(ordereditems[i].shopid)
-//                                                  .child("Orders").child(
-//                                                  "Active")
-//                                                  .child(ordereditems[index].orderID);
-//                                              del.remove();
-//                                            }catch(e){
-//                                              print(e);
-//
-//                                              print("err");
-//                                            }
-//                                          }
-
-                                                        del = database.reference()
-                                                            .child("User Orders").child(DataStream.UserId).child("Active").child(orders[index].orderID);
-                                                        del.remove();
-
-                                                        del = database.reference()
-                                                            .child("Admin").child("Orders").child("Active")
-                                                        // .child(DataStream.UserId)
-                                                            .child(orders[index].orderID);
-                                                        del.remove();
-
-                                                      }).then((value) {
-
-
-
-
-                                                        _adminRef.set(<dynamic, dynamic>{
-                                                          'no_of_items': orders[index].no_of_items,
-                                                          'userID':orders[index].userID,
-                                                          'bill': orders[index].bill,
-                                                          'status': 'cancelled',
-                                                          'orderDate':orders[index].orderDate,
-                                                          'orderTime': orders[index].orderTime,
-                                                          'phonenumber' :orders[index].phonenumber,
-                                                          'orderID': orders[index].orderID,
-                                                          'address': orders[index].address,
-                                                          'location':orders[index].location,
-
-                                                        }).then((value) {
-
-                                                          FirebaseDatabase database = new FirebaseDatabase();
-                                                          DatabaseReference _userRef = database.reference()
-                                                              .child("Admin").child("Orders").child("History").child(orders[index].orderID);
-
-
-
-                                                          volunteerRef = database.reference().child("User Orders").child(DataStream.UserId).child("History").child(orders[index].orderID).child("items");
-                                                          volunteerRef.onChildAdded.listen((event) {
-
-                                                            // ordereditems.add(Cart.fromSnapshot(event.snapshot));
-
-                                                            //   print("Shops."+Cart.fromSnapshot(event.snapshot).town+"."+Cart.fromSnapshot(event.snapshot).shopcatagory+"."+Cart.fromSnapshot(event.snapshot).shopid+" orders."+"active."+orders[index].orderID);
-
-                                                            _userRef.child("items").push().set(<dynamic, dynamic>{
-                                                              'no_of_items': Cart.fromSnapshot(event.snapshot).no_of_items,
-                                                              'cardid': Cart.fromSnapshot(event.snapshot).cardid.toString(),
-                                                              'cardname': Cart.fromSnapshot(event.snapshot).cardname.toString(),
-                                                              'cardimage': Cart.fromSnapshot(event.snapshot).cardimage.toString(),
-                                                              'cardprice': Cart.fromSnapshot(event.snapshot).cardprice,
-                                                              'unit': Cart.fromSnapshot(event.snapshot).unit.toString(),
-
-                                                              'shopcatagory': Cart.fromSnapshot(event.snapshot).shopcatagory,
-                                                              'shopid': Cart.fromSnapshot(event.snapshot).shopid,
-
+                                                            _shopRef.update(<String, String>{
+                                                              'status': 'cancelled',
                                                             });
 
-
-
                                                           });
 
 
 
 
-                                                        });
 
-                                                      });
 
 
                                                     },
@@ -1581,7 +1452,7 @@ class HomePage extends State<Home> {
       StreamBuilder(
           stream: FirebaseDatabase.instance
               .reference()
-              .child("User Orders").child(DataStream.UserId).child("History")
+              .child("User Orders").child(DataStream.UserId).child("Active")
             //  .limitToFirst(3)
               .onValue,
           builder: (BuildContext context, AsyncSnapshot<Event> snapshot) {
@@ -1594,8 +1465,23 @@ class HomePage extends State<Home> {
             if (map!=null) {
 
               orders.clear();
-              map.forEach((dynamic, v) =>
-                  orders.add( new Order(v["key"],v['no_of_items'],v['bill'] , v["location"],v["orderDate"] ,v["address"] , v["orderTime"], v["phonenumber"], v["orderID"],v["status"],v["userID"]))
+              map.forEach((dynamic, v) {
+
+                if(v["status"]=="completed"||v["status"]=="cancelled") {
+                  orders.add(new Order(
+                      v["key"],
+                      v['no_of_items'],
+                      v['bill'],
+                      v["location"],
+                      v["orderDate"],
+                      v["address"],
+                      v["orderTime"],
+                      v["phonenumber"],
+                      v["orderID"],
+                      v["status"],
+                      v["userID"]));
+                }
+              }
               );
 
               orders.sort((a, b){
@@ -1622,7 +1508,7 @@ class HomePage extends State<Home> {
                     child: GestureDetector(
                       onTap: (){
                         //OrderItemsScreen
-                        Navigator.push( context, MaterialPageRoute( builder: (BuildContext context) => OrderItemsScreen("History",orders[index]),),);
+                        Navigator.push( context, MaterialPageRoute( builder: (BuildContext context) => OrderItemsScreen("Active",orders[index]),),);
 
                       },
                       child: Container(
