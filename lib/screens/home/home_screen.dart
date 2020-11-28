@@ -50,6 +50,8 @@ class HomePage extends State<Home> {
     if(isloadingDialogueShowing) {
       Navigator.of(context).pop();
       Navigator.of(context).pop();
+      Navigator.of(context).pop();
+
       isloadingDialogueShowing=false;
       isLoadingError=false;
     }
@@ -1338,8 +1340,8 @@ class HomePage extends State<Home> {
 
                                                         onPressed: (){
 
-                                                    //  Navigator.of(context).pop();
 
+                                                          showLoadingDialogue("Cancelling Order");
 
 
 
@@ -1371,6 +1373,8 @@ class HomePage extends State<Home> {
 
                                                             _shopRef.update(<String, String>{
                                                               'status': 'cancelled',
+                                                            }).then((value) {
+                                                              hideLoadingDialogue();
                                                             });
 
                                                           });
