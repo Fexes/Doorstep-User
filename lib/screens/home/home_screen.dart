@@ -157,7 +157,7 @@ class HomePage extends State<Home> {
     });
   }
 
-    void getodercount(){
+   static void getodercount(){
     final locationDbRef = FirebaseDatabase.instance.reference().child("User Orders").child(DataStream.UserId).child("Order Count");
 
     locationDbRef.once().then((value) async {
@@ -180,6 +180,9 @@ class HomePage extends State<Home> {
             print(value.value["delivery_charges"]);
 
             DataStream.DeliverCharges = value.value['delivery_charges'];
+            DataStream.Discount = 0;
+            DataStream.MinOrder = 0;
+
           }
           );
         }
@@ -197,6 +200,8 @@ class HomePage extends State<Home> {
             print(value.value["delivery_charges"]);
 
             DataStream.DeliverCharges = value.value['delivery_charges'];
+            DataStream.Discount = 0;
+            DataStream.MinOrder = 0;
           }
           );
         }

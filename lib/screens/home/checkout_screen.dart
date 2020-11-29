@@ -777,9 +777,6 @@ class _CheckOutScreenState extends State<CheckOutScreen> {
                       color: isaddressaded?Colors.green:Colors.grey,
                       onPressed: (){
 
-
-
-
                         if(isaddressaded){
 
                           showLoadingDialogue("Placing Order");
@@ -807,6 +804,8 @@ class _CheckOutScreenState extends State<CheckOutScreen> {
                               'no_of_orders': order_count+1,
 
                           }).then((value) {
+
+                            HomePage.getodercount();
 
                           _userRef.set(<dynamic, dynamic>{
                             'no_of_items': '${carts.length}',
