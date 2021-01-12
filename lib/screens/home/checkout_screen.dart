@@ -6,7 +6,9 @@ import 'package:Doorstep/models/Shops.dart';
 import 'package:Doorstep/screens/auth/sign-in.dart';
 import 'package:Doorstep/screens/first-screen.dart';
 import 'package:Doorstep/styles/CustomDialogBox.dart';
+import 'package:Doorstep/styles/PromoDialogBox.dart';
 import 'package:Doorstep/utilts/UI/DataStream.dart';
+import 'package:Doorstep/utilts/UI/promo_dialogue.dart';
 import 'package:firebase_auth/firebase_auth.dart';
  import 'package:firebase_database/firebase_database.dart';
 import 'package:firebase_database/ui/firebase_animated_list.dart';
@@ -41,6 +43,7 @@ class _CheckOutScreenState extends State<CheckOutScreen> {
   bool isloadingDialogueShowing=false;
 
   bool isLoadingError=false;
+
   hideLoadingDialogue(){
 
     if(isloadingDialogueShowing) {
@@ -126,8 +129,15 @@ class _CheckOutScreenState extends State<CheckOutScreen> {
     _focusNode.addListener(_onOnFocusNodeEvent);
     _add();
 
-    getodercount();
-  }
+   // getodercount();
+    DataStream.PromoCode=null;
+    setuplist();
+    DeliverCharges = DataStream.DeliverCharges ;
+
+    }
+
+ int DeliverCharges ;
+ int Discount =0;
 
   void getodercount(){
     final locationDbRef = FirebaseDatabase.instance.reference().child("User Orders").child(DataStream.UserId).child("Order Count");
@@ -174,7 +184,7 @@ class _CheckOutScreenState extends State<CheckOutScreen> {
         }
       }
 
-      setuplist();
+
 
     }
     );
@@ -255,7 +265,7 @@ class _CheckOutScreenState extends State<CheckOutScreen> {
       total=total+(carts[i].no_of_items*carts[i].cardprice);
     }
 
-    return (total+DataStream.DeliverCharges)-DataStream.Discount;
+    return (total+DeliverCharges)-Discount;
   }
 
 
@@ -406,7 +416,7 @@ class _CheckOutScreenState extends State<CheckOutScreen> {
                             padding: const EdgeInsets.all(5.0),
                             child: Container(
 
-                              height: 160,
+                              height: 185,
                                width: screenWidth(context)-10,
                               child: Padding(
                                 padding: EdgeInsets.all(20),
@@ -418,6 +428,68 @@ class _CheckOutScreenState extends State<CheckOutScreen> {
                                       color: Colors.grey[400],
                                     ),
                                     SizedBox(height: 10,),
+
+                                    Row(
+                                      mainAxisAlignment: MainAxisAlignment.center,
+                                      children: [
+                                        Text(
+                                          'Promo Code : ',
+                                          style: TextStyle(fontSize: 16, fontWeight: FontWeight.w300,color: Colors.black,),
+                                        ),
+                                        GestureDetector(
+                                          onTap: ()  {
+
+                                            showDialog(context: context,
+                                                builder: (BuildContext context){
+                                                  return PromoDialogBox(
+                                                    title: "Enter Promo Code",
+                                                    descriptions: "Enter a valid Promo Code to Avail an ongoing Offer or get a Discount on the items you are about to purchase",
+                                                    text: "Validate",
+
+                                                  );
+                                                }
+                                            ).then((value) {
+
+                                              if(DataStream.PromoCode!=null){
+
+
+                                                Discount = DataStream.PromoCode.discount;
+                                                DeliverCharges = DataStream.PromoCode.delivery;
+
+                                                setState(() {
+
+                                                });
+
+
+                                              }
+
+                                            });
+
+                                          },
+                                          child: DataStream.PromoCode==null? Container(
+                                            height: 18.0,
+                                            width: 18.0,
+                                            decoration: BoxDecoration(
+                                              shape: BoxShape.rectangle,
+                                              borderRadius: BorderRadius.all(Radius.circular(10.0)),
+                                              color: Colors.green,
+
+                                            ),
+                                            child: InkWell(
+                                              child: Icon(Icons.add, size: 16.0, color:  Colors.white
+
+                                              ),
+                                            )
+
+                                          ):Text(
+                                            DataStream.PromoCode.promoID,
+                                            style: TextStyle(fontSize: 16, fontWeight: FontWeight.w500,color: Colors.green,),
+                                          ),
+                                        ),
+
+                                      ],
+                                    ),
+                                    SizedBox(height: 5,),
 
                                     Row(
                                       mainAxisAlignment: MainAxisAlignment.spaceBetween,
@@ -442,7 +514,7 @@ class _CheckOutScreenState extends State<CheckOutScreen> {
                                           style: TextStyle(fontSize: 16, fontWeight: FontWeight.w300,color: Colors.black),
                                         ),
                                         Text(
-                                          'Rs. ${DataStream.DeliverCharges}',
+                                          'Rs. ${DeliverCharges}',
                                           style: TextStyle(fontSize: 16, fontWeight: FontWeight.w300,color: Colors.black),
                                         ),
                                       ],
@@ -456,7 +528,7 @@ class _CheckOutScreenState extends State<CheckOutScreen> {
                                           style: TextStyle(fontSize: 16, fontWeight: FontWeight.w300,color: Colors.black),
                                         ),
                                         Text(
-                                          'Rs. ${DataStream.Discount}',
+                                          'Rs. ${Discount}',
                                           style: TextStyle(fontSize: 16, fontWeight: FontWeight.w300,color: Colors.black),
                                         ),
                                       ],
@@ -490,6 +562,8 @@ class _CheckOutScreenState extends State<CheckOutScreen> {
                                         ),
                                       ],
                                     ),
+
+
                                   ],
                                 ),
                               ),
@@ -498,7 +572,7 @@ class _CheckOutScreenState extends State<CheckOutScreen> {
                           ),
 
                           Padding(
-                            padding: const EdgeInsets.all(15.0),
+                            padding: const EdgeInsets.fromLTRB(15, 0, 15, 0),
                             child: Container(
                               decoration: BoxDecoration(
                                 color: Colors.white,
@@ -777,230 +851,27 @@ class _CheckOutScreenState extends State<CheckOutScreen> {
                       color: isaddressaded?Colors.green:Colors.grey,
                       onPressed: (){
 
-                        if(isaddressaded){
-
-                          showLoadingDialogue("Placing Order");
-                          String orderID=getRandomString(4)+"-"+getRandomString(3);
-                          FirebaseDatabase database = new FirebaseDatabase();
-
-                          DatabaseReference ordercount = database.reference()
-                              .child('User Orders').child(DataStream.UserId).child("Order Count");
-
-                          DatabaseReference _userRef = database.reference()
-                              .child('User Orders').child(DataStream.UserId).child("Active").child(orderID);
-
-                          DatabaseReference shoporder = database.reference()
-                              .child('Shops');
-
-                          DatabaseReference adminorder = database.reference()
-                              .child('Admin').child("Orders");
-
-                          var now = new DateTime.now();
-                          var date = new DateFormat('yyyy-MM-dd');
-                          var time = new DateFormat('hh:mm');
-
-
-                          ordercount.set(<dynamic, dynamic>{
-                              'no_of_orders': order_count+1,
-
-                          }).then((value) {
-
-                            HomePage.getodercount();
-
-                          _userRef.set(<dynamic, dynamic>{
-                            'no_of_items': '${carts.length}',
-                            'userID':DataStream.UserId,
-                            'bill': '${caltotal()}',
-                            'status': 'pending',
-                            'orderDate': date.format(now),
-                            'orderTime': time.format(now),
-                            'phonenumber':DataStream.PhoneNumber,
-                            'orderID': orderID,
-                            'address': Useraddress+"\n"+useraddress,
-                            'location':"${deliverylocation.latitude},${deliverylocation.longitude}",
-
-                          }).then((value) {
-
-
-                            for(int i=0;i<=carts.length-1;i++){
-
-                              adminorder
-                                  .child("Active")
-                                  //.child(DataStream.UserId)
-                                  .child(orderID)
-                                  .set(<dynamic, dynamic>{
-                                'no_of_items': '${carts.length}',
-                                'userID':DataStream.UserId,
-                                'bill': '${caltotal()}',
-                                'status': 'pending',
-                                'orderDate': date.format(now),
-                                'orderTime': time.format(now),
-                                'phonenumber': DataStream.PhoneNumber,
-                                'orderID': orderID,
-                                'address': Useraddress+"\n"+useraddress,
-                                'location': "${deliverylocation
-                                    .latitude},${deliverylocation.longitude}",
-
-                              }).then((value) {
-
-                                adminorder
-                                .child("Active")
-                               // .child(DataStream.UserId)
-                                    .child(orderID).child("items").push().set(
-                                    <dynamic, dynamic>{
-                                      'no_of_items': carts[i].no_of_items,
-                                      'cardid': carts[i].cardid.toString(),
-                                      'cardname': carts[i].cardname.toString(),
-                                      'unit':carts[i].unit,
-
-                                      'cardimage': carts[i].cardimage.toString(),
-                                      'cardprice': carts[i].cardprice,
-                                      'shopcatagory':carts[i].shopcatagory,
-                                      'shopid': carts[i].shopid,
-
-                                    }
-                                );
-
-                              });
 
 
 
-                                shoporder.child(
-                                    carts[i].shopcatagory).child(
-                                    carts[i].shopid).child("Orders")
-                                    .child("Active")
-                                    .child(orderID)
-                                    .set(<dynamic, dynamic>{
-                                  'no_of_items': '${carts.length}',
-                                  'userID':DataStream.UserId,
-                                  'bill': '${caltotal()}',
-                                  'status': 'pending',
-                                  'orderDate': date.format(now),
-                                  'orderTime': time.format(now),
-                                  'phonenumber': DataStream.PhoneNumber,
-                                  'orderID': orderID,
-                                  'address': Useraddress+"\n"+useraddress,
-                                  'location': "${deliverylocation
-                                      .latitude},${deliverylocation.longitude}",
-
-                                }).then((value) {
-
-                                  shoporder.child(carts[i].shopcatagory).child(carts[i].shopid).child("Orders")
-                                      .child("Active").child(orderID).child("items").push().set(
-                                      <dynamic, dynamic>{
-                                        'no_of_items': carts[i].no_of_items,
-                                        'cardid': carts[i].cardid.toString(),
-                                        'cardname': carts[i].cardname.toString(),
-                                        'unit':carts[i].unit,
-
-                                        'cardimage': carts[i].cardimage.toString(),
-                                        'cardprice': carts[i].cardprice,
-                                         'shopcatagory':carts[i].shopcatagory,
-                                        'shopid': carts[i].shopid,
-
-                                      }
-                                  );
-
-                                }).then((value) {
-
-                                  shoporder.child(
-                                      carts[i].shopcatagory).child(
-                                      carts[i].shopid).child("Orders")
-                                      .child("Active")
-                                      .child(orderID)
-                                      .set(<dynamic, dynamic>{
-                                    'no_of_items': '${carts.length}',
-                                    'userID':DataStream.UserId,
-                                    'bill': '${caltotal()}',
-                                    'status': 'pending',
-                                    'orderDate': date.format(now),
-                                    'orderTime': time.format(now),
-                                    'phonenumber': DataStream.PhoneNumber,
-                                    'orderID': orderID,
-                                    'address': Useraddress+"\n"+useraddress,
-                                    'location': "${deliverylocation
-                                        .latitude},${deliverylocation.longitude}",
-
-                                  }).then((value) {
-
-                                    shoporder.child(carts[i].shopcatagory).child(carts[i].shopid).child("Orders")
-                                        .child("Active").child(orderID).child("items").push().set(
-                                        <dynamic, dynamic>{
-                                          'no_of_items': carts[i].no_of_items,
-                                          'cardid': carts[i].cardid.toString(),
-                                          'cardname': carts[i].cardname.toString(),
-                                          'cardimage': carts[i].cardimage.toString(),
-                                          'cardprice': carts[i].cardprice,
-                                          'unit':carts[i].unit,
-                                          'shopcatagory':carts[i].shopcatagory,
-                                          'shopid': carts[i].shopid,
-
-                                        }
-                                    );
-
-                                  });
-                                });
+                        if(DataStream.PromoCode!=null) {
 
 
 
-                              _userRef.child("items").push().set(<dynamic, dynamic>{
-                                'no_of_items': carts[i].no_of_items,
-                                'cardid': carts[i].cardid.toString(),
-                                'cardname': carts[i].cardname.toString(),
-                                'cardimage': carts[i].cardimage.toString(),
-                                'cardprice': carts[i].cardprice,
-                                'unit':carts[i].unit,
-                                'shopcatagory':carts[i].shopcatagory,
-                                'shopid': carts[i].shopid,
+                         if(DataStream.PromoCode.min_order<calSubtotal()){
+                           placeOrder();
 
+                         }else{
+                           ToastUtils.showCustomToast(context, "Minimum Order \n is Rs. "+DataStream.PromoCode.min_order.toString()+" \n for Promo Code",null);
 
-                              }).then((value) {
-                                FirebaseDatabase database = new FirebaseDatabase();
-                                DatabaseReference _userRef = database.reference()
-                                    .child('Cart').child(DataStream.UserId);
-                                _userRef.remove();
-                              });
-                            }
-                            final locationDbRef = FirebaseDatabase.instance.reference().child("Admin").child("Delivery");
-
-                            locationDbRef.once().then((value) async {
-                              print(value.value["delivery_charges"]);
-
-                              DataStream.DeliverCharges = value.value['delivery_charges'];
-
-                              hideLoadingDialogue();
-
-                              showDialog(context: context,
-                                  builder: (BuildContext context){
-                                    return CustomDialogBox(
-                                      title: "Order Placed",
-                                      descriptions: "Your Order has been placed tarck you order with the order ID",
-                                      orderId: "# "+orderID,
-                                      text: "Ok",
-
-                                    );
-                                  }
-                              );
-                              ToastUtils.showCustomToast(context, "Order Placed", true);
-
-
-
-                            //  Navigator.of(context).pop();
-                            }
-                            );
-
-
-                          });
-                          });
+                         }
 
                         }else{
-                          ToastUtils.showCustomToast(context, "Add Delivery Address", null);
-                          final FormState form = _formKey.currentState;
-                          if (!form.validate()) {
-                            return;
-                          }
+
+                          placeOrder();
 
                         }
+
 
                       },
                       child: Row(
@@ -1099,6 +970,269 @@ class _CheckOutScreenState extends State<CheckOutScreen> {
       // adding a new marker to map
       markers[markerId] = marker;
     });
+  }
+
+  void placeOrder() {
+    if(isaddressaded){
+
+      showLoadingDialogue("Placing Order");
+      String orderID=getRandomString(4)+"-"+getRandomString(3);
+      FirebaseDatabase database = new FirebaseDatabase();
+
+      DatabaseReference ordercount = database.reference()
+          .child('User Orders').child(DataStream.UserId).child("Order Count");
+
+      DatabaseReference _userRef = database.reference()
+          .child('User Orders').child(DataStream.UserId).child("Active").child(orderID);
+
+      DatabaseReference shoporder = database.reference()
+          .child('Shops');
+
+      DatabaseReference adminorder = database.reference()
+          .child('Admin').child("Orders");
+
+      var now = new DateTime.now();
+      var date = new DateFormat('yyyy-MM-dd');
+      var time = new DateFormat('hh:mm');
+
+
+      ordercount.set(<dynamic, dynamic>{
+        'no_of_orders': order_count+1,
+
+      }).then((value) {
+
+
+
+
+        if(DataStream.PromoCode!=null) {
+
+
+          DatabaseReference promoref = database
+              .reference()
+              .child('Users').child(
+              DataStream.UserId)
+              .child("Promo")
+              .child(DataStream.PromoCode.promoID);
+
+
+
+
+          promoref.set(<dynamic, dynamic>{
+            'status':"used",
+
+          });
+
+
+        }
+
+
+
+
+        HomePage.getodercount();
+
+        _userRef.set(<dynamic, dynamic>{
+          'no_of_items': '${carts.length}',
+          'userID':DataStream.UserId,
+          'bill': '${caltotal()}',
+          'status': 'pending',
+          'orderDate': date.format(now),
+          'orderTime': time.format(now),
+          'phonenumber':DataStream.PhoneNumber,
+          'orderID': orderID,
+          'address': Useraddress+"\n"+useraddress,
+          'location':"${deliverylocation.latitude},${deliverylocation.longitude}",
+
+        }).then((value) {
+
+
+          for(int i=0;i<=carts.length-1;i++){
+
+            adminorder
+                .child("Active")
+            //.child(DataStream.UserId)
+                .child(orderID)
+                .set(<dynamic, dynamic>{
+              'no_of_items': '${carts.length}',
+              'userID':DataStream.UserId,
+              'bill': '${caltotal()}',
+              'status': 'pending',
+              'orderDate': date.format(now),
+              'orderTime': time.format(now),
+              'phonenumber': DataStream.PhoneNumber,
+              'orderID': orderID,
+              'address': Useraddress+"\n"+useraddress,
+              'location': "${deliverylocation
+                  .latitude},${deliverylocation.longitude}",
+
+            }).then((value) {
+
+              adminorder
+                  .child("Active")
+              // .child(DataStream.UserId)
+                  .child(orderID).child("items").push().set(
+                  <dynamic, dynamic>{
+                    'no_of_items': carts[i].no_of_items,
+                    'cardid': carts[i].cardid.toString(),
+                    'cardname': carts[i].cardname.toString(),
+                    'unit':carts[i].unit,
+
+                    'cardimage': carts[i].cardimage.toString(),
+                    'cardprice': carts[i].cardprice,
+                    'shopcatagory':carts[i].shopcatagory,
+                    'shopid': carts[i].shopid,
+
+                  }
+              );
+
+            });
+
+
+
+            shoporder.child(
+                carts[i].shopcatagory).child(
+                carts[i].shopid).child("Orders")
+                .child("Active")
+                .child(orderID)
+                .set(<dynamic, dynamic>{
+              'no_of_items': '${carts.length}',
+              'userID':DataStream.UserId,
+              'bill': '${caltotal()}',
+              'status': 'pending',
+              'orderDate': date.format(now),
+              'orderTime': time.format(now),
+              'phonenumber': DataStream.PhoneNumber,
+              'orderID': orderID,
+              'address': Useraddress+"\n"+useraddress,
+              'location': "${deliverylocation
+                  .latitude},${deliverylocation.longitude}",
+
+            }).then((value) {
+
+              shoporder.child(carts[i].shopcatagory).child(carts[i].shopid).child("Orders")
+                  .child("Active").child(orderID).child("items").push().set(
+                  <dynamic, dynamic>{
+                    'no_of_items': carts[i].no_of_items,
+                    'cardid': carts[i].cardid.toString(),
+                    'cardname': carts[i].cardname.toString(),
+                    'unit':carts[i].unit,
+
+                    'cardimage': carts[i].cardimage.toString(),
+                    'cardprice': carts[i].cardprice,
+                    'shopcatagory':carts[i].shopcatagory,
+                    'shopid': carts[i].shopid,
+
+                  }
+              );
+
+            }).then((value) {
+
+              shoporder.child(
+                  carts[i].shopcatagory).child(
+                  carts[i].shopid).child("Orders")
+                  .child("Active")
+                  .child(orderID)
+                  .set(<dynamic, dynamic>{
+                'no_of_items': '${carts.length}',
+                'userID':DataStream.UserId,
+                'bill': '${caltotal()}',
+                'status': 'pending',
+                'orderDate': date.format(now),
+                'orderTime': time.format(now),
+                'phonenumber': DataStream.PhoneNumber,
+                'orderID': orderID,
+                'address': Useraddress+"\n"+useraddress,
+                'location': "${deliverylocation
+                    .latitude},${deliverylocation.longitude}",
+
+              }).then((value) {
+
+                shoporder.child(carts[i].shopcatagory).child(carts[i].shopid).child("Orders")
+                    .child("Active").child(orderID).child("items").push().set(
+                    <dynamic, dynamic>{
+                      'no_of_items': carts[i].no_of_items,
+                      'cardid': carts[i].cardid.toString(),
+                      'cardname': carts[i].cardname.toString(),
+                      'cardimage': carts[i].cardimage.toString(),
+                      'cardprice': carts[i].cardprice,
+                      'unit':carts[i].unit,
+                      'shopcatagory':carts[i].shopcatagory,
+                      'shopid': carts[i].shopid,
+
+                    }
+                );
+
+              });
+            });
+
+
+
+            _userRef.child("items").push().set(<dynamic, dynamic>{
+              'no_of_items': carts[i].no_of_items,
+              'cardid': carts[i].cardid.toString(),
+              'cardname': carts[i].cardname.toString(),
+              'cardimage': carts[i].cardimage.toString(),
+              'cardprice': carts[i].cardprice,
+              'unit':carts[i].unit,
+              'shopcatagory':carts[i].shopcatagory,
+              'shopid': carts[i].shopid,
+
+
+            }).then((value) {
+              FirebaseDatabase database = new FirebaseDatabase();
+              DatabaseReference _userRef = database.reference()
+                  .child('Cart').child(DataStream.UserId);
+              _userRef.remove();
+
+
+
+
+
+
+            });
+          }
+          final locationDbRef = FirebaseDatabase.instance.reference().child("Admin").child("Delivery");
+
+          locationDbRef.once().then((value) async {
+            print(value.value["delivery_charges"]);
+
+            DataStream.DeliverCharges = value.value['delivery_charges'];
+
+
+
+
+            hideLoadingDialogue();
+
+            showDialog(context: context,
+                builder: (BuildContext context){
+                  return CustomDialogBox(
+                    title: "Order Placed",
+                    descriptions: "Your Order has been placed tarck you order with the order ID",
+                    orderId: "# "+orderID,
+                    text: "Ok",
+
+                  );
+                }
+            );
+            ToastUtils.showCustomToast(context, "Order Placed", true);
+
+
+
+            //  Navigator.of(context).pop();
+          }
+          );
+
+
+        });
+      });
+
+    }else{
+      ToastUtils.showCustomToast(context, "Add Delivery Address", null);
+      final FormState form = _formKey.currentState;
+      if (!form.validate()) {
+        return;
+      }
+
+    }
   }
 
 }

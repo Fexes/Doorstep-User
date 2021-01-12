@@ -1,4 +1,6 @@
 import 'package:Doorstep/models/AppUser.dart';
+import 'package:Doorstep/models/Cart.dart';
+import 'package:Doorstep/models/Promo.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 
@@ -25,6 +27,10 @@ class DataStream{
   static int MinOrder=0;
 
   static int order_count=0;
+
+  static Promo PromoCode;
+
+  List<Cart> carts;
 
 
 }

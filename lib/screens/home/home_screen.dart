@@ -166,47 +166,7 @@ class HomePage extends State<Home> {
         print(value.value["no_of_orders"]);
         DataStream.order_count = value.value['no_of_orders'];
 
-        if (DataStream.order_count < 3) {
-          DataStream.DeliverCharges = 0;
-          DataStream.Discount = 100;
-          DataStream.MinOrder = 200;
-
-        }
-        else {
-          final locationDbRef = FirebaseDatabase.instance.reference().child(
-              "Admin").child("Delivery");
-
-          locationDbRef.once().then((value) async {
-            print(value.value["delivery_charges"]);
-
-            DataStream.DeliverCharges = value.value['delivery_charges'];
-            DataStream.Discount = 0;
-            DataStream.MinOrder = 0;
-
-          }
-          );
-        }
-      }else{
-        if (DataStream.order_count < 3) {
-          DataStream.DeliverCharges = 0;
-          DataStream.Discount = 100;
-          DataStream.MinOrder = 200;
-        }
-        else {
-          final locationDbRef = FirebaseDatabase.instance.reference().child(
-              "Admin").child("Delivery");
-
-          locationDbRef.once().then((value) async {
-            print(value.value["delivery_charges"]);
-
-            DataStream.DeliverCharges = value.value['delivery_charges'];
-            DataStream.Discount = 0;
-            DataStream.MinOrder = 0;
-          }
-          );
-        }
       }
-
 
     }
     );

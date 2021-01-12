@@ -653,15 +653,10 @@ class _CartScreenState extends State<CartScreen> {
                           ),
                           color: Colors.green,
                           onPressed: (){
+                            Navigator.of(context).pushReplacement(
+                                MaterialPageRoute(
+                                    builder: (context) => CheckOutScreen())).then((value) {setupCart();});
 
-                            if(calSubtotal() >= 200 ||  DataStream.order_count>3) {
-                              Navigator.of(context).pushReplacement(
-                                  MaterialPageRoute(
-                                      builder: (context) => CheckOutScreen())).then((value) {setupCart();});
-                            }else{
-                              ToastUtils.showCustomToast(context, "Minimum Order \n is Rs. 200 \n for first 3 orders",null);
-
-                            }
 
                           },
                           child: Text('Checkout',style: TextStyle(color: Colors.white,fontWeight: FontWeight.w500, fontSize: 18),),

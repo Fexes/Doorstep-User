@@ -442,12 +442,7 @@ class _ProductCatalogState extends State<ProductCatalog> {
                                     // final FormState form = _formKey.currentState;
                                     //   form.save();
                                   },
-                                  validator: (String value) {
-                                    if(value.length != 10)
-                                      return 'Please enter correct Phone Number';
-                                    else
-                                      return null;
-                                  },
+                                
                                   decoration: InputDecoration(
                                     contentPadding: EdgeInsets.only(left: 10.0, right: 0.0, top: 10.0, bottom: 12.0),
                                     border: OutlineInputBorder(
@@ -566,6 +561,7 @@ class _ProductCatalogState extends State<ProductCatalog> {
                             crossAxisSpacing: 1.0,
                           ),
                           itemCount: products.length,
+
                           padding: EdgeInsets.all(8.0),
                           itemBuilder: (BuildContext context, int index) {
 
@@ -754,6 +750,7 @@ class _ProductCatalogState extends State<ProductCatalog> {
                                     ),
                                   ),
 
+
                                   // Padding(
                                   //   padding: EdgeInsets.all(5),
                                   //   child: Container(
@@ -907,7 +904,9 @@ class _ProductCatalogState extends State<ProductCatalog> {
                               ],
                             );
 
+
                           },
+
                         ):
                         Center(child: Column(
                           mainAxisAlignment: MainAxisAlignment.center,
