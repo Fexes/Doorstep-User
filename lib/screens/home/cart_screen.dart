@@ -129,41 +129,7 @@ class _CartScreenState extends State<CartScreen> {
       print(value.value["no_of_orders"]);
       order_count = value.value['no_of_orders'];
 
-      if (order_count < 3) {
-        DataStream.DeliverCharges = 0;
-        DataStream.Discount = 100;
-        DataStream.MinOrder = 200;
-       }
-      else {
-        final locationDbRef = FirebaseDatabase.instance.reference().child(
-            "Admin").child("Delivery");
-
-        locationDbRef.once().then((value) async {
-          print(value.value["delivery_charges"]);
-
-          DataStream.DeliverCharges = value.value['delivery_charges'];
-        }
-        );
-      }
-    }else{
-
-        if (order_count < 3) {
-          DataStream.DeliverCharges = 0;
-          DataStream.Discount = 100;
-          DataStream.MinOrder = 200;
-        }
-        else {
-          final locationDbRef = FirebaseDatabase.instance.reference().child(
-              "Admin").child("Delivery");
-
-          locationDbRef.once().then((value) async {
-            print(value.value["delivery_charges"]);
-
-            DataStream.DeliverCharges = value.value['delivery_charges'];
-          }
-          );
-        }
-      }
+    }
 
       setuplist();
 
