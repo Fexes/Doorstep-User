@@ -5,6 +5,7 @@ import 'package:Doorstep/models/Banners.dart';
 import 'package:Doorstep/models/Cart.dart';
 import 'package:Doorstep/models/Order.dart';
 import 'package:Doorstep/models/Product.dart';
+import 'package:Doorstep/models/ShopCategory.dart';
 import 'package:Doorstep/models/Shops.dart';
 import 'package:Doorstep/models/AppUser.dart';
 import 'package:Doorstep/screens/auth/sign-in.dart';
@@ -16,6 +17,7 @@ import 'package:badges/badges.dart';
 import 'package:carousel_slider/carousel_options.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_database/firebase_database.dart';
+import 'package:firestore_ui/firestore_ui.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter_open_whatsapp/flutter_open_whatsapp.dart';
 import 'package:flutter_spinkit/flutter_spinkit.dart';
@@ -25,7 +27,8 @@ import 'package:Doorstep/styles/styles.dart';
  
 import 'package:google_map_location_picker/google_map_location_picker.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
-import 'package:rate_my_app/rate_my_app.dart';
+import 'package:in_app_review/in_app_review.dart';
+import 'package:motion_tab_bar/motiontabbar.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'dart:async';
 import 'dart:convert' show jsonDecode, utf8;
@@ -35,6 +38,7 @@ import 'package:carousel_slider/carousel_slider.dart';
 
 
 import 'package:http/http.dart' as http;
+import 'package:spannable_grid/spannable_grid.dart';
  import 'package:url_launcher/url_launcher.dart' as UrlLauncher;
 
 import 'cart_screen.dart';
@@ -133,6 +137,7 @@ class HomePage extends State<Home> {
     super.initState();
 
 
+
     haswhatsapp();
 
     FirebaseAuth.instance.currentUser().then((firebaseUser){
@@ -161,7 +166,11 @@ class HomePage extends State<Home> {
 
   haswhatsapp() async {
  //   whatsapp = await FlutterLaunch.hasApp(name: "whatsapp");
+    final InAppReview inAppReview = InAppReview.instance;
 
+    if (await inAppReview.isAvailable()) {
+      inAppReview.requestReview();
+    }
     whatsapp=true;
     setState(() {
 
@@ -182,6 +191,10 @@ class HomePage extends State<Home> {
     }
     );
   }
+  int catlistcount;
+  List<ShopCategory> shopcat;
+  List<ShopCategory> shopcat2;
+  List<ShopCategory> shopcat3;
    List<Order> orders;
   List<Banners> banners;
   bool whatsapp=false;
@@ -191,6 +204,9 @@ class HomePage extends State<Home> {
   bool bannerloaded=false;
   void setupBanner(){
 
+    shopcat = new List();
+    shopcat2 = new List();
+    shopcat3 = new List();
     banners = new List();
     imgList = new List();
 
@@ -297,6 +313,9 @@ class HomePage extends State<Home> {
    // imgList = new List();
 
     List<Widget> imageSliders;
+    List<SpannableGridCellData> cells = List();
+
+
 
 
       if (bannerloaded) {
@@ -459,676 +478,1022 @@ class HomePage extends State<Home> {
               flex: 1,
               child: Stack(
                 children: [
-                  ListView(
-                    children: [
-                      bannerloaded?
-                      Column(
-                          children: [
 
 
-                            CarouselSlider(
-                              items: imageSliders,
-                              options: CarouselOptions(
-                                  autoPlay: true,
-                                  enlargeStrategy: CenterPageEnlargeStrategy.scale,
-                                  enlargeCenterPage: true,
-                                  aspectRatio: 2.0,
-                                  onPageChanged: (index, reason) {
-                                    setState(() {
-                                      _current = index;
-                                    });
-                                  }
-                              ),
-                            ),
+                  Padding(
+                    padding:  EdgeInsets.fromLTRB(0,0, 0, 0),
+                    child: StreamBuilder(
+                        stream: FirebaseDatabase.instance
+                            .reference()
+                            .child("Admin").child("AppVersion").child("ShopCategory")
+                            .onValue
+                        ,
+                        builder: (BuildContext context, AsyncSnapshot<Event> snapshot) {
+                          if (snapshot.hasData) {
 
-                            Row(
-                              mainAxisAlignment: MainAxisAlignment.center,
-                              children: imgList.map((url) {
-                                int index = imgList.indexOf(url);
-                                return Container(
-                                  width: 8.0,
-                                  height: 8.0,
-                                  margin: EdgeInsets.symmetric(vertical: 10.0, horizontal: 2.0),
-                                  decoration: BoxDecoration(
-                                    shape: BoxShape.circle,
-                                    color: _current == index
-                                        ? Color.fromRGBO(0, 0, 0, 0.9)
-                                        : Color.fromRGBO(0, 0, 0, 0.4),
-                                  ),
-                                );
-                              }).toList(),
-                            ),
-                          ]
-                      ):
-                     SizedBox(height: 5,),
+                            Map<dynamic, dynamic> map = snapshot.data.snapshot.value;
+
+                            if(map!=null) {
+                              // shops.clear();
+                              shopcat.clear();
+                              shopcat2.clear();
+                              shopcat3.clear();
+                              catlistcount=0;
+                              int x=0;
+
+                              map.forEach((dynamic, v)  {
+
+                               // print(v["CategoryName"]);
+
+                                if( v["group"]==1) {
+                                  catlistcount++;
+                                 shopcat.add(new ShopCategory(
+                                   v["key"],
+                                   v["CategoryImage"],
+                                   v["CategoryName"],
+                                   v["TagLine"],
+                                   v["group"],
+                                   v["index"],
+                                 ));
+
+                               }
+
+                                if( v["group"]==2) {
+                                      shopcat2.add(new ShopCategory(
+                                        v["key"],
+                                        v["CategoryImage"],
+                                        v["CategoryName"],
+                                        v["TagLine"],
+                                        v["group"],
+                                        v["index"],
+
+                                      ));
+
+                                    }
+                                if( v["group"]==3) {
+
+                                  shopcat3.add(new ShopCategory(
+                                    v["key"],
+                                    v["CategoryImage"],
+                                    v["CategoryName"],
+                                    v["TagLine"],
+                                    v["group"],
+                                    v["index"],
+
+                                  ));
 
 
-                      Padding(
-                        padding: const EdgeInsets.all(15.0),
-                        child: Container(
-                          decoration: BoxDecoration(
-                            shape: BoxShape.rectangle,
-                            borderRadius: BorderRadius.all(Radius.circular(10.0)),
-                            color: Colors.white,
 
-                            boxShadow: [
-                              BoxShadow(
-                                color: Colors.grey.withOpacity(0.75),
-                                spreadRadius: 5,
-                                blurRadius: 7,
-                                offset: Offset(0, 3),
-                              ),
-                            ],
-                          ),
+                                }
 
-                          width: screenWidth(context)-10,
-                          child: Padding(
-                            padding: EdgeInsets.all(15),
-                            child: Column(
-                              crossAxisAlignment:CrossAxisAlignment.start,
-                              children: [
 
-                                Row(
-                                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                                  children: [
+                                x++;
+                              });
+                              shopcat.sort((a, b) => a.index.compareTo(b.index));
+                              shopcat2.sort((a, b) => a.index.compareTo(b.index));
+                              shopcat3.sort((a, b) => a.index.compareTo(b.index));
 
-                                    Row(
-                                      children: [
-                                        Icon(Icons.location_on),
-                                        SizedBox(width: 10,),
+                              print("length "+shopcat.length.toString());
+                              print("length "+shopcat2.length.toString());
 
-                                        Container(
-                                          width: screenWidth(context)/2,
-                                          child: Text(
+                              print("length "+shopcat3.length.toString());
 
-                                            PickedAddress,
-                                            style: TextStyle(fontSize: 12, fontWeight: FontWeight.w300,color: Colors.black),
-                                            textAlign: TextAlign.left,
-                                            maxLines: 4,
-                                          ),
-                                        ),
-                                      ],
-                                    ),
-                                    GestureDetector(
-                                      onTap: (){
+                              print("length $catlistcount ");
 
-                                        Dialog errorDialog = Dialog(
-                                          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12.0)), //this right here
-                                          child: Container(
-                                            height: 180.0,
-                                            width: screenWidth(context),
 
-                                            child: Column(
+
+                            }
+
+
+
+                            return  ListView.builder(
+
+
+                              itemCount: (catlistcount)+1,
+                              itemBuilder: (BuildContext context, int index) {
+                                return
+                                  index==0?
+                                  Column(
+                                    children: [
+                                      bannerloaded?
+                                      Column(
+                                          children: [
+
+
+                                            CarouselSlider(
+                                              items: imageSliders,
+                                              options: CarouselOptions(
+                                                  autoPlay: true,
+                                                  enlargeStrategy: CenterPageEnlargeStrategy.scale,
+                                                  enlargeCenterPage: true,
+                                                  aspectRatio: 2.0,
+                                                  onPageChanged: (index, reason) {
+                                                    setState(() {
+                                                      _current = index;
+                                                    });
+                                                  }
+                                              ),
+                                            ),
+
+                                            Row(
                                               mainAxisAlignment: MainAxisAlignment.center,
-                                              children: <Widget>[
-                                                SizedBox(height: 20,),
+                                              children: imgList.map((url) {
+                                                int index = imgList.indexOf(url);
+                                                return Container(
+                                                  width: 8.0,
+                                                  height: 8.0,
+                                                  margin: EdgeInsets.symmetric(vertical: 10.0, horizontal: 2.0),
+                                                  decoration: BoxDecoration(
+                                                    shape: BoxShape.circle,
+                                                    color: _current == index
+                                                        ? Color.fromRGBO(0, 0, 0, 0.9)
+                                                        : Color.fromRGBO(0, 0, 0, 0.4),
+                                                  ),
+                                                );
+                                              }).toList(),
+                                            ),
+                                          ]
+                                      ):
+                                      SizedBox(height: 5,),
 
-                                                Padding(
-                                                  padding:  EdgeInsets.all(1.0),
-                                                  child: Text('Change Location', style: TextStyle(color: Colors.red,fontSize: 18,fontWeight: FontWeight.w500),),
-                                                ),
-                                               // SizedBox(height: 20,),
 
+                                      Padding(
+                                        padding: const EdgeInsets.all(15.0),
+                                        child: Container(
+                                          decoration: BoxDecoration(
+                                            shape: BoxShape.rectangle,
+                                            borderRadius: BorderRadius.all(Radius.circular(10.0)),
+                                            color: Colors.white,
 
-                                                Padding(
-                                                  padding:  EdgeInsets.all(20.0),
-                                                  child: Text('Changing your location will clear your Cart are you sure you want to change your Location ?', style: TextStyle(color: Colors.black,fontSize: 14),),
-                                                ),
+                                            boxShadow: [
+                                              BoxShadow(
+                                                color: Colors.grey.withOpacity(0.75),
+                                                spreadRadius: 5,
+                                                blurRadius: 7,
+                                                offset: Offset(0, 3),
+                                              ),
+                                            ],
+                                          ),
 
+                                          width: screenWidth(context)-10,
+                                          child: Padding(
+                                            padding: EdgeInsets.all(15),
+                                            child: Column(
+                                              crossAxisAlignment:CrossAxisAlignment.start,
+                                              children: [
 
-
-                                                SizedBox(height: 10,),
                                                 Row(
-                                                  mainAxisAlignment: MainAxisAlignment.end,
-                                                  crossAxisAlignment: CrossAxisAlignment.end,
+                                                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
                                                   children: [
-                                                    FlatButton(
 
-                                                        onPressed: (){
-                                                          Navigator.of(context).pop();
+                                                    Row(
+                                                      children: [
+                                                        Icon(Icons.location_on),
+                                                        SizedBox(width: 10,),
 
-                                                        },
-                                                        child: Text('Dismiss', style: TextStyle(color: Colors.grey, fontSize: 14.0),)),
+                                                        Container(
+                                                          width: screenWidth(context)/2,
+                                                          child: Text(
 
-                                                    FlatButton(onPressed: (){
+                                                            PickedAddress,
+                                                            style: TextStyle(fontSize: 12, fontWeight: FontWeight.w300,color: Colors.black),
+                                                            textAlign: TextAlign.left,
+                                                            maxLines: 4,
+                                                          ),
+                                                        ),
+                                                      ],
+                                                    ),
+                                                    GestureDetector(
+                                                      onTap: (){
 
-                                                        FirebaseDatabase database = new FirebaseDatabase();
+                                                        Dialog errorDialog = Dialog(
+                                                          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12.0)), //this right here
+                                                          child: Container(
+                                                            height: 180.0,
+                                                            width: screenWidth(context),
 
-                                                        DatabaseReference del = database
-                                                            .reference();
+                                                            child: Column(
+                                                              mainAxisAlignment: MainAxisAlignment.center,
+                                                              children: <Widget>[
+                                                                SizedBox(height: 20,),
+
+                                                                Padding(
+                                                                  padding:  EdgeInsets.all(1.0),
+                                                                  child: Text('Change Location', style: TextStyle(color: Colors.red,fontSize: 18,fontWeight: FontWeight.w500),),
+                                                                ),
+                                                                // SizedBox(height: 20,),
 
 
-                                                        del =
-                                                            database.reference()
-                                                                .child("Cart")
-                                                                .child(
-                                                                DataStream
-                                                                    .UserId);
-                                                        del.remove().then((
-                                                            value) {
-                                                          carts.clear();
-                                                          Navigator.of(context)
-                                                              .pop();
+                                                                Padding(
+                                                                  padding:  EdgeInsets.all(20.0),
+                                                                  child: Text('Changing your location will clear your Cart are you sure you want to change your Location ?', style: TextStyle(color: Colors.black,fontSize: 14),),
+                                                                ),
 
+
+
+                                                                SizedBox(height: 10,),
+                                                                Row(
+                                                                  mainAxisAlignment: MainAxisAlignment.end,
+                                                                  crossAxisAlignment: CrossAxisAlignment.end,
+                                                                  children: [
+                                                                    FlatButton(
+
+                                                                        onPressed: (){
+                                                                          Navigator.of(context).pop();
+
+                                                                        },
+                                                                        child: Text('Dismiss', style: TextStyle(color: Colors.grey, fontSize: 14.0),)),
+
+                                                                    FlatButton(onPressed: (){
+
+                                                                      FirebaseDatabase database = new FirebaseDatabase();
+
+                                                                      DatabaseReference del = database
+                                                                          .reference();
+
+
+                                                                      del =
+                                                                          database.reference()
+                                                                              .child("Cart")
+                                                                              .child(
+                                                                              DataStream
+                                                                                  .UserId);
+                                                                      del.remove().then((
+                                                                          value) {
+                                                                        carts.clear();
+                                                                        Navigator.of(context)
+                                                                            .pop();
+
+                                                                        addLocation().then((value) {setupBanner();});
+
+                                                                        setState(() {
+
+                                                                        });
+                                                                      });
+
+
+                                                                    },
+                                                                        child: Text('Change Location', style: TextStyle(color: Colors.redAccent, fontSize: 14.0),)),
+                                                                  ],
+                                                                )
+                                                              ],
+                                                            ),
+                                                          ),
+                                                        );
+
+
+                                                        if(carts.length>0) {
+                                                          showDialog(context: context,
+                                                              builder: (
+                                                                  BuildContext context) => errorDialog);
+                                                        }else{
                                                           addLocation().then((value) {setupBanner();});
 
-                                                          setState(() {
+                                                        }
 
-                                                          });
+
+                                                        setState(() {
+
                                                         });
+                                                      },
 
 
-                                                    },
-                                                        child: Text('Change Location', style: TextStyle(color: Colors.redAccent, fontSize: 14.0),)),
+                                                      child: Text(
+                                                        'Change',
+                                                        style: TextStyle(fontSize: 16, fontWeight: FontWeight.w600,color: Colors.green),
+                                                      ),
+                                                    ),
+
                                                   ],
-                                                )
+                                                ),
+                                                //SizedBox(height: 20,),
+
+
+
+
+
                                               ],
                                             ),
                                           ),
-                                        );
 
-
-                                              if(carts.length>0) {
-                                                showDialog(context: context,
-                                                    builder: (
-                                                        BuildContext context) => errorDialog);
-                                              }else{
-                                                addLocation().then((value) {setupBanner();});
-
-                                              }
-
-
-                                        setState(() {
-
-                                        });
-                                      },
-
-
-                                      child: Text(
-                                        'Change',
-                                        style: TextStyle(fontSize: 16, fontWeight: FontWeight.w600,color: Colors.green),
+                                        ),
                                       ),
-                                    ),
 
+
+//
+//
+//                       GestureDetector(
+//                         onTap: (){
+//                           DataStream.ShopCatagory="Supermarkets";
+//                           Navigator.push( context, MaterialPageRoute( builder: (BuildContext context) => ShopsScreen(),),).then((value) {setupCart();});
+//
+//                         },
+//                         child: Padding(
+//                           padding: EdgeInsets.all(5),
+//                           child: Container(
+//                             height: 170,
+//                             decoration: BoxDecoration(
+//                               boxShadow: [
+//                                 BoxShadow(
+//                                   color:  Colors.grey.withOpacity(0.9),
+//                                   spreadRadius: 2,
+//                                   blurRadius: 3,
+//                                 ),
+//                               ],
+//                               shape: BoxShape.rectangle,
+//                               borderRadius: BorderRadius.all(Radius.circular(15.0)),
+//                               image: DecorationImage(
+//                                 image: AssetImage("assets/imgs/super_market.jpg"),
+//                                 fit: BoxFit.cover,
+//                               ),
+//                             ),
+//                             child:  Padding(
+//                               padding: EdgeInsets.all(0),
+//                               child: Container(
+//
+//                                 height: 100,
+//                                 decoration: BoxDecoration(
+//
+//                                   shape: BoxShape.rectangle,
+//                                   borderRadius: BorderRadius.all(Radius.circular(15.0)),
+//                                   gradient: new LinearGradient(
+//                                       colors: [
+//                                         Colors.black.withOpacity(0.75)
+// ,
+//                                             const Color(0x10000000),
+//
+//                                       ],
+//                                       begin: const FractionalOffset(0.0, 0.0),
+//                                       end: const FractionalOffset(0.0, 1.0),
+//                                       stops: [0.0, 1.0],
+//                                       tileMode: TileMode.clamp),
+//                                 ),
+//                                 child: Padding(
+//                                   padding: EdgeInsets.all(12),
+//                                   child: Column(
+//                                     crossAxisAlignment: CrossAxisAlignment.start,
+//                                     mainAxisAlignment: MainAxisAlignment.start,
+//                                     children: [
+//                                       Text(
+//                                         'Supermarkets',
+//                                         style: TextStyle( fontSize: 22, fontWeight: FontWeight.w500,color: Colors.white),
+//                                       ),
+//                                       Text(
+//                                         'Groceries made easy',
+//                                         style: TextStyle( fontSize: 16, fontWeight: FontWeight.w300,color: Colors.white),
+//                                       ),
+//
+//                                     ],
+//                                   ),
+//                                 ),
+//                               ),
+//                             ), /* add child content here */
+//                           ),
+//                         ),
+//                       ),
+//
+//                         Row(
+//                           children: [
+//
+//
+//                             GestureDetector(
+//                               onTap: (){
+//                                 DataStream.ShopCatagory="Bakery";
+//
+//                                 Navigator.push( context, MaterialPageRoute( builder: (BuildContext context) => ShopsScreen(),),).then((value) {setupCart();});
+//
+//                               },
+//                               child: Padding(
+//                                 padding: EdgeInsets.all(5),
+//                                 child: Container(
+//                                   height: 170,
+//                                   width: ((screenWidth(context)/2))-15,
+//
+//                                   decoration: BoxDecoration(
+//                                     boxShadow: [
+//                                   BoxShadow(
+//                                     color:  Colors.grey.withOpacity(0.9),
+//                                     spreadRadius: 2,
+//                                     blurRadius: 3,
+//                                   ),
+//                                 ],
+//                                     shape: BoxShape.rectangle,
+//                                     borderRadius: BorderRadius.all(Radius.circular(15.0)),
+//                                     image: DecorationImage(
+//                                       image: AssetImage("assets/imgs/bk.jpg"),
+//
+//                                       fit: BoxFit.cover,
+//                                     ),
+//                                   ),
+//                                   child:  Padding(
+//                                     padding: EdgeInsets.all(0),
+//                                     child: Container(
+//
+//                                       height: 100,
+//                                       decoration: BoxDecoration(
+//
+//                                         shape: BoxShape.rectangle,
+//                                         borderRadius: BorderRadius.all(Radius.circular(15.0)),
+//                                         gradient: new LinearGradient(
+//                                             colors: [
+//                                               Colors.black.withOpacity(0.75),
+//                                               const Color(0x10000000),
+//                                             ],
+//                                             begin: const FractionalOffset(0.0, 0.0),
+//                                             end: const FractionalOffset(0.0, 1.0),
+//                                             stops: [0.0, 1.0],
+//                                             tileMode: TileMode.clamp),
+//                                       ),
+//                                       child: Padding(
+//                                         padding: EdgeInsets.all(12),
+//                                         child: Column(
+//                                           crossAxisAlignment: CrossAxisAlignment.start,
+//                                           mainAxisAlignment: MainAxisAlignment.start,
+//                                           children: [
+//
+//                                             Text(
+//                                               'Bakery',
+//                                               style: TextStyle( fontSize: 22, fontWeight: FontWeight.w500,color: Colors.white),
+//                                             ),
+//                                             Text(
+//                                               'Freshly Baked',
+//                                               style: TextStyle( fontSize: 16, fontWeight: FontWeight.w300,color: Colors.white),
+//                                             ),
+//                                           ],
+//                                         ),
+//                                       ),
+//                                     ),
+//                                   ), /* add child content here */
+//                                 ),
+//                               ),
+//                             ),
+//
+//
+//
+//                             GestureDetector(
+//                               onTap: (){
+//                                 DataStream.ShopCatagory="Butchery & BBQ";
+//                                 Navigator.push( context, MaterialPageRoute( builder: (BuildContext context) => ShopsScreen(),),).then((value) {setupCart();});
+//
+//                               },
+//                               child: Padding(
+//                                 padding: EdgeInsets.all(5),
+//                                 child: Container(
+//                                   height: 170,
+//                                   width: ((screenWidth(context)/2))-5,
+//
+//
+//                                   decoration: BoxDecoration(
+//                                     boxShadow: [
+//                                   BoxShadow(
+//                                     color:  Colors.grey.withOpacity(0.9),
+//                                     spreadRadius: 2,
+//                                     blurRadius: 3,
+//                                   ),
+//                                 ],
+//                                     shape: BoxShape.rectangle,
+//                                     borderRadius: BorderRadius.all(Radius.circular(15.0)),
+//                                     image: DecorationImage(
+//                                       image: AssetImage("assets/imgs/bbq.jpg"),
+//                                       fit: BoxFit.cover,
+//                                     ),
+//                                   ),
+//                                   child:  Padding(
+//                                     padding: EdgeInsets.all(0),
+//                                     child: Container(
+//
+//                                       height: 100,
+//                                       decoration: BoxDecoration(
+//
+//                                         shape: BoxShape.rectangle,
+//                                         borderRadius: BorderRadius.all(Radius.circular(15.0)),
+//                                         gradient: new LinearGradient(
+//                                             colors: [
+//                                               Colors.black.withOpacity(0.75)
+// ,
+//                                               const Color(0x10000000),
+//                                             ],
+//                                             begin: const FractionalOffset(0.0, 0.0),
+//                                             end: const FractionalOffset(0.0, 1.0),
+//                                             stops: [0.0, 1.0],
+//                                             tileMode: TileMode.clamp),
+//                                       ),
+//                                       child: Padding(
+//                                         padding: EdgeInsets.all(12),
+//                                         child: Column(
+//                                           crossAxisAlignment: CrossAxisAlignment.start,
+//                                           mainAxisAlignment: MainAxisAlignment.start,
+//                                           children: [
+//                                             Text(
+//                                               'Butchery & BBQ',
+//                                               style: TextStyle( fontSize: 22, fontWeight: FontWeight.w500,color: Colors.white),
+//                                             ),
+//                                             Text(
+//                                               'The place to meat',
+//                                               style: TextStyle( fontSize: 16, fontWeight: FontWeight.w300,color: Colors.white),
+//                                             ),
+//                                           ],
+//                                         ),
+//                                       ),
+//                                     ),
+//                                   ), /* add child content here */
+//                                 ),
+//                               ),
+//                             ),
+//
+//                           ],
+//                         ),
+//                         GestureDetector(
+//                           onTap: (){
+//                             DataStream.ShopCatagory="Fruits & Vegetables";
+//                             Navigator.push( context, MaterialPageRoute( builder: (BuildContext context) => ShopsScreen(),),).then((value) {setupCart();});
+//
+//                           },
+//                           child: Padding(
+//                             padding: EdgeInsets.all(5),
+//                             child: Container(
+//                               height: 170,
+//                               decoration: BoxDecoration(
+//                                   boxShadow: [
+//                                   BoxShadow(
+//                                     color:  Colors.grey.withOpacity(0.9),
+//                                     spreadRadius: 2,
+//                                     blurRadius: 3,
+//                                   ),
+//                                 ],
+//                                 shape: BoxShape.rectangle,
+//                                 borderRadius: BorderRadius.all(Radius.circular(15.0)),
+//                                 image: DecorationImage(
+//                                   image: AssetImage("assets/imgs/grocery_store.jpg"),
+//                                   fit: BoxFit.cover,
+//                                 ),
+//                               ),
+//                               child:  Padding(
+//                                 padding: EdgeInsets.all(0),
+//                                 child: Container(
+//
+//                                   height: 100,
+//                                   decoration: BoxDecoration(
+//                                     shape: BoxShape.rectangle,
+//                                     borderRadius: BorderRadius.all(Radius.circular(15.0)),
+//                                     gradient: new LinearGradient(
+//                                         colors: [
+//                                           Colors.black.withOpacity(0.75)
+// ,
+//                                               const Color(0x10000000),
+//                                         ],
+//                                         begin: const FractionalOffset(0.0, 0.0),
+//                                         end: const FractionalOffset(0.0, 1.0),
+//                                         stops: [0.0, 1.0],
+//                                         tileMode: TileMode.clamp),
+//                                   ),
+//                                   child: Padding(
+//                                     padding: EdgeInsets.all(12),
+//                                     child: Column(
+//                                       crossAxisAlignment: CrossAxisAlignment.start,
+//                                       mainAxisAlignment: MainAxisAlignment.start,
+//                                       children: [
+//                                         Text(
+//                                           'Fruits & Vegetables',
+//                                           style: TextStyle( fontSize: 22, fontWeight: FontWeight.w500,color: Colors.white),
+//                                         ),
+//                                         Text(
+//                                           'Fresher and better',
+//                                           style: TextStyle( fontSize: 16, fontWeight: FontWeight.w300,color: Colors.white),
+//                                         ),
+//                                       ],
+//                                     ),
+//                                   ),
+//                                 ),
+//                               ), /* add child content here */
+//                             ),
+//                           ),
+//                         ),
+//
+//                         Row(
+//
+//                           children: [
+//                             GestureDetector(
+//                               onTap: (){
+//                                 DataStream.ShopCatagory="Tandoor";
+//                                 Navigator.push( context, MaterialPageRoute( builder: (BuildContext context) => ShopsScreen(),),).then((value) {setupCart();});
+//
+//                               },
+//                               child: Padding(
+//                                 padding: EdgeInsets.all(5),
+//                                 child: Container(
+//                                   height: 170,
+//                                   width: ((screenWidth(context)/2))-15,
+//
+//
+//
+//                                   decoration: BoxDecoration(
+//                                     boxShadow: [
+//                                   BoxShadow(
+//                                     color:  Colors.grey.withOpacity(0.9),
+//                                     spreadRadius: 2,
+//                                     blurRadius: 3,
+//                                   ),
+//                                 ],
+//                                     shape: BoxShape.rectangle,
+//                                     borderRadius: BorderRadius.all(Radius.circular(15.0)),
+//                                     image: DecorationImage(
+//                                       image: AssetImage("assets/imgs/naan.jpg"),
+//                                       fit: BoxFit.cover,
+//                                     ),
+//                                   ),
+//                                   child:  Padding(
+//                                     padding: EdgeInsets.all(0),
+//                                     child: Container(
+//
+//                                       height: 100,
+//                                       decoration: BoxDecoration(
+//                                         shape: BoxShape.rectangle,
+//                                         borderRadius: BorderRadius.all(Radius.circular(15.0)),
+//                                         gradient: new LinearGradient(
+//                                             colors: [
+//                                               Colors.black.withOpacity(0.75)
+// ,
+//                                               const Color(0x10000000),
+//                                             ],
+//                                             begin: const FractionalOffset(0.0, 0.0),
+//                                             end: const FractionalOffset(0.0, 1.0),
+//                                             stops: [0.0, 1.0],
+//                                             tileMode: TileMode.clamp),
+//                                       ),
+//                                       child: Padding(
+//                                         padding: EdgeInsets.all(12),
+//                                         child: Column(
+//                                           crossAxisAlignment: CrossAxisAlignment.start,
+//                                           mainAxisAlignment: MainAxisAlignment.start,
+//                                           children: [
+//                                             Text(
+//                                               'Tandoor',
+//                                               style: TextStyle( fontSize: 22, fontWeight: FontWeight.w500,color: Colors.white),
+//                                             ),
+//                                             Text(
+//                                               'Fresh Naan',
+//                                               style: TextStyle( fontSize: 16, fontWeight: FontWeight.w300,color: Colors.white),
+//                                             ),
+//                                           ],
+//                                         ),
+//                                       ),
+//                                     ),
+//                                   ), /* add child content here */
+//                                 ),
+//                               ),
+//                             ),
+//                             GestureDetector(
+//                               onTap: (){
+//                                 DataStream.ShopCatagory="Dairy";
+//                                 Navigator.push( context, MaterialPageRoute( builder: (BuildContext context) => ShopsScreen(),),).then((value) {setupCart();});
+//
+//                               },
+//                               child: Padding(
+//                                 padding: EdgeInsets.all(5),
+//                                 child: Container(
+//                                   height: 170,
+//                                   width: ((screenWidth(context)/2))-5,
+//
+//
+//                                   decoration: BoxDecoration(
+//                                     boxShadow: [
+//                                   BoxShadow(
+//                                     color:  Colors.grey.withOpacity(0.9),
+//                                     spreadRadius: 2,
+//                                     blurRadius: 3,
+//                                   ),
+//                                 ],
+//                                     shape: BoxShape.rectangle,
+//                                     borderRadius: BorderRadius.all(Radius.circular(15.0)),
+//                                     image: DecorationImage(
+//                                       image: AssetImage("assets/imgs/dairy.jpg"),
+//                                       fit: BoxFit.cover,
+//                                     ),
+//                                   ),
+//                                   child:  Padding(
+//                                     padding: EdgeInsets.all(0),
+//                                     child: Container(
+//
+//                                       height: 100,
+//                                       decoration: BoxDecoration(
+//                                         shape: BoxShape.rectangle,
+//                                         borderRadius: BorderRadius.all(Radius.circular(15.0)),
+//                                         gradient: new LinearGradient(
+//                                             colors: [
+//                                               Colors.black.withOpacity(0.75)
+// ,
+//                                               const Color(0x10000000),
+//                                             ],
+//                                             begin: const FractionalOffset(0.0, 0.0),
+//                                             end: const FractionalOffset(0.0, 1.0),
+//                                             stops: [0.0, 1.0],
+//                                             tileMode: TileMode.clamp),
+//                                       ),
+//                                       child: Padding(
+//                                         padding: EdgeInsets.all(12),
+//                                         child: Column(
+//                                           crossAxisAlignment: CrossAxisAlignment.start,
+//                                           mainAxisAlignment: MainAxisAlignment.start,
+//                                           children: [
+//                                             Text(
+//                                               'Dairy',
+//                                               style: TextStyle( fontSize: 22, fontWeight: FontWeight.w500,color: Colors.white),
+//                                             ),
+//                                             Text(
+//                                               'Fresh Dairy Products',
+//                                               style: TextStyle( fontSize: 16, fontWeight: FontWeight.w300,color: Colors.white),
+//                                             ),
+//                                           ],
+//                                         ),
+//                                       ),
+//                                     ),
+//                                   ), /* add child content here */
+//                                 ),
+//                               ),
+//                             ),
+//                           ],
+//                         ),
+
+                                    ],
+                                  ):
+
+                                      Column(
+                                        children: [
+                                           Container(
+                                             width:screenHeight(context),
+                                             child: GestureDetector(
+
+                                                onTap: (){
+                                                  DataStream.ShopCatagory=shopcat[index-1].CategoryName;
+                                                  Navigator.push( context, MaterialPageRoute( builder: (BuildContext context) => ShopsScreen(),),).then((value) {setupCart();});
+
+                                                },
+                                                child: Padding(
+                                                  padding: EdgeInsets.all(5),
+                                                  child: Container(
+                                                    height: 170,
+                                                    decoration: BoxDecoration(
+                                                      boxShadow: [
+                                                        BoxShadow(
+                                                          color:  Colors.grey.withOpacity(0.9),
+                                                          spreadRadius: 2,
+                                                          blurRadius: 3,
+                                                        ),
+                                                      ],
+                                                      shape: BoxShape.rectangle,
+                                                      borderRadius: BorderRadius.all(Radius.circular(15.0)),
+                                                      image: DecorationImage(
+                                                        image: NetworkImage(shopcat[index-1].CategoryImage),
+                                                        fit: BoxFit.cover,
+                                                      ),
+                                                    ),
+                                                    child:  Padding(
+                                                      padding: EdgeInsets.all(0),
+                                                      child: Container(
+
+                                                        height: 100,
+                                                        decoration: BoxDecoration(
+                                                          shape: BoxShape.rectangle,
+                                                          borderRadius: BorderRadius.all(Radius.circular(15.0)),
+                                                          gradient: new LinearGradient(
+                                                              colors: [
+                                                                Colors.black.withOpacity(0.75)
+                                                                ,
+                                                                const Color(0x10000000),
+                                                              ],
+                                                              begin: const FractionalOffset(0.0, 0.0),
+                                                              end: const FractionalOffset(0.0, 1.0),
+                                                              stops: [0.0, 1.0],
+                                                              tileMode: TileMode.clamp),
+                                                        ),
+                                                        child: Padding(
+                                                          padding: EdgeInsets.all(12),
+                                                          child: Column(
+                                                            crossAxisAlignment: CrossAxisAlignment.start,
+                                                            mainAxisAlignment: MainAxisAlignment.start,
+                                                            children: [
+                                                              Text(
+                                                                shopcat[index-1].CategoryName,
+                                                                style: TextStyle( fontSize: 22, fontWeight: FontWeight.w500,color: Colors.white),
+                                                              ),
+                                                              Text(
+                                                                shopcat[index-1].TagLine,
+                                                                style: TextStyle( fontSize: 16, fontWeight: FontWeight.w300,color: Colors.white),
+                                                              ),
+                                                            ],
+                                                          ),
+                                                        ),
+                                                      ),
+                                                    ), /* add child content here */
+                                                  ),
+                                                ),
+                                              ),
+                                           ),
+
+
+                                           Row(
+
+                                            children: [
+
+                                              index<=shopcat2.length?
+                                              GestureDetector(
+                                                onTap: (){
+                                                  DataStream.ShopCatagory=shopcat2[index-1].CategoryName;
+
+                                                  Navigator.push( context, MaterialPageRoute( builder: (BuildContext context) => ShopsScreen(),),).then((value) {setupCart();});
+
+                                                },
+                                                child: Padding(
+                                                  padding: EdgeInsets.all(5),
+                                                  child: Container(
+                                                    height: 170,
+                                                    width: ((screenWidth(context)/2))-15,
+
+                                                    decoration: BoxDecoration(
+                                                      boxShadow: [
+                                                        BoxShadow(
+                                                          color:  Colors.grey.withOpacity(0.9),
+                                                          spreadRadius: 2,
+                                                          blurRadius: 3,
+                                                        ),
+                                                      ],
+                                                      shape: BoxShape.rectangle,
+                                                      borderRadius: BorderRadius.all(Radius.circular(15.0)),
+                                                      image: DecorationImage(
+                                                        image: NetworkImage(shopcat2[index-1].CategoryImage),
+
+                                                        fit: BoxFit.cover,
+                                                      ),
+                                                    ),
+                                                    child:  Padding(
+                                                      padding: EdgeInsets.all(0),
+                                                      child: Container(
+
+                                                        height: 100,
+                                                        decoration: BoxDecoration(
+
+                                                          shape: BoxShape.rectangle,
+                                                          borderRadius: BorderRadius.all(Radius.circular(15.0)),
+                                                          gradient: new LinearGradient(
+                                                              colors: [
+                                                                Colors.black.withOpacity(0.75),
+                                                                const Color(0x10000000),
+                                                              ],
+                                                              begin: const FractionalOffset(0.0, 0.0),
+                                                              end: const FractionalOffset(0.0, 1.0),
+                                                              stops: [0.0, 1.0],
+                                                              tileMode: TileMode.clamp),
+                                                        ),
+                                                        child: Padding(
+                                                          padding: EdgeInsets.all(12),
+                                                          child: Column(
+                                                            crossAxisAlignment: CrossAxisAlignment.start,
+                                                            mainAxisAlignment: MainAxisAlignment.start,
+                                                            children: [
+
+                                                              Text(
+                                                                shopcat2[index-1].CategoryName,
+                                                                style: TextStyle( fontSize: 22, fontWeight: FontWeight.w500,color: Colors.white),
+                                                              ),
+                                                              Text(
+                                                                shopcat2[index-1].TagLine,
+                                                                style: TextStyle( fontSize: 16, fontWeight: FontWeight.w300,color: Colors.white),
+                                                              ),
+                                                            ],
+                                                          ),
+                                                        ),
+                                                      ),
+                                                    ), /* add child content here */
+                                                  ),
+                                                ),
+                                              ):SizedBox(),
+
+
+                                              index<=shopcat3.length?
+                                              GestureDetector(
+                                                onTap: (){
+                                                  DataStream.ShopCatagory=shopcat3[index-1].CategoryName;
+                                                  Navigator.push( context, MaterialPageRoute( builder: (BuildContext context) => ShopsScreen(),),).then((value) {setupCart();});
+
+                                                },
+                                                child: Padding(
+                                                  padding: EdgeInsets.all(5),
+                                                  child: Container(
+                                                    height: 170,
+                                                    width: ((screenWidth(context)/2))-5,
+
+
+                                                    decoration: BoxDecoration(
+                                                      boxShadow: [
+                                                        BoxShadow(
+                                                          color:  Colors.grey.withOpacity(0.9),
+                                                          spreadRadius: 2,
+                                                          blurRadius: 3,
+                                                        ),
+                                                      ],
+                                                      shape: BoxShape.rectangle,
+                                                      borderRadius: BorderRadius.all(Radius.circular(15.0)),
+                                                      image: DecorationImage(
+                                                        image: NetworkImage(shopcat3[index-1].CategoryImage),
+                                                        fit: BoxFit.cover,
+                                                      ),
+                                                    ),
+                                                    child:  Padding(
+                                                      padding: EdgeInsets.all(0),
+                                                      child: Container(
+
+                                                        height: 100,
+                                                        decoration: BoxDecoration(
+
+                                                          shape: BoxShape.rectangle,
+                                                          borderRadius: BorderRadius.all(Radius.circular(15.0)),
+                                                          gradient: new LinearGradient(
+                                                              colors: [
+                                                                Colors.black.withOpacity(0.75)
+                                                                ,
+                                                                const Color(0x10000000),
+                                                              ],
+                                                              begin: const FractionalOffset(0.0, 0.0),
+                                                              end: const FractionalOffset(0.0, 1.0),
+                                                              stops: [0.0, 1.0],
+                                                              tileMode: TileMode.clamp),
+                                                        ),
+                                                        child: Padding(
+                                                          padding: EdgeInsets.all(12),
+                                                          child: Column(
+                                                            crossAxisAlignment: CrossAxisAlignment.start,
+                                                            mainAxisAlignment: MainAxisAlignment.start,
+                                                            children: [
+                                                              Text(
+                                                                shopcat3[index-1].CategoryName,
+                                                                style: TextStyle( fontSize: 22, fontWeight: FontWeight.w500,color: Colors.white),
+                                                              ),
+                                                              Text(
+                                                                shopcat3[index-1].TagLine,
+                                                                style: TextStyle( fontSize: 16, fontWeight: FontWeight.w300,color: Colors.white),
+                                                              ),
+                                                            ],
+                                                          ),
+                                                        ),
+                                                      ),
+                                                    ), /* add child content here */
+                                                  ),
+                                                ),
+                                              ):SizedBox(),
+
+
+
+                                            ],
+                                          )
+
+                                        ],
+                                      );
+
+                              },
+                            );
+
+
+
+
+
+
+                          } else {
+                            return Center(child: Column(
+                              mainAxisAlignment: MainAxisAlignment.center,
+                              crossAxisAlignment: CrossAxisAlignment.center,
+                              children: <Widget>[
+                                Stack(
+                                  alignment: Alignment.center,
+                                  children: [
+                                    Image.asset("assets/icons/logo.png",height: 23,width: 23, ),
+
+                                    SpinKitFadingCircle(
+                                      size: 60,
+                                      itemBuilder: (BuildContext context, int index) {
+                                        return DecoratedBox(
+                                          decoration: BoxDecoration(
+                                            color: index==1 ? Colors.green[900] :index==2 ?Colors.green[800] : index==3 ?Colors.green[700] : index==4 ?
+                                            Colors.green[600] :index==5 ?Colors.green[500] : index==6 ?Colors.green[400]:
+                                            index==1 ?Colors.green[300] : index==1 ?Colors.green[200] : index==1 ?Colors.green[100] : index==1 ?
+                                            Colors.green[100] :index==1 ?Colors.green[100] :Colors.green[900]
+                                            ,
+                                            borderRadius: BorderRadius.all(Radius.circular(30.0)),
+                                          ),
+                                        );
+                                      },
+                                    ),
                                   ],
                                 ),
-                                //SizedBox(height: 20,),
-
-
-
-
-
+                                Text("Loading", style: TextStyle(fontSize: 12,color: Colors.white),),
                               ],
-                            ),
-                          ),
-
-                        ),
-                      ),
-
-
-                      GestureDetector(
-                        onTap: (){
-                          DataStream.ShopCatagory="Supermarkets";
-                          Navigator.push( context, MaterialPageRoute( builder: (BuildContext context) => ShopsScreen(),),).then((value) {setupCart();});
-
-                        },
-                        child: Padding(
-                          padding: EdgeInsets.all(5),
-                          child: Container(
-                            height: 170,
-                            decoration: BoxDecoration(
-                              boxShadow: [
-                                BoxShadow(
-                                  color:  Colors.grey.withOpacity(0.9),
-                                  spreadRadius: 2,
-                                  blurRadius: 3,
-                                ),
-                              ],
-                              shape: BoxShape.rectangle,
-                              borderRadius: BorderRadius.all(Radius.circular(15.0)),
-                              image: DecorationImage(
-                                image: AssetImage("assets/imgs/super_market.jpg"),
-                                fit: BoxFit.cover,
-                              ),
-                            ),
-                            child:  Padding(
-                              padding: EdgeInsets.all(0),
-                              child: Container(
-
-                                height: 100,
-                                decoration: BoxDecoration(
-                                
-                                  shape: BoxShape.rectangle,
-                                  borderRadius: BorderRadius.all(Radius.circular(15.0)),
-                                  gradient: new LinearGradient(
-                                      colors: [
-                                        Colors.black.withOpacity(0.75)
-,
-                                            const Color(0x10000000),
-
-                                      ],
-                                      begin: const FractionalOffset(0.0, 0.0),
-                                      end: const FractionalOffset(0.0, 1.0),
-                                      stops: [0.0, 1.0],
-                                      tileMode: TileMode.clamp),
-                                ),
-                                child: Padding(
-                                  padding: EdgeInsets.all(12),
-                                  child: Column(
-                                    crossAxisAlignment: CrossAxisAlignment.start,
-                                    mainAxisAlignment: MainAxisAlignment.start,
-                                    children: [
-                                      Text(
-                                        'Supermarkets',
-                                        style: TextStyle( fontSize: 22, fontWeight: FontWeight.w500,color: Colors.white),
-                                      ),
-                                      Text(
-                                        'Groceries made easy',
-                                        style: TextStyle( fontSize: 16, fontWeight: FontWeight.w300,color: Colors.white),
-                                      ),
-
-                                    ],
-                                  ),
-                                ),
-                              ),
-                            ), /* add child content here */
-                          ),
-                        ),
-                      ),
-                      Row(
-                        children: [
-
-
-                          GestureDetector(
-                            onTap: (){
-                              DataStream.ShopCatagory="Bakery";
-
-                              Navigator.push( context, MaterialPageRoute( builder: (BuildContext context) => ShopsScreen(),),).then((value) {setupCart();});
-
-                            },
-                            child: Padding(
-                              padding: EdgeInsets.all(5),
-                              child: Container(
-                                height: 170,
-                                width: ((screenWidth(context)/2))-15,
-
-                                decoration: BoxDecoration(
-                                  boxShadow: [
-                                BoxShadow(
-                                  color:  Colors.grey.withOpacity(0.9),
-                                  spreadRadius: 2,
-                                  blurRadius: 3,
-                                ),
-                              ],
-                                  shape: BoxShape.rectangle,
-                                  borderRadius: BorderRadius.all(Radius.circular(15.0)),
-                                  image: DecorationImage(
-                                    image: AssetImage("assets/imgs/bk.jpg"),
-
-                                    fit: BoxFit.cover,
-                                  ),
-                                ),
-                                child:  Padding(
-                                  padding: EdgeInsets.all(0),
-                                  child: Container(
-
-                                    height: 100,
-                                    decoration: BoxDecoration(
-
-                                      shape: BoxShape.rectangle,
-                                      borderRadius: BorderRadius.all(Radius.circular(15.0)),
-                                      gradient: new LinearGradient(
-                                          colors: [
-                                            Colors.black.withOpacity(0.75),
-                                            const Color(0x10000000),
-                                          ],
-                                          begin: const FractionalOffset(0.0, 0.0),
-                                          end: const FractionalOffset(0.0, 1.0),
-                                          stops: [0.0, 1.0],
-                                          tileMode: TileMode.clamp),
-                                    ),
-                                    child: Padding(
-                                      padding: EdgeInsets.all(12),
-                                      child: Column(
-                                        crossAxisAlignment: CrossAxisAlignment.start,
-                                        mainAxisAlignment: MainAxisAlignment.start,
-                                        children: [
-
-                                          Text(
-                                            'Bakery',
-                                            style: TextStyle( fontSize: 22, fontWeight: FontWeight.w500,color: Colors.white),
-                                          ),
-                                          Text(
-                                            'Freshly Baked',
-                                            style: TextStyle( fontSize: 16, fontWeight: FontWeight.w300,color: Colors.white),
-                                          ),
-                                        ],
-                                      ),
-                                    ),
-                                  ),
-                                ), /* add child content here */
-                              ),
-                            ),
-                          ),
-
-
-                          
-                          GestureDetector(
-                            onTap: (){
-                              DataStream.ShopCatagory="Butchery & BBQ";
-                              Navigator.push( context, MaterialPageRoute( builder: (BuildContext context) => ShopsScreen(),),).then((value) {setupCart();});
-
-                            },
-                            child: Padding(
-                              padding: EdgeInsets.all(5),
-                              child: Container(
-                                height: 170,
-                                width: ((screenWidth(context)/2))-5,
-
-
-                                decoration: BoxDecoration(
-                                  boxShadow: [
-                                BoxShadow(
-                                  color:  Colors.grey.withOpacity(0.9),
-                                  spreadRadius: 2,
-                                  blurRadius: 3,
-                                ),
-                              ],
-                                  shape: BoxShape.rectangle,
-                                  borderRadius: BorderRadius.all(Radius.circular(15.0)),
-                                  image: DecorationImage(
-                                    image: AssetImage("assets/imgs/bbq.jpg"),
-                                    fit: BoxFit.cover,
-                                  ),
-                                ),
-                                child:  Padding(
-                                  padding: EdgeInsets.all(0),
-                                  child: Container(
-
-                                    height: 100,
-                                    decoration: BoxDecoration(
-
-                                      shape: BoxShape.rectangle,
-                                      borderRadius: BorderRadius.all(Radius.circular(15.0)),
-                                      gradient: new LinearGradient(
-                                          colors: [
-                                            Colors.black.withOpacity(0.75)
-,
-                                            const Color(0x10000000),
-                                          ],
-                                          begin: const FractionalOffset(0.0, 0.0),
-                                          end: const FractionalOffset(0.0, 1.0),
-                                          stops: [0.0, 1.0],
-                                          tileMode: TileMode.clamp),
-                                    ),
-                                    child: Padding(
-                                      padding: EdgeInsets.all(12),
-                                      child: Column(
-                                        crossAxisAlignment: CrossAxisAlignment.start,
-                                        mainAxisAlignment: MainAxisAlignment.start,
-                                        children: [
-                                          Text(
-                                            'Butchery & BBQ',
-                                            style: TextStyle( fontSize: 22, fontWeight: FontWeight.w500,color: Colors.white),
-                                          ),
-                                          Text(
-                                            'The place to meat',
-                                            style: TextStyle( fontSize: 16, fontWeight: FontWeight.w300,color: Colors.white),
-                                          ),
-                                        ],
-                                      ),
-                                    ),
-                                  ),
-                                ), /* add child content here */
-                              ),
-                            ),
-                          ),
-
-                        ],
-                      ),
-                      GestureDetector(
-                        onTap: (){
-                          DataStream.ShopCatagory="Fruits & Vegetables";
-                          Navigator.push( context, MaterialPageRoute( builder: (BuildContext context) => ShopsScreen(),),).then((value) {setupCart();});
-
-                        },
-                        child: Padding(
-                          padding: EdgeInsets.all(5),
-                          child: Container(
-                            height: 170,
-                            decoration: BoxDecoration(
-                                boxShadow: [
-                                BoxShadow(
-                                  color:  Colors.grey.withOpacity(0.9),
-                                  spreadRadius: 2,
-                                  blurRadius: 3,
-                                ),
-                              ],
-                              shape: BoxShape.rectangle,
-                              borderRadius: BorderRadius.all(Radius.circular(15.0)),
-                              image: DecorationImage(
-                                image: AssetImage("assets/imgs/grocery_store.jpg"),
-                                fit: BoxFit.cover,
-                              ),
-                            ),
-                            child:  Padding(
-                              padding: EdgeInsets.all(0),
-                              child: Container(
-
-                                height: 100,
-                                decoration: BoxDecoration(
-                                  shape: BoxShape.rectangle,
-                                  borderRadius: BorderRadius.all(Radius.circular(15.0)),
-                                  gradient: new LinearGradient(
-                                      colors: [
-                                        Colors.black.withOpacity(0.75)
-,
-                                            const Color(0x10000000),
-                                      ],
-                                      begin: const FractionalOffset(0.0, 0.0),
-                                      end: const FractionalOffset(0.0, 1.0),
-                                      stops: [0.0, 1.0],
-                                      tileMode: TileMode.clamp),
-                                ),
-                                child: Padding(
-                                  padding: EdgeInsets.all(12),
-                                  child: Column(
-                                    crossAxisAlignment: CrossAxisAlignment.start,
-                                    mainAxisAlignment: MainAxisAlignment.start,
-                                    children: [
-                                      Text(
-                                        'Fruits & Vegetables',
-                                        style: TextStyle( fontSize: 22, fontWeight: FontWeight.w500,color: Colors.white),
-                                      ),
-                                      Text(
-                                        'Fresher and better',
-                                        style: TextStyle( fontSize: 16, fontWeight: FontWeight.w300,color: Colors.white),
-                                      ),
-                                    ],
-                                  ),
-                                ),
-                              ),
-                            ), /* add child content here */
-                          ),
-                        ),
-                      ),
-
-                      Row(
-
-                        children: [
-                          GestureDetector(
-                            onTap: (){
-                              DataStream.ShopCatagory="Tandoor";
-                              Navigator.push( context, MaterialPageRoute( builder: (BuildContext context) => ShopsScreen(),),).then((value) {setupCart();});
-
-                            },
-                            child: Padding(
-                              padding: EdgeInsets.all(5),
-                              child: Container(
-                                height: 170,
-                                width: ((screenWidth(context)/2))-15,
-
-
-
-                                decoration: BoxDecoration(
-                                  boxShadow: [
-                                BoxShadow(
-                                  color:  Colors.grey.withOpacity(0.9),
-                                  spreadRadius: 2,
-                                  blurRadius: 3,
-                                ),
-                              ],
-                                  shape: BoxShape.rectangle,
-                                  borderRadius: BorderRadius.all(Radius.circular(15.0)),
-                                  image: DecorationImage(
-                                    image: AssetImage("assets/imgs/naan.jpg"),
-                                    fit: BoxFit.cover,
-                                  ),
-                                ),
-                                child:  Padding(
-                                  padding: EdgeInsets.all(0),
-                                  child: Container(
-
-                                    height: 100,
-                                    decoration: BoxDecoration(
-                                      shape: BoxShape.rectangle,
-                                      borderRadius: BorderRadius.all(Radius.circular(15.0)),
-                                      gradient: new LinearGradient(
-                                          colors: [
-                                            Colors.black.withOpacity(0.75)
-,
-                                            const Color(0x10000000),
-                                          ],
-                                          begin: const FractionalOffset(0.0, 0.0),
-                                          end: const FractionalOffset(0.0, 1.0),
-                                          stops: [0.0, 1.0],
-                                          tileMode: TileMode.clamp),
-                                    ),
-                                    child: Padding(
-                                      padding: EdgeInsets.all(12),
-                                      child: Column(
-                                        crossAxisAlignment: CrossAxisAlignment.start,
-                                        mainAxisAlignment: MainAxisAlignment.start,
-                                        children: [
-                                          Text(
-                                            'Tandoor',
-                                            style: TextStyle( fontSize: 22, fontWeight: FontWeight.w500,color: Colors.white),
-                                          ),
-                                          Text(
-                                            'Fresh Naan',
-                                            style: TextStyle( fontSize: 16, fontWeight: FontWeight.w300,color: Colors.white),
-                                          ),
-                                        ],
-                                      ),
-                                    ),
-                                  ),
-                                ), /* add child content here */
-                              ),
-                            ),
-                          ),
-                          GestureDetector(
-                            onTap: (){
-                              DataStream.ShopCatagory="Dairy";
-                              Navigator.push( context, MaterialPageRoute( builder: (BuildContext context) => ShopsScreen(),),).then((value) {setupCart();});
-
-                            },
-                            child: Padding(
-                              padding: EdgeInsets.all(5),
-                              child: Container(
-                                height: 170,
-                                width: ((screenWidth(context)/2))-5,
-
-
-                                decoration: BoxDecoration(
-                                  boxShadow: [
-                                BoxShadow(
-                                  color:  Colors.grey.withOpacity(0.9),
-                                  spreadRadius: 2,
-                                  blurRadius: 3,
-                                ),
-                              ],
-                                  shape: BoxShape.rectangle,
-                                  borderRadius: BorderRadius.all(Radius.circular(15.0)),
-                                  image: DecorationImage(
-                                    image: AssetImage("assets/imgs/dairy.jpg"),
-                                    fit: BoxFit.cover,
-                                  ),
-                                ),
-                                child:  Padding(
-                                  padding: EdgeInsets.all(0),
-                                  child: Container(
-
-                                    height: 100,
-                                    decoration: BoxDecoration(
-                                      shape: BoxShape.rectangle,
-                                      borderRadius: BorderRadius.all(Radius.circular(15.0)),
-                                      gradient: new LinearGradient(
-                                          colors: [
-                                            Colors.black.withOpacity(0.75)
-,
-                                            const Color(0x10000000),
-                                          ],
-                                          begin: const FractionalOffset(0.0, 0.0),
-                                          end: const FractionalOffset(0.0, 1.0),
-                                          stops: [0.0, 1.0],
-                                          tileMode: TileMode.clamp),
-                                    ),
-                                    child: Padding(
-                                      padding: EdgeInsets.all(12),
-                                      child: Column(
-                                        crossAxisAlignment: CrossAxisAlignment.start,
-                                        mainAxisAlignment: MainAxisAlignment.start,
-                                        children: [
-                                          Text(
-                                            'Dairy',
-                                            style: TextStyle( fontSize: 22, fontWeight: FontWeight.w500,color: Colors.white),
-                                          ),
-                                          Text(
-                                            'Fresh Dairy Products',
-                                            style: TextStyle( fontSize: 16, fontWeight: FontWeight.w300,color: Colors.white),
-                                          ),
-                                        ],
-                                      ),
-                                    ),
-                                  ),
-                                ), /* add child content here */
-                              ),
-                            ),
-                          ),
-                        ],
-                      ),
-
-                    ],
+                            ));
+                          }
+                        }),
                   ),
-//                  user!=null?
-//                  Positioned(
-//                    right: 15,
-//                    top: 15,
-//                    child: Badge(
-//                      badgeColor: Colors.redAccent,
-//                      badgeContent: Container(
-//                        height: 20,
-//                        width: 20,
-//                        child: Column(
-//                          mainAxisAlignment: MainAxisAlignment.center,
-//                          crossAxisAlignment: CrossAxisAlignment.center,
-//                          children: [
-//
-//                            Text(carts.length.toString(),style: TextStyle(color: Colors.white),),
-//                          ],
-//                        ),
-//                      ),
-//                      child: FloatingActionButton(
-//                        onPressed: (){
-//                           Navigator.push( context, MaterialPageRoute( builder: (BuildContext context) => CartScreen(),),).then((value) {setupCart();})
-//                        },
-//
-//                        child: Icon(Icons.shopping_cart),
-//                      ),
-//                    ),
-//                  ):SizedBox(height: 1,)
                 ],
               ),
+
             ),
           ],
         ),
@@ -1779,52 +2144,7 @@ class HomePage extends State<Home> {
       ),
     );
 
-//    RateMyApp _rateMyApp = RateMyApp (
-//        preferencesPrefix: 'rateMyApp_pro',
-//        minDays: 1,
-//        minLaunches: 1,
-//        remindDays: 1,
-//        remindLaunches: 1
-//    );
-//    _rateMyApp.init().then((_){
-//      if(_rateMyApp.shouldOpenDialog){ //conditions check if user already rated the app
-//        _rateMyApp.showStarRateDialog(
-//          context,
-//          title: 'What do you think about Our App?',
-//          message: 'Please leave a rating',
-//          actionsBuilder: (_, stars){
-//            return [ // Returns a list of actions (that will be shown at the bottom of the dialog).
-//              FlatButton(
-//                child: Text('OK'),
-//                onPressed: () async {
-//                  print('Thanks for the ' + (stars == null ? '0' : stars.round().toString()) + ' star(s) !');
-//                  if(stars != null && (stars == 4 || stars == 5)){
-//                    //if the user stars is equal to 4 or five
-//                    // you can redirect the use to playstore or                         appstore to enter their reviews
-//
-//
-//                  } else {
-//// else you can redirect the user to a page in your app to tell you how you can make the app better
-//
-//                  }
-//                  // You can handle the result as you want (for instance if the user puts 1 star then open your contact page, if he puts more then open the store page, etc...).
-//                  // This allows to mimic the behavior of the default "Rate" button. See "Advanced > Broadcasting events" for more information :
-//                  await _rateMyApp.callEvent(RateMyAppEventType.rateButtonPressed);
-//                  Navigator.pop<RateMyAppDialogButton>(context, RateMyAppDialogButton.rate);
-//                },
-//              ),
-//            ];
-//          },
-//          dialogStyle: DialogStyle(
-//            titleAlign: TextAlign.center,
-//            messageAlign: TextAlign.center,
-//            messagePadding: EdgeInsets.only(bottom: 20.0),
-//          ),
-//          starRatingOptions: StarRatingOptions(),
-//          onDismissed: () => _rateMyApp.callEvent(RateMyAppEventType.laterButtonPressed),
-//        );
-//      }
-//    });
+
 
      Widget ProfileScreen  =Center(
       child: Scaffold(
@@ -2280,45 +2600,59 @@ class HomePage extends State<Home> {
 //      _selectedIndex==0? HomeScreen:
 //      _selectedIndex==1?OrdersScreen:ProfileScreen,
 
-      bottomNavigationBar: Container(
-        decoration: BoxDecoration(
-          color: Colors.white,
-          borderRadius: BorderRadius.only(
-              topLeft: Radius.circular(10),
-              topRight: Radius.circular(10),
-              bottomLeft: Radius.circular(10),
-              bottomRight: Radius.circular(10)
-          ),
-          boxShadow: [
-            BoxShadow(
-              color: Colors.grey.withOpacity(0.75),
-              spreadRadius: 5,
-              blurRadius: 7,
-              offset: Offset(0, 3), // changes position of shadow
-            ),
-          ],
-        ),
-        child: BottomNavigationBar(
+      bottomNavigationBar:
 
-          items: const <BottomNavigationBarItem>[
-            BottomNavigationBarItem(
-              icon: Icon(Icons.shopping_basket),
-              title: Text('Market'),
-            ),
-            BottomNavigationBarItem(
-              icon: Icon(Icons.airport_shuttle),
-              title: Text('Orders'),
-            ),
-            BottomNavigationBarItem(
-              icon: Icon(Icons.account_circle),
-              title: Text('Profile'),
-            ),
-          ],
-          currentIndex: _selectedIndex,
-          selectedItemColor: Colors.amber[800],
-          onTap: onItemTapped,
-        ),
-      ),
+      MotionTabBar(
+        tabOneName: "Market",
+        tabTwoName: "Orders",
+        tabThreeName: "Profile",
+        tabOneIcon: Icons.shopping_basket,
+        tabTwoIcon: Icons.airport_shuttle,
+        tabThreeIcon: Icons.account_circle,
+        tabIconColor: Colors.grey,
+        tabSelectedColor: Colors.green,
+        textStyle: TextStyle(color: Colors.green),
+        onTabItemSelected: onItemTapped,
+      )
+      // Container(
+      //   decoration: BoxDecoration(
+      //     color: Colors.white,
+      //     borderRadius: BorderRadius.only(
+      //         topLeft: Radius.circular(10),
+      //         topRight: Radius.circular(10),
+      //         bottomLeft: Radius.circular(10),
+      //         bottomRight: Radius.circular(10)
+      //     ),
+      //     boxShadow: [
+      //       BoxShadow(
+      //         color: Colors.grey.withOpacity(0.75),
+      //         spreadRadius: 5,
+      //         blurRadius: 7,
+      //         offset: Offset(0, 3), // changes position of shadow
+      //       ),
+      //     ],
+      //   ),
+      //   child: BottomNavigationBar(
+      //
+      //     items: const <BottomNavigationBarItem>[
+      //       BottomNavigationBarItem(
+      //         icon: Icon(Icons.shopping_basket),
+      //         title: Text('Market'),
+      //       ),
+      //       BottomNavigationBarItem(
+      //         icon: Icon(Icons.airport_shuttle),
+      //         title: Text('Orders'),
+      //       ),
+      //       BottomNavigationBarItem(
+      //         icon: Icon(Icons.account_circle),
+      //         title: Text('Profile'),
+      //       ),
+      //     ],
+      //     currentIndex: _selectedIndex,
+      //     selectedItemColor: Colors.amber[800],
+      //     onTap: onItemTapped,
+      //   ),
+      // ),
     );
   }
 

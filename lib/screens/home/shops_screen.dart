@@ -101,8 +101,6 @@ class _ShopsScreenState extends State<ShopsScreen> {
    }
   Dialog loadingdialog;
 
-  List<Shops> _todoList;
-  final FirebaseDatabase _database = FirebaseDatabase.instance;
 
 
 
@@ -110,10 +108,6 @@ class _ShopsScreenState extends State<ShopsScreen> {
   @override
     initState()   {
     super.initState();
-
-    _todoList = new List();
-
-
 
 
     dd();
