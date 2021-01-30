@@ -53,6 +53,7 @@
 	<string>Your permission is required to use speech recognition service in your app</string>
 	<key>UIBackgroundModes</key>
 	<array>
+		<string>fetch</string>
 		<string>remote-notification</string>
 	</array>
 	<key>UILaunchStoryboardName</key>

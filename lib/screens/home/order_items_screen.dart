@@ -580,97 +580,91 @@ class _OrderItemsScreenState extends State<OrderItemsScreen> {
             ],
           ),
 
-          status=="History"?
-          Positioned(
-            bottom: 10,
-            child: Padding(
-              padding: const EdgeInsets.fromLTRB(20.0, 30.0, 20.0, 20),
-              child:  Container(
-                height: 60,
-                decoration: BoxDecoration(
-                  color: Colors.green,
-                  borderRadius: BorderRadius.only(
-                      topLeft: Radius.circular(10),
-                      topRight: Radius.circular(10),
-                      bottomLeft: Radius.circular(10),
-                      bottomRight: Radius.circular(10)
-                  ),
-                  boxShadow: [
-                    BoxShadow(
-                      color: Colors.green[100],
-                      spreadRadius: 3,
-                      blurRadius: 4,
-                      offset: Offset(0, 3),
-                    ),
-                  ],
-                ),
-                width: screenWidth(context)-40,
-                child: FlatButton(
-                  shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(8.0),
-                  ),
-                  color: Colors.green,
-                  onPressed: (){
-
-                    int chk=0;
-
-                    FirebaseDatabase database = new FirebaseDatabase();
-                    DatabaseReference _userRef = database.reference()
-                        .child("Cart").child(DataStream.UserId);
-
-
-
-
-
-
-                    volunteerRef = database.reference().child("User Orders").child(DataStream.UserId).child("Active").child(order.orderID).child("items");
-                    volunteerRef.onChildAdded.listen((event) {
-
-                      // ordereditems.add(Cart.fromSnapshot(event.snapshot));
-
-                    //  print("Shops."+Cart.fromSnapshot(event.snapshot).town+"."+Cart.fromSnapshot(event.snapshot).shopcatagory+"."+Cart.fromSnapshot(event.snapshot).shopid+" orders."+"active."+orders[index].orderID);
-
-                      _userRef.child(Cart.fromSnapshot(event.snapshot).cardid.toString()+Cart.fromSnapshot(event.snapshot).shopid).set(<dynamic, dynamic>{
-                        'no_of_items': Cart.fromSnapshot(event.snapshot).no_of_items,
-                        'cardid': Cart.fromSnapshot(event.snapshot).cardid.toString(),
-                        'cardname': Cart.fromSnapshot(event.snapshot).cardname.toString(),
-                        'cardimage': Cart.fromSnapshot(event.snapshot).cardimage.toString(),
-                        'cardprice': Cart.fromSnapshot(event.snapshot).cardprice,
-                        'unit':Cart.fromSnapshot(event.snapshot).unit,
-                        'shopcatagory': Cart.fromSnapshot(event.snapshot).shopcatagory,
-                        'shopid': Cart.fromSnapshot(event.snapshot).shopid,
-
-                      }).then((value) {
-                   //     Navigator.pop(context);
-                        if(chk==0) {
-                          chk++;
-                          Navigator.push(context, MaterialPageRoute(
-                            builder: (BuildContext context) => CartScreen(),),);
-                          //    Navigator.of(context).pushReplacement(MaterialPageRoute(builder: (context) => CartScreen()));
-                        }
-                      });
-
-
-
-                    });
-
-                  },
-                  child: Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-
-                    children: [
-
-                      Text('Reorder',style: TextStyle(color: Colors.white,fontWeight: FontWeight.w500, fontSize: 18),),
-
-                    ],
-                  ),
-                ),
-              ),
-
-            ),
-          ):
-
-              SizedBox(),
+          // status=="History"?
+          // Positioned(
+          //   bottom: 10,
+          //   child: Padding(
+          //     padding: const EdgeInsets.fromLTRB(20.0, 30.0, 20.0, 20),
+          //     child:  Container(
+          //       height: 60,
+          //       decoration: BoxDecoration(
+          //         color: Colors.green,
+          //         borderRadius: BorderRadius.only(
+          //             topLeft: Radius.circular(10),
+          //             topRight: Radius.circular(10),
+          //             bottomLeft: Radius.circular(10),
+          //             bottomRight: Radius.circular(10)
+          //         ),
+          //         boxShadow: [
+          //           BoxShadow(
+          //             color: Colors.green[100],
+          //             spreadRadius: 3,
+          //             blurRadius: 4,
+          //             offset: Offset(0, 3),
+          //           ),
+          //         ],
+          //       ),
+          //       width: screenWidth(context)-40,
+          //       child: FlatButton(
+          //         shape: RoundedRectangleBorder(
+          //           borderRadius: BorderRadius.circular(8.0),
+          //         ),
+          //         color: Colors.green,
+          //         onPressed: (){
+          //
+          //           int chk=0;
+          //
+          //           FirebaseDatabase database = new FirebaseDatabase();
+          //           DatabaseReference _userRef = database.reference()
+          //               .child("Cart").child(DataStream.UserId);
+          //
+          //
+          //
+          //           volunteerRef = database.reference().child("User Orders").child(DataStream.UserId).child("Active").child(order.orderID).child("items");
+          //           volunteerRef.onChildAdded.listen((event) {
+          //
+          //             // ordereditems.add(Cart.fromSnapshot(event.snapshot));
+          //
+          //           //  print("Shops."+Cart.fromSnapshot(event.snapshot).town+"."+Cart.fromSnapshot(event.snapshot).shopcatagory+"."+Cart.fromSnapshot(event.snapshot).shopid+" orders."+"active."+orders[index].orderID);
+          //
+          //             _userRef.child(Cart.fromSnapshot(event.snapshot).cardid.toString()+Cart.fromSnapshot(event.snapshot).shopid).set(<dynamic, dynamic>{
+          //               'no_of_items': Cart.fromSnapshot(event.snapshot).no_of_items,
+          //               'cardid': Cart.fromSnapshot(event.snapshot).cardid.toString(),
+          //               'cardname': Cart.fromSnapshot(event.snapshot).cardname.toString(),
+          //               'cardimage': Cart.fromSnapshot(event.snapshot).cardimage.toString(),
+          //               'cardprice': Cart.fromSnapshot(event.snapshot).cardprice,
+          //               'unit':Cart.fromSnapshot(event.snapshot).unit,
+          //               'shopcatagory': Cart.fromSnapshot(event.snapshot).shopcatagory,
+          //               'shopid': Cart.fromSnapshot(event.snapshot).shopid,
+          //
+          //             }).then((value) {
+          //          //     Navigator.pop(context);
+          //               if(chk==0) {
+          //                 chk++;
+          //                 Navigator.push(context, MaterialPageRoute(
+          //                   builder: (BuildContext context) => CartScreen(),),);
+          //                 //    Navigator.of(context).pushReplacement(MaterialPageRoute(builder: (context) => CartScreen()));
+          //               }
+          //             });
+          //           });
+          //
+          //         },
+          //         child: Row(
+          //           mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+          //
+          //           children: [
+          //
+          //             Text('Reorder',style: TextStyle(color: Colors.white,fontWeight: FontWeight.w500, fontSize: 18),),
+          //
+          //           ],
+          //         ),
+          //       ),
+          //     ),
+          //
+          //   ),
+          // ):
+          //
+          //     SizedBox(),
 
         ],
       ),

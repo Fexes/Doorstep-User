@@ -227,8 +227,8 @@ class _SingleProductState extends State<SingleProduct> {
                         shape: BoxShape.rectangle,
                         borderRadius: BorderRadius.all(Radius.circular(15.0)),
                         image: DecorationImage(
-                        //  image: NetworkImage(product.cardimage),
-                          image: CacheImage(product.cardimage.length>10?product.cardimage:"https://firebasestorage.googleapis.com/v0/b/doorstep-fdb26.appspot.com/o/images%2Fimg_missing.png?alt=media&token=60b4508f-9d43-41db-a85d-5e16240a4466"),
+                          image: NetworkImage(product.cardimage),
+                       //   image: CacheImage(product.cardimage.length>10?product.cardimage:"https://firebasestorage.googleapis.com/v0/b/doorstep-fdb26.appspot.com/o/images%2Fimg_missing.png?alt=media&token=60b4508f-9d43-41db-a85d-5e16240a4466"),
 
                           fit: BoxFit.cover,
                         ),

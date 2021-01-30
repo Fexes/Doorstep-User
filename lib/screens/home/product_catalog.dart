@@ -35,16 +35,16 @@ import 'cart_screen.dart';
 import 'home_screen.dart';
 
 class ProductCatalog extends StatefulWidget {
-  String SHOP_KEY;
+  String itemcategory;
   Shops shop;
-  ProductCatalog(Shops s, String key){
-    SHOP_KEY=key;
+  ProductCatalog(Shops s, String ic){
+    itemcategory=ic;
     shop=s;
   }
 
 
   @override
-  _ProductCatalogState createState() => _ProductCatalogState(shop,SHOP_KEY);
+  _ProductCatalogState createState() => _ProductCatalogState(shop,itemcategory);
 }
 
 class _ProductCatalogState extends State<ProductCatalog> {
@@ -54,9 +54,9 @@ class _ProductCatalogState extends State<ProductCatalog> {
   bool isLoadingError=false;
   Shops shop;
 
-  String SHOP_KEY;
-  _ProductCatalogState(Shops s,String key){
-    SHOP_KEY=key;
+  String itemcategory;
+  _ProductCatalogState(Shops s,String ic){
+    itemcategory=ic;
     shop=s;
 
   }
@@ -137,7 +137,14 @@ class _ProductCatalogState extends State<ProductCatalog> {
     carts = new List();
 
 
-    img=     "https://firebasestorage.googleapis.com/v0/b/doorstep-fdb26.appspot.com/o/images%2Fimg_missing.png?alt=media&token=60b4508f-9d43-41db-a85d-5e16240a4466";
+    img="https://firebasestorage.googleapis.com/v0/b/doorstep-fdb26.appspot.com/o/images%2Fimg_missing.png?alt=media&token=60b4508f-9d43-41db-a85d-5e16240a4466";
+
+
+    if(itemcategory!=null) {
+      selectfilter = itemcategory.toUpperCase();
+      filterProductCatagory(selectfilter);
+
+    }
 
     setuplist();
 
@@ -257,7 +264,7 @@ class _ProductCatalogState extends State<ProductCatalog> {
     productsItemcount.clear();
 
     final FirebaseDatabase database = FirebaseDatabase.instance;
-    volunteerRef = database.reference().child("Shops").child(DataStream.ShopCatagory).child(SHOP_KEY).child("Products");
+    volunteerRef = database.reference().child("Shops").child(DataStream.ShopCatagory).child(shop.shopid).child("Products");
     volunteerRef.onChildAdded.listen(_onEntryAdded);
 
   }

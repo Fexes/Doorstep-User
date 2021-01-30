@@ -1,12 +1,16 @@
 import 'dart:io';
+import 'dart:math';
 
 import 'package:Doorstep/models/Banners.dart';
 import 'package:Doorstep/models/Cart.dart';
 import 'package:Doorstep/models/Order.dart';
+import 'package:Doorstep/models/Product.dart';
 import 'package:Doorstep/models/Shops.dart';
 import 'package:Doorstep/models/AppUser.dart';
 import 'package:Doorstep/screens/auth/sign-in.dart';
+import 'package:Doorstep/screens/home/product_catalog.dart';
 import 'package:Doorstep/screens/home/shops_screen.dart';
+import 'package:Doorstep/screens/home/single_product.dart';
 import 'package:Doorstep/utilts/UI/DataStream.dart';
 import 'package:badges/badges.dart';
 import 'package:carousel_slider/carousel_options.dart';
@@ -14,7 +18,7 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_database/firebase_database.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter_open_whatsapp/flutter_open_whatsapp.dart';
- import 'package:flutter_spinkit/flutter_spinkit.dart';
+import 'package:flutter_spinkit/flutter_spinkit.dart';
 import 'package:Doorstep/utilts/UI/toast_utility.dart';
 import 'package:flutter/material.dart';
 import 'package:Doorstep/styles/styles.dart';
@@ -99,7 +103,14 @@ class HomePage extends State<Home> {
 
   }
 
-
+  double calculateDistance(lat1, lon1, lat2, lon2){
+    var p = 0.017453292519943295;
+    var c = cos;
+    var a = 0.5 - c((lat2 - lat1) * p)/2 +
+        c(lat1 * p) * c(lat2 * p) *
+            (1 - c((lon2 - lon1) * p))/2;
+    return 12742 * asin(sqrt(a));
+  }
 
   @override
   void dispose() {
@@ -190,10 +201,36 @@ class HomePage extends State<Home> {
     volunteerRef = database.reference().child("Admin").child("Banners");
     volunteerRef.onChildAdded.listen((event) {
       setState(() {
-        bannerloaded=true;
-        banners.add(Banners.fromSnapshot(event.snapshot));
-        imgList.add(Banners.fromSnapshot(event.snapshot).image);
 
+        bannerloaded=true;
+
+        if(Banners.fromSnapshot(event.snapshot).radius!=null) {
+          double distanceInKM = calculateDistance(
+              DataStream.userlocation.latitude,
+              DataStream.userlocation.longitude, double.parse(Banners
+              .fromSnapshot(event.snapshot)
+              .location
+              .toString()
+              .split(",")[0]), double.parse(Banners
+              .fromSnapshot(event.snapshot)
+              .location
+              .toString()
+              .split(",")[1]));
+
+          if (distanceInKM < Banners
+              .fromSnapshot(event.snapshot)
+              .radius) {
+            banners.add(Banners.fromSnapshot(event.snapshot));
+            imgList.add(Banners
+                .fromSnapshot(event.snapshot)
+                .image);
+          }
+        }else{
+          banners.add(Banners.fromSnapshot(event.snapshot));
+          imgList.add(Banners
+              .fromSnapshot(event.snapshot)
+              .image);
+        }
       });
 
     });
@@ -203,13 +240,13 @@ class HomePage extends State<Home> {
   AppUser appuser=DataStream.appuser;
   void getUserDetails(){
 
-    appuser= new AppUser("","","","");
+    appuser= new AppUser("","","","","");
 
     final locationDbRef = FirebaseDatabase.instance.reference().child("Users").child(DataStream.UserId);
 
     locationDbRef.once().then((value) async {
       if(value.value!=null){
-        appuser= new AppUser(value.value["first_name"], value.value["last_name"],value.value["phone"] , value.value["email"]);
+        appuser= new AppUser(value.value["first_name"], value.value["last_name"],value.value["phone"] , value.value["email"],value.value["userTokenID"]);
         setState(() {
 
         });
@@ -263,7 +300,7 @@ class HomePage extends State<Home> {
 
 
       if (bannerloaded) {
-        imageSliders = imgList.map((item) =>
+        imageSliders = banners.map((item) =>
             Container(
               child: Container(
                 //  margin: EdgeInsets.all(5.0),
@@ -284,8 +321,65 @@ class HomePage extends State<Home> {
                                 ),
                               ],
                             ),
-                                child: Image.network(
-                                  item, fit: BoxFit.cover, width: 1000.0),
+                                child: GestureDetector(
+                                  onTap:() {
+
+                                    DataStream.ShopId=item.shopid;
+                                   // print(item.shopid);
+
+
+
+
+
+                                    if(item.shopid!=null) {
+                                      if (item.productid != null) {
+                                        final productDbRef = FirebaseDatabase
+                                            .instance.reference().child("Shops")
+                                            .child(item.shopcatacgry).child(
+                                            item.shopid).child("Products")
+                                            .child(item.productid);
+
+                                        productDbRef.once().then((value) async {
+                                          if (value.value != null) {
+                                            Product bannerproduct = new Product
+                                                .fromSnapshot(value);
+
+
+                                            Navigator.push(context,
+                                              MaterialPageRoute(builder: (
+                                                  BuildContext context) =>
+                                                  SingleProduct(
+                                                      bannerproduct, 0),),);
+                                          }
+                                        });
+                                      }
+
+                                      if (item.productid == null) {
+                                        final shopDbRef = FirebaseDatabase
+                                            .instance.reference().child(
+                                            "shopuser").child(item.shopid);
+
+                                        shopDbRef.once().then((value) async {
+                                          if (value.value != null) {
+                                            Shops bannershop = new Shops
+                                                .fromSnapshot(value);
+                                            DataStream.ShopCatagory =
+                                                bannershop.shopcategory;
+
+                                            Navigator.push(
+                                              context, MaterialPageRoute(
+                                              builder: (BuildContext context) =>
+                                                  ProductCatalog(
+                                                      bannershop,
+                                                      item.itemcategory),),);
+                                          }
+                                        });
+                                      }
+                                    }
+                                    },
+                                  child: Image.network(
+                                    item.image, fit: BoxFit.cover, width: 1000.0),
+                                ),
 
                           ),
                         ),
@@ -516,7 +610,7 @@ class HomePage extends State<Home> {
                                                           Navigator.of(context)
                                                               .pop();
 
-                                                          addLocation();
+                                                          addLocation().then((value) {setupBanner();});
 
                                                           setState(() {
 
@@ -539,7 +633,7 @@ class HomePage extends State<Home> {
                                                     builder: (
                                                         BuildContext context) => errorDialog);
                                               }else{
-                                                addLocation();
+                                                addLocation().then((value) {setupBanner();});
 
                                               }
 

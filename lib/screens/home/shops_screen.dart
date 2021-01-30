@@ -246,13 +246,38 @@ class _ShopsScreenState extends State<ShopsScreen> {
 
                         //  Shops(this.key,this.shopid,this.shopcategory,this.shopdiscription,this.shopimage,this.shopname,this.location);
 
-                        double distanceInMeters = calculateDistance(DataStream.userlocation.latitude,DataStream.userlocation.longitude,double.parse(v["location"].toString().split(",")[0]),double.parse(v["location"].toString().split(",")[1]));
+                        double distanceInKM = calculateDistance(DataStream.userlocation.latitude,DataStream.userlocation.longitude,double.parse(v["location"].toString().split(",")[0]),double.parse(v["location"].toString().split(",")[1]));
 
                     //    print(distanceInMeters.toString()+"-"+v["shopname"]);
 
 
-                        if(distanceInMeters< DataStream.OrderRadius){
-                         // print(distanceInMeters);
+                        if(v["radius"]==null){
+                          if(distanceInKM<  DataStream.OrderRadius ){
+                            // print(distanceInMeters);
+
+                            if(DataStream.ShopCatagory== v["shopcategory"]) {
+
+                              shops.add(new Shops(
+                                  v["key"],
+                                  v["shopid"],
+                                  v["shopcategory"],
+                                  v["shopdiscription"],
+                                  v["shopimage"],
+                                  v["shopname"],
+                                  v["location"],
+                                  v["openTime"],
+                                  v["closeTime"],
+                                  v["radius"],
+                                  distanceInKM,
+                                  v["ShopStatus"]));
+
+                              shops.sort((a, b) => a.distanceInMeters.compareTo(b.distanceInMeters));
+                            }
+                          }
+                        }else{
+
+                        if(distanceInKM< v["radius"] ){
+
 
                           if(DataStream.ShopCatagory== v["shopcategory"]) {
                             shops.add(new Shops(
@@ -265,9 +290,17 @@ class _ShopsScreenState extends State<ShopsScreen> {
                                 v["location"],
                                 v["openTime"],
                                 v["closeTime"],
+                                v["radius"],
+                                distanceInKM,
                                 v["ShopStatus"]));
+
+                            shops.sort((a, b) => a.distanceInMeters.compareTo(b.distanceInMeters));
+
                           }
                         }
+
+                        }
+
 
                       }
                       );

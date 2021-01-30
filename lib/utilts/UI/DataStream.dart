@@ -10,6 +10,7 @@ class DataStream{
   static String Username;
   static String Email;
   static String PhoneNumber;
+  static String userTokenID;
   static FirebaseUser user;
   static String googleAPIKey ="AIzaSyBoLgH-s1XnyhCQ2PZEUbIaH_Jj2RKhMSU";
 

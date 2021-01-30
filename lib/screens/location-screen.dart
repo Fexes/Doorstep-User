@@ -8,6 +8,7 @@ import 'package:Doorstep/utilts/UI/DataStream.dart';
 import 'package:Doorstep/utilts/UI/toast_utility.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_database/firebase_database.dart';
+import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_spinkit/flutter_spinkit.dart';
 import 'package:Doorstep/styles/styles.dart';
@@ -123,6 +124,10 @@ class LocationScreenState extends State<LocationScreen> {
 
   }
 
+  String userTokenID;
+  final FirebaseMessaging _firebaseMessaging = FirebaseMessaging();
+
+
   static FirebaseUser userD;
   Future<Timer> loadData() async {
 
@@ -146,15 +151,33 @@ class LocationScreenState extends State<LocationScreen> {
           locationDbRef.once().then((value) async {
             if(value.value!=null){
 
-              DataStream.appuser= new AppUser(value.value["first_name"], value.value["last_name"],value.value["phone"] , value.value["email"]);
+              DataStream.appuser= new AppUser(value.value["first_name"], value.value["last_name"],value.value["phone"] , value.value["email"],value.value["userTokenID"]);
 
-            //  print(value.value["first_name"]);
+
+              _firebaseMessaging.getToken().then((token) {
+                //  print("Device Token: $token");
+                userTokenID=token;
+                FirebaseDatabase database = new FirebaseDatabase();
+                DatabaseReference db = database.reference()
+                    .child('Users').child(DataStream.UserId);
+
+                db.set(<dynamic, dynamic>{
+                  'first_name':  DataStream.appuser.first_name,
+                  'last_name':  DataStream.appuser.last_name,
+                  'phone':  DataStream.appuser.phone,
+                  'email':  DataStream.appuser.email,
+                  'userTokenID':token,
+
+                }).then((value) {
+                  print("Token Set");
+                });
+
+              });
+
 
               setState(() {
 
               });
-            }else{
-
             }
 
 

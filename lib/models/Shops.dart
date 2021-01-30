@@ -10,9 +10,11 @@ class Shops {
   String location;
    String openTime;
    String closeTime;
+   int radius;
+   double distanceInMeters;
    String ShopStatus;
 
-  Shops(this.key,this.shopid,this.shopcategory,this.shopdiscription,this.shopimage,this.shopname,this.location ,this.openTime,this.closeTime,this.ShopStatus);
+  Shops(this.key,this.shopid,this.shopcategory,this.shopdiscription,this.shopimage,this.shopname,this.location ,this.openTime,this.closeTime,this.radius,this.distanceInMeters,this.ShopStatus);
 
 
   Shops.fromSnapshot(DataSnapshot snapshot):
@@ -25,6 +27,8 @@ class Shops {
         location= snapshot.value["location"],
         openTime= snapshot.value["openTime"],
         closeTime= snapshot.value["closeTime"],
+        radius= snapshot.value["radius"],
+        distanceInMeters= snapshot.value["distanceInMeters"],
         ShopStatus= snapshot.value["ShopStatus"];
 
 
@@ -39,6 +43,8 @@ class Shops {
       "location": location,
       "openTime": openTime,
       "closeTime": closeTime,
+      "radius": radius,
+      "distanceInMeters": distanceInMeters,
       "ShopStatus": ShopStatus,
     };
   }

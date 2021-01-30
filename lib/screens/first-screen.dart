@@ -42,12 +42,15 @@ class SplashScreen extends StatefulWidget {
 
 class SplashScreenState extends State<SplashScreen> with TickerProviderStateMixin {
 
-  final FirebaseMessaging _firebaseMessaging = FirebaseMessaging();
+   final FirebaseMessaging _firebaseMessaging = FirebaseMessaging();
   _getToken() {
     _firebaseMessaging.getToken().then((token) {
-      print("Device Token: $token");
+        print("Device Token: $token");
+      DataStream.userTokenID=token;
+
     });
   }
+
   List<Message> messagesList;
 
   _configureFirebaseListeners() {
@@ -126,9 +129,6 @@ class SplashScreenState extends State<SplashScreen> with TickerProviderStateMixi
 
                           },
                         ),
-
-
-
                     ),
 
                     //Image.asset("assets/icons/logo.png", ),
@@ -139,7 +139,6 @@ class SplashScreenState extends State<SplashScreen> with TickerProviderStateMixi
                   ),
                 ],
               ),
-
             ],
           )),
         // color

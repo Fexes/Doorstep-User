@@ -2,10 +2,11 @@ const functions = require('firebase-functions');
 const admin = require('firebase-admin');
 admin.initializeApp(functions.config().functions);
 
-exports.helloworld = functions.https.onRequest(async(request, response) => {
+exports.pushNotification = functions.https.onRequest(async(request, response) => {
 
+//    var notificationTitle = request.query.notificationTitle;
+//    var notificationBody = request.query.notificationBody;
     var deviceTokenID = request.query.deviceTokenID;
-     var deviceTokenID = request.query.deviceTokenID;
 
   //  response.send(deviceTokenID)
 
@@ -14,13 +15,14 @@ exports.helloworld = functions.https.onRequest(async(request, response) => {
 
     var payload = {
         notification: {
-            title: 'Push Title',
-            body: 'Push Body',
+            title: 'notificationTitle',
+            body: 'notificationBody',
             sound: 'default',
         },
         data: {
             push_key: 'Push Key Value',
             key1: 'data',
+
         },
     };
     try {
