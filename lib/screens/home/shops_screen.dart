@@ -12,6 +12,7 @@ import 'package:flutter/material.dart';
 import 'package:Doorstep/styles/styles.dart';
  
 import 'package:geolocator/geolocator.dart';
+import 'package:intl/intl.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'dart:async';
 import 'dart:convert' show jsonDecode, utf8;
@@ -153,6 +154,18 @@ class _ShopsScreenState extends State<ShopsScreen> {
     final startTime = DateTime(currentTime.year, currentTime.month, currentTime.day,int.parse(open.split(":")[0]) , int.parse(open.split(":")[1]));
     final endTime = DateTime(currentTime.year, currentTime.month, currentTime.day,int.parse(close.split(":")[0]) , int.parse(close.split(":")[1]));
 
+
+    Duration d = Duration(hours: 0,minutes: 30);
+    if(endTime.difference(currentTime).inMinutes<30){
+      print("Closing Soon");
+      print("Difference"+(currentTime.difference(endTime).inMinutes).toString());
+
+    }else if(startTime.difference(currentTime).inMinutes<30){
+      print("Opening Soon");
+      print("open Difference"+(currentTime.difference(startTime).inMinutes).toString());
+
+    }
+
     if(startTime.isBefore(endTime)) {
      // print("day shop");
 
@@ -178,6 +191,31 @@ class _ShopsScreenState extends State<ShopsScreen> {
 
       }
     }
+  }
+  String checkopenclosesoon(String open, String close){
+
+    final currentTime = DateTime.now();
+
+
+    final startTime = DateTime(currentTime.year, currentTime.month, currentTime.day,int.parse(open.split(":")[0]) , int.parse(open.split(":")[1]));
+    final endTime = DateTime(currentTime.year, currentTime.month, currentTime.day,int.parse(close.split(":")[0]) , int.parse(close.split(":")[1]));
+
+
+     if(endTime.difference(currentTime).inMinutes<30){
+      print("Closing Soon");
+      print("Difference"+(currentTime.difference(endTime).inMinutes).toString());
+
+      return "Closing Soon";
+
+    }else if(startTime.difference(currentTime).inMinutes<30){
+      print("Opening Soon");
+      print("open Difference"+(currentTime.difference(startTime).inMinutes).toString());
+      return "Opening Soon";
+
+    }
+
+     return "null";
+
   }
 
   double calculateDistance(lat1, lon1, lat2, lon2){
@@ -242,17 +280,18 @@ class _ShopsScreenState extends State<ShopsScreen> {
 
                         double distanceInKM = calculateDistance(DataStream.userlocation.latitude,DataStream.userlocation.longitude,double.parse(v["location"].toString().split(",")[0]),double.parse(v["location"].toString().split(",")[1]));
 
-                    //    print(distanceInMeters.toString()+"-"+v["shopname"]);
+                    //    print(distanceInKM.toString()+"-"+v["shopname"]);
 
 
                         if(v["radius"]==null){
                           if(distanceInKM<  DataStream.OrderRadius ){
-                            // print(distanceInMeters);
+                            // print(distanceInKM);
 
                             if(DataStream.ShopCatagory== v["shopcategory"]) {
 
                               shops.add(new Shops(
                                   v["key"],
+                                  v["address"],
                                   v["shopid"],
                                   v["shopcategory"],
                                   v["shopdiscription"],
@@ -265,7 +304,7 @@ class _ShopsScreenState extends State<ShopsScreen> {
                                   distanceInKM,
                                   v["ShopStatus"]));
 
-                              shops.sort((a, b) => a.distanceInMeters.compareTo(b.distanceInMeters));
+                              shops.sort((a, b) => a.distanceInKM.compareTo(b.distanceInKM));
                             }
                           }
                         }else{
@@ -276,6 +315,7 @@ class _ShopsScreenState extends State<ShopsScreen> {
                           if(DataStream.ShopCatagory== v["shopcategory"]) {
                             shops.add(new Shops(
                                 v["key"],
+                                v["address"],
                                 v["shopid"],
                                 v["shopcategory"],
                                 v["shopdiscription"],
@@ -288,7 +328,7 @@ class _ShopsScreenState extends State<ShopsScreen> {
                                 distanceInKM,
                                 v["ShopStatus"]));
 
-                            shops.sort((a, b) => a.distanceInMeters.compareTo(b.distanceInMeters));
+                            shops.sort((a, b) => a.distanceInKM.compareTo(b.distanceInKM));
 
                           }
                         }
@@ -313,6 +353,9 @@ class _ShopsScreenState extends State<ShopsScreen> {
                             if(shops[index].ShopStatus.contains("Closed")||!checkTime(shops[index].openTime,shops[index].closeTime)){
 
                                ToastUtils.showCustomToast(context, "Shop Closed", null);
+                               setState(() {
+
+                               });
 
 
                             }else {
@@ -330,108 +373,236 @@ class _ShopsScreenState extends State<ShopsScreen> {
                           },
                           child: Padding(
                             padding: EdgeInsets.all(10),
-                            child: Container(
-                              height: 200,
-                              width: double.infinity,
+                            child: Stack(
+                              children: [
 
-                              decoration: BoxDecoration(
-                                boxShadow: [
-                                  BoxShadow(
-                                    color: Colors.grey.withOpacity(0.5),
-                                    spreadRadius: 5,
-                                    blurRadius: 7,
-                                    offset: Offset(0, 3), // changes position of shadow
-                                  ),
-                                ],
-                                shape: BoxShape.rectangle,
-                                borderRadius: BorderRadius.all(Radius.circular(15.0)),
-                                image: DecorationImage(
-                                  image: CacheImage(shops[index].shopimage),
-                                  fit: BoxFit.cover,
-                                ),
-                              ),
-                              child:  Padding(
-                                padding: EdgeInsets.all(0),
-                                child: Container(
 
-                                  height: 100,
+                                Container(
+                                  height: 200,
+                                  width: double.infinity,
+
                                   decoration: BoxDecoration(
-
+                                    boxShadow: [
+                                      BoxShadow(
+                                        color: Colors.grey.withOpacity(0.5),
+                                        spreadRadius: 5,
+                                        blurRadius: 7,
+                                        offset: Offset(0, 3), // changes position of shadow
+                                      ),
+                                    ],
                                     shape: BoxShape.rectangle,
                                     borderRadius: BorderRadius.all(Radius.circular(15.0)),
-                                    gradient: new LinearGradient(
-                                        colors: [
-                                          Colors.black,
-                                          const Color(0x10000000),
-                                        ],
-                                        begin: const FractionalOffset(0.0, 0.0),
-                                        end: const FractionalOffset(0.0, 1.0),
-                                        stops: [0.0, 1.0],
-                                        tileMode: TileMode.clamp),
-
-                                  ),
-
-                                  child: Padding(
-                                    padding: EdgeInsets.all(10),
-                                    child: Column(
-                                      crossAxisAlignment: CrossAxisAlignment.start,
-                                      mainAxisAlignment: MainAxisAlignment.start,
-                                      children: [
-                                        Text(
-                                          shops[index].shopname,
-                                          style: TextStyle(fontSize: 24, fontWeight: FontWeight.w500,color: Colors.white),
-                                        ),
-                                        Text(
-                                          shops[index].shopdiscription,
-                                          style: TextStyle(fontSize: 16, fontWeight: FontWeight.w200,color: Colors.white),
-                                        ),
-
-
-
-
-                                        !checkTime(shops[index].openTime,shops[index].closeTime)?
-                                        Container(
-                                           decoration: BoxDecoration(
-
-                                            shape: BoxShape.rectangle,
-                                            borderRadius: BorderRadius.all(Radius.circular(4.0)),
-                                           color: Colors.redAccent[700]
-
-                                          ),
-                                          child: Padding(
-                                            padding: const EdgeInsets.fromLTRB(20, 3, 20, 3),
-                                            child: Text(
-                                              "Closed",
-                                              style: TextStyle(fontSize: 20, fontWeight: FontWeight.w300,color:Colors.white),
-                                            ),
-                                          ),
-                                        ):
-
-                                        shops[index].ShopStatus.contains("Closed")?
-                                        Container(
-                                          decoration: BoxDecoration(
-
-                                              shape: BoxShape.rectangle,
-                                              borderRadius: BorderRadius.all(Radius.circular(4.0)),
-                                              color: Colors.redAccent[700]
-
-                                          ),
-                                          child: Padding(
-                                            padding: const EdgeInsets.fromLTRB(20, 3, 20, 3),
-                                            child: Text(
-                                              "Closed",
-                                              style: TextStyle(fontSize: 20, fontWeight: FontWeight.w300,color:Colors.white),
-                                            ),
-                                          ),
-                                        ):
-                                        SizedBox()
-
-
-                                      ],
+                                    image: DecorationImage(
+                                      image: CacheImage(shops[index].shopimage),
+                                      fit: BoxFit.cover,
                                     ),
                                   ),
+                                  child:  Padding(
+                                    padding: EdgeInsets.all(0),
+                                    child: Container(
+
+                                      height: 100,
+                                      decoration: BoxDecoration(
+
+                                        shape: BoxShape.rectangle,
+                                        borderRadius: BorderRadius.all(Radius.circular(15.0)),
+                                        gradient: new LinearGradient(
+                                            colors: [
+                                              Colors.black,
+                                              const Color(0x10000000),
+                                            ],
+                                            begin: const FractionalOffset(0.0, 0.0),
+                                            end: const FractionalOffset(0.0, 1.0),
+                                            stops: [0.0, 1.0],
+                                            tileMode: TileMode.clamp),
+
+                                      ),
+
+                                      child: Padding(
+                                        padding: EdgeInsets.all(10),
+                                        child: Column(
+                                          crossAxisAlignment: CrossAxisAlignment.start,
+                                          mainAxisAlignment: MainAxisAlignment.start,
+                                          children: [
+                                            Text(
+                                              shops[index].shopname,
+                                              style: TextStyle(fontSize: 24, fontWeight: FontWeight.w500,color: Colors.white),
+                                            ),
+
+                                            Text(
+                                              shops[index].shopdiscription,
+                                              style: TextStyle(fontSize: 18, fontWeight: FontWeight.w200,color: Colors.white),
+                                            ),
+                                            shops[index].address!=null?
+                                            Row(
+                                              children: [
+                                                Icon(Icons.location_on,color: Colors.white,size: 14,),
+                                                Text(
+                                                  shops[index].address,
+                                                  style: TextStyle(fontSize: 12, fontWeight: FontWeight.w300,color: Colors.white),
+                                                ),
+                                              ],
+                                            ):SizedBox(),
+
+
+
+
+                                            !checkTime(shops[index].openTime,shops[index].closeTime)?
+                                            Container(
+                                               decoration: BoxDecoration(
+
+                                                shape: BoxShape.rectangle,
+                                                borderRadius: BorderRadius.all(Radius.circular(4.0)),
+                                               color:
+                                               checkopenclosesoon(shops[index].openTime,shops[index].closeTime).contains("Opening")?
+                                               Colors.green[700]:Colors.redAccent[700]
+
+                                              ),
+                                              child: Padding(
+                                                padding: const EdgeInsets.fromLTRB(20, 3, 20, 3),
+                                                child:
+                                                checkopenclosesoon(shops[index].openTime,shops[index].closeTime).contains("Opening")?
+                                                Text(
+                                                  "Opening Soon",
+                                                  style: TextStyle(fontSize: 20, fontWeight: FontWeight.w300,color:Colors.white),
+                                                ):Text(
+                                                  "Closed",
+                                                  style: TextStyle(fontSize: 20, fontWeight: FontWeight.w300,color:Colors.white),
+                                                ),
+                                              ),
+                                            ):
+
+                                            shops[index].ShopStatus.contains("Closed")?
+                                            Container(
+                                              decoration: BoxDecoration(
+
+                                                  shape: BoxShape.rectangle,
+                                                  borderRadius: BorderRadius.all(Radius.circular(4.0)),
+                                                  color: Colors.redAccent[700]
+
+                                              ),
+                                              child: Padding(
+                                                padding: const EdgeInsets.fromLTRB(20, 3, 20, 3),
+                                                child: Text(
+                                                  "Closed",
+                                                  style: TextStyle(fontSize: 20, fontWeight: FontWeight.w300,color:Colors.white),
+                                                ),
+                                              ),
+                                            ):
+                                            checkopenclosesoon(shops[index].openTime,shops[index].closeTime).contains("Closing")?
+
+                                            Container(
+                                              decoration: BoxDecoration(
+
+                                                  shape: BoxShape.rectangle,
+                                                  borderRadius: BorderRadius.all(Radius.circular(4.0)),
+                                                  color: Colors.amber[900]
+
+                                              ),
+                                              child: Padding(
+                                                padding: const EdgeInsets.fromLTRB(20, 3, 20, 3),
+                                                child: Text(
+                                                  "Closing Soon",
+                                                  style: TextStyle(fontSize: 20, fontWeight: FontWeight.w300,color:Colors.white),
+                                                ),
+                                              ),
+                                            ):SizedBox()
+
+
+                                          ],
+                                        ),
+                                      ),
+                                    ),
+                                  ), /* add child content here */
                                 ),
-                              ), /* add child content here */
+
+                                Positioned(
+
+                                    right:10,
+                                    bottom: 10,
+                                    child: Container(
+                                      width: 50,
+                                      height: 50,
+                                      decoration: BoxDecoration(
+                                        shape: BoxShape.circle,
+                                        color: Colors.white.withOpacity(0.7)
+
+                                      ),
+                                      child: Center(
+                                        child: Stack(
+                                          children: [
+                                            Center(
+                                              child: Container(
+                                                width: 47,
+                                                height: 47,
+                                                decoration: BoxDecoration(
+                                                    shape: BoxShape.circle,
+                                                    color: Colors.black.withOpacity(0.7)
+
+                                                ),
+
+                                              ),
+                                            ),
+                                            Center(
+                                              child: Text(
+                                                ((shops[index].distanceInKM*3)+20).toString().split(".")[0]+" min",
+                                                textAlign: TextAlign.center,
+                                                style: TextStyle(fontSize: 12, fontWeight: FontWeight.w400,color: Colors.white),
+                                              ),
+                                            ),
+                                          ],
+                                        ),
+                                      ),
+                                    ),
+                                ),
+
+                                Positioned(
+
+                                    left:10,
+                                    bottom: 15,
+                                    child: Container(
+                                      height: 40,
+                                        decoration: BoxDecoration(
+                                        shape: BoxShape.rectangle,
+                                            borderRadius: BorderRadius.all(Radius.circular(6.0)),
+
+                                            color: Colors.black.withOpacity(0.7)
+
+                                      ),
+                                      child: Center(
+                                        child: Stack(
+                                          children: [
+                                            Center(
+                                              child: Container(
+                                                 decoration: BoxDecoration(
+                                                    shape: BoxShape.circle,
+                                                    color: Colors.black.withOpacity(0.7)
+
+                                                ),
+
+                                              ),
+                                            ),
+                                            Padding(
+                                              padding: const EdgeInsets.all(8.0),
+                                              child: Center(
+                                                child:
+                                                DateFormat("h:mma").format(DateFormat("hh:mm").parse(shops[index].openTime)) == DateFormat("h:mma").format(DateFormat("hh:mm").parse(shops[index].closeTime))?
+                                                Text(
+                                                  "24 / 7 Open",
+                                                  style: TextStyle(fontSize: 20, fontWeight: FontWeight.w400,color: Colors.white),
+                                                ):
+                                                Text(
+                                                  DateFormat("h:mma").format(DateFormat("hh:mm").parse(shops[index].openTime))  +"  -  "+ DateFormat("h:mma").format(DateFormat("hh:mm").parse(shops[index].closeTime)),
+                                                  style: TextStyle(fontSize: 20, fontWeight: FontWeight.w400,color: Colors.white),
+                                                ),
+                                              ),
+                                            ),
+                                          ],
+                                        ),
+                                      ),
+                                    ),
+                                ),
+                              ],
                             ),
                           ),
                         );

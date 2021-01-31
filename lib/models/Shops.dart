@@ -2,6 +2,7 @@ import 'package:firebase_database/firebase_database.dart';
 
 class Shops {
   String key;
+  String address;
   String shopid;
   String shopcategory;
   String shopdiscription;
@@ -11,14 +12,15 @@ class Shops {
    String openTime;
    String closeTime;
    int radius;
-   double distanceInMeters;
+   double distanceInKM;
    String ShopStatus;
 
-  Shops(this.key,this.shopid,this.shopcategory,this.shopdiscription,this.shopimage,this.shopname,this.location ,this.openTime,this.closeTime,this.radius,this.distanceInMeters,this.ShopStatus);
+  Shops(this.key,this.address,this.shopid,this.shopcategory,this.shopdiscription,this.shopimage,this.shopname,this.location ,this.openTime,this.closeTime,this.radius,this.distanceInKM,this.ShopStatus);
 
 
   Shops.fromSnapshot(DataSnapshot snapshot):
         key = snapshot.key,
+        address = snapshot.value["address"],
         shopid = snapshot.value["shopid"],
         shopcategory = snapshot.value["shopcategory"],
         shopdiscription= snapshot.value["shopdiscription"],
@@ -28,13 +30,14 @@ class Shops {
         openTime= snapshot.value["openTime"],
         closeTime= snapshot.value["closeTime"],
         radius= snapshot.value["radius"],
-        distanceInMeters= snapshot.value["distanceInMeters"],
+        distanceInKM= snapshot.value["distanceInKM"],
         ShopStatus= snapshot.value["ShopStatus"];
 
 
   toJson() {
     return {
       "key": key,
+      "address": address,
       "shopid": shopid,
       "shopcategory": shopcategory,
       "shopdiscription": shopdiscription,
@@ -44,7 +47,7 @@ class Shops {
       "openTime": openTime,
       "closeTime": closeTime,
       "radius": radius,
-      "distanceInMeters": distanceInMeters,
+      "distanceInKM": distanceInKM,
       "ShopStatus": ShopStatus,
     };
   }
