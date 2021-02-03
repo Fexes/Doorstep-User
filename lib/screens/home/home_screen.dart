@@ -14,6 +14,7 @@ import 'package:Doorstep/screens/home/shops_screen.dart';
 import 'package:Doorstep/screens/home/single_product.dart';
 import 'package:Doorstep/utilts/UI/DataStream.dart';
 import 'package:badges/badges.dart';
+import 'package:bubble_bottom_bar/bubble_bottom_bar.dart';
 import 'package:carousel_slider/carousel_options.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_database/firebase_database.dart';
@@ -24,11 +25,10 @@ import 'package:flutter_spinkit/flutter_spinkit.dart';
 import 'package:Doorstep/utilts/UI/toast_utility.dart';
 import 'package:flutter/material.dart';
 import 'package:Doorstep/styles/styles.dart';
- 
+
 import 'package:google_map_location_picker/google_map_location_picker.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:in_app_review/in_app_review.dart';
-import 'package:motion_tab_bar/motiontabbar.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'dart:async';
 import 'dart:convert' show jsonDecode, utf8;
@@ -38,7 +38,6 @@ import 'package:carousel_slider/carousel_slider.dart';
 
 
 import 'package:http/http.dart' as http;
-import 'package:spannable_grid/spannable_grid.dart';
  import 'package:url_launcher/url_launcher.dart' as UrlLauncher;
 
 import 'cart_screen.dart';
@@ -166,11 +165,13 @@ class HomePage extends State<Home> {
 
   haswhatsapp() async {
  //   whatsapp = await FlutterLaunch.hasApp(name: "whatsapp");
-    final InAppReview inAppReview = InAppReview.instance;
+  //  final InAppReview inAppReview = InAppReview.instance;
 
-    if (await inAppReview.isAvailable()) {
-      inAppReview.requestReview();
-    }
+    // if (await inAppReview.isAvailable()) {
+    //
+    //   inAppReview.requestReview();
+    //
+    // }
     whatsapp=true;
     setState(() {
 
@@ -263,6 +264,8 @@ class HomePage extends State<Home> {
     locationDbRef.once().then((value) async {
       if(value.value!=null){
         appuser= new AppUser(value.value["first_name"], value.value["last_name"],value.value["phone"] , value.value["email"],value.value["userTokenID"]);
+
+        DataStream.appuser=appuser;
         setState(() {
 
         });
@@ -272,8 +275,7 @@ class HomePage extends State<Home> {
 
 
 
-    }
-    );
+    });
 
   }
 
@@ -313,7 +315,6 @@ class HomePage extends State<Home> {
    // imgList = new List();
 
     List<Widget> imageSliders;
-    List<SpannableGridCellData> cells = List();
 
 
 
@@ -368,7 +369,7 @@ class HomePage extends State<Home> {
                                               MaterialPageRoute(builder: (
                                                   BuildContext context) =>
                                                   SingleProduct(
-                                                      bannerproduct, 0),),);
+                                                      bannerproduct, 0),),).then((value) {setupCart();});
                                           }
                                         });
                                       }
@@ -390,7 +391,7 @@ class HomePage extends State<Home> {
                                               builder: (BuildContext context) =>
                                                   ProductCatalog(
                                                       bannershop,
-                                                      item.itemcategory),),);
+                                                      item.itemcategory),),).then((value) {setupCart();});
                                           }
                                         });
                                       }
@@ -417,6 +418,7 @@ class HomePage extends State<Home> {
            mainAxisAlignment: MainAxisAlignment.spaceBetween,
            children: [
              user!=null?
+
              GestureDetector(
                onTap: () async {
 
@@ -428,7 +430,7 @@ class HomePage extends State<Home> {
               //   print("asdasd");
 
                },
-                child:   Image.asset("assets/icons/whatsapp.png",height: 33,width: 33, ),
+                child:   Image.asset("assets/icons/whatsapp.png",height: 30,width: 30, ),
 
 
              )
@@ -553,12 +555,7 @@ class HomePage extends State<Home> {
                               shopcat2.sort((a, b) => a.index.compareTo(b.index));
                               shopcat3.sort((a, b) => a.index.compareTo(b.index));
 
-                              print("length "+shopcat.length.toString());
-                              print("length "+shopcat2.length.toString());
 
-                              print("length "+shopcat3.length.toString());
-
-                              print("length $catlistcount ");
 
 
 
@@ -780,440 +777,6 @@ class HomePage extends State<Home> {
                                       ),
 
 
-//
-//
-//                       GestureDetector(
-//                         onTap: (){
-//                           DataStream.ShopCatagory="Supermarkets";
-//                           Navigator.push( context, MaterialPageRoute( builder: (BuildContext context) => ShopsScreen(),),).then((value) {setupCart();});
-//
-//                         },
-//                         child: Padding(
-//                           padding: EdgeInsets.all(5),
-//                           child: Container(
-//                             height: 170,
-//                             decoration: BoxDecoration(
-//                               boxShadow: [
-//                                 BoxShadow(
-//                                   color:  Colors.grey.withOpacity(0.9),
-//                                   spreadRadius: 2,
-//                                   blurRadius: 3,
-//                                 ),
-//                               ],
-//                               shape: BoxShape.rectangle,
-//                               borderRadius: BorderRadius.all(Radius.circular(15.0)),
-//                               image: DecorationImage(
-//                                 image: AssetImage("assets/imgs/super_market.jpg"),
-//                                 fit: BoxFit.cover,
-//                               ),
-//                             ),
-//                             child:  Padding(
-//                               padding: EdgeInsets.all(0),
-//                               child: Container(
-//
-//                                 height: 100,
-//                                 decoration: BoxDecoration(
-//
-//                                   shape: BoxShape.rectangle,
-//                                   borderRadius: BorderRadius.all(Radius.circular(15.0)),
-//                                   gradient: new LinearGradient(
-//                                       colors: [
-//                                         Colors.black.withOpacity(0.75)
-// ,
-//                                             const Color(0x10000000),
-//
-//                                       ],
-//                                       begin: const FractionalOffset(0.0, 0.0),
-//                                       end: const FractionalOffset(0.0, 1.0),
-//                                       stops: [0.0, 1.0],
-//                                       tileMode: TileMode.clamp),
-//                                 ),
-//                                 child: Padding(
-//                                   padding: EdgeInsets.all(12),
-//                                   child: Column(
-//                                     crossAxisAlignment: CrossAxisAlignment.start,
-//                                     mainAxisAlignment: MainAxisAlignment.start,
-//                                     children: [
-//                                       Text(
-//                                         'Supermarkets',
-//                                         style: TextStyle( fontSize: 22, fontWeight: FontWeight.w500,color: Colors.white),
-//                                       ),
-//                                       Text(
-//                                         'Groceries made easy',
-//                                         style: TextStyle( fontSize: 16, fontWeight: FontWeight.w300,color: Colors.white),
-//                                       ),
-//
-//                                     ],
-//                                   ),
-//                                 ),
-//                               ),
-//                             ), /* add child content here */
-//                           ),
-//                         ),
-//                       ),
-//
-//                         Row(
-//                           children: [
-//
-//
-//                             GestureDetector(
-//                               onTap: (){
-//                                 DataStream.ShopCatagory="Bakery";
-//
-//                                 Navigator.push( context, MaterialPageRoute( builder: (BuildContext context) => ShopsScreen(),),).then((value) {setupCart();});
-//
-//                               },
-//                               child: Padding(
-//                                 padding: EdgeInsets.all(5),
-//                                 child: Container(
-//                                   height: 170,
-//                                   width: ((screenWidth(context)/2))-15,
-//
-//                                   decoration: BoxDecoration(
-//                                     boxShadow: [
-//                                   BoxShadow(
-//                                     color:  Colors.grey.withOpacity(0.9),
-//                                     spreadRadius: 2,
-//                                     blurRadius: 3,
-//                                   ),
-//                                 ],
-//                                     shape: BoxShape.rectangle,
-//                                     borderRadius: BorderRadius.all(Radius.circular(15.0)),
-//                                     image: DecorationImage(
-//                                       image: AssetImage("assets/imgs/bk.jpg"),
-//
-//                                       fit: BoxFit.cover,
-//                                     ),
-//                                   ),
-//                                   child:  Padding(
-//                                     padding: EdgeInsets.all(0),
-//                                     child: Container(
-//
-//                                       height: 100,
-//                                       decoration: BoxDecoration(
-//
-//                                         shape: BoxShape.rectangle,
-//                                         borderRadius: BorderRadius.all(Radius.circular(15.0)),
-//                                         gradient: new LinearGradient(
-//                                             colors: [
-//                                               Colors.black.withOpacity(0.75),
-//                                               const Color(0x10000000),
-//                                             ],
-//                                             begin: const FractionalOffset(0.0, 0.0),
-//                                             end: const FractionalOffset(0.0, 1.0),
-//                                             stops: [0.0, 1.0],
-//                                             tileMode: TileMode.clamp),
-//                                       ),
-//                                       child: Padding(
-//                                         padding: EdgeInsets.all(12),
-//                                         child: Column(
-//                                           crossAxisAlignment: CrossAxisAlignment.start,
-//                                           mainAxisAlignment: MainAxisAlignment.start,
-//                                           children: [
-//
-//                                             Text(
-//                                               'Bakery',
-//                                               style: TextStyle( fontSize: 22, fontWeight: FontWeight.w500,color: Colors.white),
-//                                             ),
-//                                             Text(
-//                                               'Freshly Baked',
-//                                               style: TextStyle( fontSize: 16, fontWeight: FontWeight.w300,color: Colors.white),
-//                                             ),
-//                                           ],
-//                                         ),
-//                                       ),
-//                                     ),
-//                                   ), /* add child content here */
-//                                 ),
-//                               ),
-//                             ),
-//
-//
-//
-//                             GestureDetector(
-//                               onTap: (){
-//                                 DataStream.ShopCatagory="Butchery & BBQ";
-//                                 Navigator.push( context, MaterialPageRoute( builder: (BuildContext context) => ShopsScreen(),),).then((value) {setupCart();});
-//
-//                               },
-//                               child: Padding(
-//                                 padding: EdgeInsets.all(5),
-//                                 child: Container(
-//                                   height: 170,
-//                                   width: ((screenWidth(context)/2))-5,
-//
-//
-//                                   decoration: BoxDecoration(
-//                                     boxShadow: [
-//                                   BoxShadow(
-//                                     color:  Colors.grey.withOpacity(0.9),
-//                                     spreadRadius: 2,
-//                                     blurRadius: 3,
-//                                   ),
-//                                 ],
-//                                     shape: BoxShape.rectangle,
-//                                     borderRadius: BorderRadius.all(Radius.circular(15.0)),
-//                                     image: DecorationImage(
-//                                       image: AssetImage("assets/imgs/bbq.jpg"),
-//                                       fit: BoxFit.cover,
-//                                     ),
-//                                   ),
-//                                   child:  Padding(
-//                                     padding: EdgeInsets.all(0),
-//                                     child: Container(
-//
-//                                       height: 100,
-//                                       decoration: BoxDecoration(
-//
-//                                         shape: BoxShape.rectangle,
-//                                         borderRadius: BorderRadius.all(Radius.circular(15.0)),
-//                                         gradient: new LinearGradient(
-//                                             colors: [
-//                                               Colors.black.withOpacity(0.75)
-// ,
-//                                               const Color(0x10000000),
-//                                             ],
-//                                             begin: const FractionalOffset(0.0, 0.0),
-//                                             end: const FractionalOffset(0.0, 1.0),
-//                                             stops: [0.0, 1.0],
-//                                             tileMode: TileMode.clamp),
-//                                       ),
-//                                       child: Padding(
-//                                         padding: EdgeInsets.all(12),
-//                                         child: Column(
-//                                           crossAxisAlignment: CrossAxisAlignment.start,
-//                                           mainAxisAlignment: MainAxisAlignment.start,
-//                                           children: [
-//                                             Text(
-//                                               'Butchery & BBQ',
-//                                               style: TextStyle( fontSize: 22, fontWeight: FontWeight.w500,color: Colors.white),
-//                                             ),
-//                                             Text(
-//                                               'The place to meat',
-//                                               style: TextStyle( fontSize: 16, fontWeight: FontWeight.w300,color: Colors.white),
-//                                             ),
-//                                           ],
-//                                         ),
-//                                       ),
-//                                     ),
-//                                   ), /* add child content here */
-//                                 ),
-//                               ),
-//                             ),
-//
-//                           ],
-//                         ),
-//                         GestureDetector(
-//                           onTap: (){
-//                             DataStream.ShopCatagory="Fruits & Vegetables";
-//                             Navigator.push( context, MaterialPageRoute( builder: (BuildContext context) => ShopsScreen(),),).then((value) {setupCart();});
-//
-//                           },
-//                           child: Padding(
-//                             padding: EdgeInsets.all(5),
-//                             child: Container(
-//                               height: 170,
-//                               decoration: BoxDecoration(
-//                                   boxShadow: [
-//                                   BoxShadow(
-//                                     color:  Colors.grey.withOpacity(0.9),
-//                                     spreadRadius: 2,
-//                                     blurRadius: 3,
-//                                   ),
-//                                 ],
-//                                 shape: BoxShape.rectangle,
-//                                 borderRadius: BorderRadius.all(Radius.circular(15.0)),
-//                                 image: DecorationImage(
-//                                   image: AssetImage("assets/imgs/grocery_store.jpg"),
-//                                   fit: BoxFit.cover,
-//                                 ),
-//                               ),
-//                               child:  Padding(
-//                                 padding: EdgeInsets.all(0),
-//                                 child: Container(
-//
-//                                   height: 100,
-//                                   decoration: BoxDecoration(
-//                                     shape: BoxShape.rectangle,
-//                                     borderRadius: BorderRadius.all(Radius.circular(15.0)),
-//                                     gradient: new LinearGradient(
-//                                         colors: [
-//                                           Colors.black.withOpacity(0.75)
-// ,
-//                                               const Color(0x10000000),
-//                                         ],
-//                                         begin: const FractionalOffset(0.0, 0.0),
-//                                         end: const FractionalOffset(0.0, 1.0),
-//                                         stops: [0.0, 1.0],
-//                                         tileMode: TileMode.clamp),
-//                                   ),
-//                                   child: Padding(
-//                                     padding: EdgeInsets.all(12),
-//                                     child: Column(
-//                                       crossAxisAlignment: CrossAxisAlignment.start,
-//                                       mainAxisAlignment: MainAxisAlignment.start,
-//                                       children: [
-//                                         Text(
-//                                           'Fruits & Vegetables',
-//                                           style: TextStyle( fontSize: 22, fontWeight: FontWeight.w500,color: Colors.white),
-//                                         ),
-//                                         Text(
-//                                           'Fresher and better',
-//                                           style: TextStyle( fontSize: 16, fontWeight: FontWeight.w300,color: Colors.white),
-//                                         ),
-//                                       ],
-//                                     ),
-//                                   ),
-//                                 ),
-//                               ), /* add child content here */
-//                             ),
-//                           ),
-//                         ),
-//
-//                         Row(
-//
-//                           children: [
-//                             GestureDetector(
-//                               onTap: (){
-//                                 DataStream.ShopCatagory="Tandoor";
-//                                 Navigator.push( context, MaterialPageRoute( builder: (BuildContext context) => ShopsScreen(),),).then((value) {setupCart();});
-//
-//                               },
-//                               child: Padding(
-//                                 padding: EdgeInsets.all(5),
-//                                 child: Container(
-//                                   height: 170,
-//                                   width: ((screenWidth(context)/2))-15,
-//
-//
-//
-//                                   decoration: BoxDecoration(
-//                                     boxShadow: [
-//                                   BoxShadow(
-//                                     color:  Colors.grey.withOpacity(0.9),
-//                                     spreadRadius: 2,
-//                                     blurRadius: 3,
-//                                   ),
-//                                 ],
-//                                     shape: BoxShape.rectangle,
-//                                     borderRadius: BorderRadius.all(Radius.circular(15.0)),
-//                                     image: DecorationImage(
-//                                       image: AssetImage("assets/imgs/naan.jpg"),
-//                                       fit: BoxFit.cover,
-//                                     ),
-//                                   ),
-//                                   child:  Padding(
-//                                     padding: EdgeInsets.all(0),
-//                                     child: Container(
-//
-//                                       height: 100,
-//                                       decoration: BoxDecoration(
-//                                         shape: BoxShape.rectangle,
-//                                         borderRadius: BorderRadius.all(Radius.circular(15.0)),
-//                                         gradient: new LinearGradient(
-//                                             colors: [
-//                                               Colors.black.withOpacity(0.75)
-// ,
-//                                               const Color(0x10000000),
-//                                             ],
-//                                             begin: const FractionalOffset(0.0, 0.0),
-//                                             end: const FractionalOffset(0.0, 1.0),
-//                                             stops: [0.0, 1.0],
-//                                             tileMode: TileMode.clamp),
-//                                       ),
-//                                       child: Padding(
-//                                         padding: EdgeInsets.all(12),
-//                                         child: Column(
-//                                           crossAxisAlignment: CrossAxisAlignment.start,
-//                                           mainAxisAlignment: MainAxisAlignment.start,
-//                                           children: [
-//                                             Text(
-//                                               'Tandoor',
-//                                               style: TextStyle( fontSize: 22, fontWeight: FontWeight.w500,color: Colors.white),
-//                                             ),
-//                                             Text(
-//                                               'Fresh Naan',
-//                                               style: TextStyle( fontSize: 16, fontWeight: FontWeight.w300,color: Colors.white),
-//                                             ),
-//                                           ],
-//                                         ),
-//                                       ),
-//                                     ),
-//                                   ), /* add child content here */
-//                                 ),
-//                               ),
-//                             ),
-//                             GestureDetector(
-//                               onTap: (){
-//                                 DataStream.ShopCatagory="Dairy";
-//                                 Navigator.push( context, MaterialPageRoute( builder: (BuildContext context) => ShopsScreen(),),).then((value) {setupCart();});
-//
-//                               },
-//                               child: Padding(
-//                                 padding: EdgeInsets.all(5),
-//                                 child: Container(
-//                                   height: 170,
-//                                   width: ((screenWidth(context)/2))-5,
-//
-//
-//                                   decoration: BoxDecoration(
-//                                     boxShadow: [
-//                                   BoxShadow(
-//                                     color:  Colors.grey.withOpacity(0.9),
-//                                     spreadRadius: 2,
-//                                     blurRadius: 3,
-//                                   ),
-//                                 ],
-//                                     shape: BoxShape.rectangle,
-//                                     borderRadius: BorderRadius.all(Radius.circular(15.0)),
-//                                     image: DecorationImage(
-//                                       image: AssetImage("assets/imgs/dairy.jpg"),
-//                                       fit: BoxFit.cover,
-//                                     ),
-//                                   ),
-//                                   child:  Padding(
-//                                     padding: EdgeInsets.all(0),
-//                                     child: Container(
-//
-//                                       height: 100,
-//                                       decoration: BoxDecoration(
-//                                         shape: BoxShape.rectangle,
-//                                         borderRadius: BorderRadius.all(Radius.circular(15.0)),
-//                                         gradient: new LinearGradient(
-//                                             colors: [
-//                                               Colors.black.withOpacity(0.75)
-// ,
-//                                               const Color(0x10000000),
-//                                             ],
-//                                             begin: const FractionalOffset(0.0, 0.0),
-//                                             end: const FractionalOffset(0.0, 1.0),
-//                                             stops: [0.0, 1.0],
-//                                             tileMode: TileMode.clamp),
-//                                       ),
-//                                       child: Padding(
-//                                         padding: EdgeInsets.all(12),
-//                                         child: Column(
-//                                           crossAxisAlignment: CrossAxisAlignment.start,
-//                                           mainAxisAlignment: MainAxisAlignment.start,
-//                                           children: [
-//                                             Text(
-//                                               'Dairy',
-//                                               style: TextStyle( fontSize: 22, fontWeight: FontWeight.w500,color: Colors.white),
-//                                             ),
-//                                             Text(
-//                                               'Fresh Dairy Products',
-//                                               style: TextStyle( fontSize: 16, fontWeight: FontWeight.w300,color: Colors.white),
-//                                             ),
-//                                           ],
-//                                         ),
-//                                       ),
-//                                     ),
-//                                   ), /* add child content here */
-//                                 ),
-//                               ),
-//                             ),
-//                           ],
-//                         ),
 
                                     ],
                                   ):
@@ -1230,7 +793,7 @@ class HomePage extends State<Home> {
 
                                                 },
                                                 child: Padding(
-                                                  padding: EdgeInsets.all(5),
+                                                  padding: EdgeInsets.fromLTRB(6, 3, 6, 3),
                                                   child: Container(
                                                     height: 170,
                                                     decoration: BoxDecoration(
@@ -1258,7 +821,7 @@ class HomePage extends State<Home> {
                                                           borderRadius: BorderRadius.all(Radius.circular(15.0)),
                                                           gradient: new LinearGradient(
                                                               colors: [
-                                                                Colors.black.withOpacity(0.75)
+                                                                Colors.black.withOpacity(0.95)
                                                                 ,
                                                                 const Color(0x10000000),
                                                               ],
@@ -1293,6 +856,8 @@ class HomePage extends State<Home> {
 
 
                                            Row(
+                                             mainAxisAlignment: MainAxisAlignment.center,
+                                             crossAxisAlignment: CrossAxisAlignment.center,
 
                                             children: [
 
@@ -1305,7 +870,7 @@ class HomePage extends State<Home> {
 
                                                 },
                                                 child: Padding(
-                                                  padding: EdgeInsets.all(5),
+                                                  padding: EdgeInsets.all(3),
                                                   child: Container(
                                                     height: 170,
                                                     width: ((screenWidth(context)/2))-15,
@@ -1378,7 +943,7 @@ class HomePage extends State<Home> {
 
                                                 },
                                                 child: Padding(
-                                                  padding: EdgeInsets.all(5),
+                                                  padding: EdgeInsets.all(3),
                                                   child: Container(
                                                     height: 170,
                                                     width: ((screenWidth(context)/2))-5,
@@ -1561,7 +1126,7 @@ class HomePage extends State<Home> {
                     child: GestureDetector(
                       onTap: (){
                         //OrderItemsScreen
-                        Navigator.push( context, MaterialPageRoute( builder: (BuildContext context) => OrderItemsScreen("Active",orders[index]),),);
+                        Navigator.push( context, MaterialPageRoute( builder: (BuildContext context) => OrderItemsScreen("Active",orders[index]),),).then((value) {setupCart();});
 
                       },
                       child: Container(
@@ -1936,7 +1501,7 @@ class HomePage extends State<Home> {
                     child: GestureDetector(
                       onTap: (){
                         //OrderItemsScreen
-                        Navigator.push( context, MaterialPageRoute( builder: (BuildContext context) => OrderItemsScreen("Active",orders[index]),),);
+                        Navigator.push( context, MaterialPageRoute( builder: (BuildContext context) => OrderItemsScreen("Active",orders[index]),),).then((value) {setupCart();});
 
                       },
                       child: Container(
@@ -2199,7 +1764,8 @@ class HomePage extends State<Home> {
                                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                                 children: [
                                   Row(
-                                    children: [
+
+                                     children: [
                                       Icon(Icons.account_box),
                                       SizedBox(width: 5,),
 
@@ -2207,8 +1773,27 @@ class HomePage extends State<Home> {
                                         'Contact Details ',
                                         style: TextStyle(fontSize: 16, fontWeight: FontWeight.w500,color: Colors.black),
                                       ),
+
+
                                     ],
                                   ),
+                                  profileedit?
+                                  Visibility(
+                                    visible: profileedit,
+                                    child: GestureDetector(
+                                        onTap: (){
+                                          if(profileedit) {
+                                            profileedit = false;
+                                          }else{
+                                            profileedit = true;
+
+                                          }
+                                          setState(() {
+
+                                          });
+                                        },
+                                        child: Icon(Icons.cancel,color: Colors.redAccent,)),
+                                  ):
                                   GestureDetector(
                                     onTap: (){
 
@@ -2283,24 +1868,8 @@ class HomePage extends State<Home> {
                                         ),
                                       ],
                                     ),
-                                    SizedBox(height: 10,),
 
-                                    TextField(
 
-                                      decoration: InputDecoration(
-                                        border: InputBorder.none,
-                                        hintText: "(Phone)  "+DataStream.PhoneNumber,
-                                        enabled: false,
-
-                                        enabledBorder: UnderlineInputBorder(
-                                          borderSide: BorderSide(color: Colors.green),
-                                        ),
-                                        focusedBorder: UnderlineInputBorder(
-                                          borderSide: BorderSide(color: Colors.green),
-                                        ),
-
-                                      ),
-                                    ),
                                     SizedBox(height: 10,),
 
                                     TextField(
@@ -2319,8 +1888,24 @@ class HomePage extends State<Home> {
 
                                       ),
                                     ),
+                                    SizedBox(height: 10,),
 
-                                    SizedBox(height: 20,),
+                                    TextField(
+
+                                      decoration: InputDecoration(
+                                        border: InputBorder.none,
+                                        hintText: "(Phone)  "+DataStream.PhoneNumber,
+                                        enabled: false,
+
+                                        enabledBorder: UnderlineInputBorder(
+                                          borderSide: BorderSide(color: Colors.green),
+                                        ),
+                                        focusedBorder: UnderlineInputBorder(
+                                          borderSide: BorderSide(color: Colors.green),
+                                        ),
+
+                                      ),
+                                    ),
 
 
                                     Row(
@@ -2363,6 +1948,8 @@ class HomePage extends State<Home> {
                                               setState(() {
 
                                               });
+                                              DataStream.appuser.first_name=firstname.text;
+                                              DataStream.appuser.first_name=lasename.text;
                                               ToastUtils.showCustomToast(
                                                   context, "Saved", true);
 
@@ -2438,54 +2025,218 @@ class HomePage extends State<Home> {
 
                       ),
                     ),
-                    Container(
-                      height: 40,
-                      decoration: BoxDecoration(
-                        color: Colors.redAccent,
-                        borderRadius: BorderRadius.only(
-                            topLeft: Radius.circular(10),
-                            topRight: Radius.circular(10),
-                            bottomLeft: Radius.circular(10),
-                            bottomRight: Radius.circular(10)
-                        ),
+                    Padding(
+                      padding: const EdgeInsets.fromLTRB(15, 0, 15, 15),
+                      child: Container(
+                        decoration: BoxDecoration(
+                          shape: BoxShape.rectangle,
+                          borderRadius: BorderRadius.all(Radius.circular(10.0)),
+                          color: Colors.white,
 
-                        boxShadow: [
-                          BoxShadow(
-                            color: Colors.redAccent[100],
-                            spreadRadius: 3,
-                            blurRadius: 4,
-                            offset: Offset(0, 3),
-                          ),
-                        ],
-                      ),
-                      width: screenWidth(context)-40,
-                      child: FlatButton(
-                        shape: RoundedRectangleBorder(
-                          borderRadius: BorderRadius.circular(8.0),
-                        ),
-                        color: Colors.redAccent,
-                        onPressed: (){
-
-
-                          FirebaseAuth.instance.currentUser().then((firebaseUser) async {
-                            if(firebaseUser != null){
-                              await FirebaseAuth.instance.signOut();
-
-                              Navigator.of(context).pushReplacement(MaterialPageRoute(builder: (context) => SignIn()));
-
-                            }
-
-                          });
-
-                        },
-                        child: Row(
-                          mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-
-                          children: [
-
-                            Text('Logout',style: TextStyle(color: Colors.white,fontWeight: FontWeight.w500, fontSize: 18),),
-
+                          boxShadow: [
+                            BoxShadow(
+                              color: Colors.grey.withOpacity(0.75),
+                              spreadRadius: 5,
+                              blurRadius: 7,
+                              offset: Offset(0, 3),
+                            ),
                           ],
+                        ),
+
+                        width: screenWidth(context)-10,
+                        child: Padding(
+                          padding: EdgeInsets.all(15),
+                          child: Column(
+                            crossAxisAlignment:CrossAxisAlignment.start,
+                            children: [
+
+                              Row(
+                                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                                children: [
+
+                                  Row(
+                                    children: [
+                                      Icon(Icons.location_on),
+                                      SizedBox(width: 10,),
+
+                                      Container(
+                                        width: screenWidth(context)/2,
+                                        child: Text(
+
+                                          PickedAddress,
+                                          style: TextStyle(fontSize: 12, fontWeight: FontWeight.w300,color: Colors.black),
+                                          textAlign: TextAlign.left,
+                                          maxLines: 4,
+                                        ),
+                                      ),
+                                    ],
+                                  ),
+                                  GestureDetector(
+                                    onTap: (){
+
+                                      Dialog errorDialog = Dialog(
+                                        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12.0)), //this right here
+                                        child: Container(
+                                          height: 180.0,
+                                          width: screenWidth(context),
+
+                                          child: Column(
+                                            mainAxisAlignment: MainAxisAlignment.center,
+                                            children: <Widget>[
+                                              SizedBox(height: 20,),
+
+                                              Padding(
+                                                padding:  EdgeInsets.all(1.0),
+                                                child: Text('Change Location', style: TextStyle(color: Colors.red,fontSize: 18,fontWeight: FontWeight.w500),),
+                                              ),
+                                              // SizedBox(height: 20,),
+
+
+                                              Padding(
+                                                padding:  EdgeInsets.all(20.0),
+                                                child: Text('Changing your location will clear your Cart are you sure you want to change your Location ?', style: TextStyle(color: Colors.black,fontSize: 14),),
+                                              ),
+
+
+
+                                              SizedBox(height: 10,),
+                                              Row(
+                                                mainAxisAlignment: MainAxisAlignment.end,
+                                                crossAxisAlignment: CrossAxisAlignment.end,
+                                                children: [
+                                                  FlatButton(
+
+                                                      onPressed: (){
+                                                        Navigator.of(context).pop();
+
+                                                      },
+                                                      child: Text('Dismiss', style: TextStyle(color: Colors.grey, fontSize: 14.0),)),
+
+                                                  FlatButton(onPressed: (){
+
+                                                    FirebaseDatabase database = new FirebaseDatabase();
+
+                                                    DatabaseReference del = database
+                                                        .reference();
+
+
+                                                    del =
+                                                        database.reference()
+                                                            .child("Cart")
+                                                            .child(
+                                                            DataStream
+                                                                .UserId);
+                                                    del.remove().then((
+                                                        value) {
+                                                      carts.clear();
+                                                      Navigator.of(context)
+                                                          .pop();
+
+                                                      addLocation().then((value) {setupBanner();});
+
+                                                      setState(() {
+
+                                                      });
+                                                    });
+
+
+                                                  },
+                                                      child: Text('Change Location', style: TextStyle(color: Colors.redAccent, fontSize: 14.0),)),
+                                                ],
+                                              )
+                                            ],
+                                          ),
+                                        ),
+                                      );
+
+
+                                      if(carts.length>0) {
+                                        showDialog(context: context,
+                                            builder: (
+                                                BuildContext context) => errorDialog);
+                                      }else{
+                                        addLocation().then((value) {setupBanner();});
+
+                                      }
+
+
+                                      setState(() {
+
+                                      });
+                                    },
+
+
+                                    child: Text(
+                                      'Change',
+                                      style: TextStyle(fontSize: 16, fontWeight: FontWeight.w600,color: Colors.green),
+                                    ),
+                                  ),
+
+                                ],
+                              ),
+                              //SizedBox(height: 20,),
+
+
+
+
+
+                            ],
+                          ),
+                        ),
+
+                      ),
+                    ),
+                    Padding(
+                      padding: const EdgeInsets.all(15),
+                      child: Container(
+                        height: 45,
+                        decoration: BoxDecoration(
+                          color: Colors.redAccent,
+                          borderRadius: BorderRadius.only(
+                              topLeft: Radius.circular(10),
+                              topRight: Radius.circular(10),
+                              bottomLeft: Radius.circular(10),
+                              bottomRight: Radius.circular(10)
+                          ),
+
+                          boxShadow: [
+                            BoxShadow(
+                              color: Colors.redAccent[100],
+                              spreadRadius: 3,
+                              blurRadius: 4,
+                              offset: Offset(0, 3),
+                            ),
+                          ],
+                        ),
+                   //   width: screenWidth(context)-40,
+                        child: FlatButton(
+                          shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(8.0),
+                          ),
+                          color: Colors.redAccent,
+                          onPressed: (){
+
+
+                            FirebaseAuth.instance.currentUser().then((firebaseUser) async {
+                              if(firebaseUser != null){
+                                await FirebaseAuth.instance.signOut();
+
+                                Navigator.of(context).pushReplacement(MaterialPageRoute(builder: (context) => SignIn()));
+
+                              }
+
+                            });
+
+                          },
+                          child: Row(
+                            mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+
+                            children: [
+
+                              Text('Logout',style: TextStyle(color: Colors.white,fontWeight: FontWeight.w500, fontSize: 18),),
+
+                            ],
+                          ),
                         ),
                       ),
                     ),
@@ -2601,19 +2352,37 @@ class HomePage extends State<Home> {
 //      _selectedIndex==1?OrdersScreen:ProfileScreen,
 
       bottomNavigationBar:
+       Container(
+            decoration: BoxDecoration(
+              color: Colors.white,
 
-      MotionTabBar(
-        tabOneName: "Market",
-        tabTwoName: "Orders",
-        tabThreeName: "Profile",
-        tabOneIcon: Icons.shopping_basket,
-        tabTwoIcon: Icons.airport_shuttle,
-        tabThreeIcon: Icons.account_circle,
-        tabIconColor: Colors.grey,
-        tabSelectedColor: Colors.green,
-        textStyle: TextStyle(color: Colors.green),
-        onTabItemSelected: onItemTapped,
-      )
+              boxShadow: [
+                BoxShadow(
+                  color: Colors.grey.withOpacity(0.75),
+                  spreadRadius: 5,
+                  blurRadius: 7,
+                  offset: Offset(0, 3), // changes position of shadow
+                ),
+              ],
+            ),
+          child: BubbleBottomBar(
+              opacity: .2,
+              currentIndex: _selectedIndex,
+              onTap: onItemTapped,
+              borderRadius: BorderRadius.vertical(top: Radius.circular(16)),
+              elevation: 8,
+              hasNotch: true, //new
+              hasInk: true, //new, gives ,a cute ink effect
+              inkColor: Colors.black12 ,//optional, uses theme color if not specified
+          items: <BubbleBottomBarItem>[
+            BubbleBottomBarItem(backgroundColor: Colors.green, icon: Icon(Icons.shopping_basket, color: Colors.black,), activeIcon: Icon(Icons.shopping_basket, color: Colors.green,), title: Text("Market")),
+            BubbleBottomBarItem(backgroundColor: Colors.blue, icon: Icon(Icons.airport_shuttle, color: Colors.black,), activeIcon: Icon(Icons.airport_shuttle, color: Colors.blue,), title: Text("Orders")),
+            BubbleBottomBarItem(backgroundColor: Colors.indigo, icon: Icon(Icons.account_circle, color: Colors.black,), activeIcon: Icon(Icons.account_circle, color: Colors.indigo,), title: Text("Profile")),
+          ],
+    ),
+        ),
+
+
       // Container(
       //   decoration: BoxDecoration(
       //     color: Colors.white,

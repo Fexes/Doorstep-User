@@ -155,16 +155,6 @@ class _ShopsScreenState extends State<ShopsScreen> {
     final endTime = DateTime(currentTime.year, currentTime.month, currentTime.day,int.parse(close.split(":")[0]) , int.parse(close.split(":")[1]));
 
 
-    Duration d = Duration(hours: 0,minutes: 30);
-    if(endTime.difference(currentTime).inMinutes<30){
-      print("Closing Soon");
-      print("Difference"+(currentTime.difference(endTime).inMinutes).toString());
-
-    }else if(startTime.difference(currentTime).inMinutes<30){
-      print("Opening Soon");
-      print("open Difference"+(currentTime.difference(startTime).inMinutes).toString());
-
-    }
 
     if(startTime.isBefore(endTime)) {
      // print("day shop");
@@ -202,14 +192,14 @@ class _ShopsScreenState extends State<ShopsScreen> {
 
 
      if(endTime.difference(currentTime).inMinutes<30){
-      print("Closing Soon");
-      print("Difference"+(currentTime.difference(endTime).inMinutes).toString());
+    //  print("Closing Soon");
+   //   print("Difference"+(currentTime.difference(endTime).inMinutes).toString());
 
       return "Closing Soon";
 
     }else if(startTime.difference(currentTime).inMinutes<30){
-      print("Opening Soon");
-      print("open Difference"+(currentTime.difference(startTime).inMinutes).toString());
+    //  print("Opening Soon");
+    //  print("open Difference"+(currentTime.difference(startTime).inMinutes).toString());
       return "Opening Soon";
 
     }
@@ -431,7 +421,7 @@ class _ShopsScreenState extends State<ShopsScreen> {
 
                                             Text(
                                               shops[index].shopdiscription,
-                                              style: TextStyle(fontSize: 18, fontWeight: FontWeight.w200,color: Colors.white),
+                                              style: TextStyle(fontSize: 18, fontWeight: FontWeight.w300,color: Colors.white),
                                             ),
                                             shops[index].address!=null?
                                             Row(
@@ -489,8 +479,7 @@ class _ShopsScreenState extends State<ShopsScreen> {
                                                 ),
                                               ),
                                             ):
-                                            checkopenclosesoon(shops[index].openTime,shops[index].closeTime).contains("Closing")?
-
+                                            checkopenclosesoon(shops[index].openTime,shops[index].closeTime).contains("Closing")&&shops[index].openTime!=shops[index].closeTime?
                                             Container(
                                               decoration: BoxDecoration(
 

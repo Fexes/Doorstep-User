@@ -1,7 +1,8 @@
 import 'dart:io';
 import 'dart:math';
 
- import 'package:Doorstep/models/Cart.dart';
+ import 'package:Doorstep/models/AppUser.dart';
+import 'package:Doorstep/models/Cart.dart';
 import 'package:Doorstep/models/Shops.dart';
 import 'package:Doorstep/screens/auth/sign-in.dart';
 import 'package:Doorstep/screens/first-screen.dart';
@@ -103,13 +104,14 @@ class _CheckOutScreenState extends State<CheckOutScreen> {
 
 
   }
-  FocusNode _focusNode;
+  FocusNode _focusNode,_focusNode2;
 
 
   @override
   void dispose() {
     super.dispose();
     _focusNode.dispose();
+    _focusNode2.dispose();
 
   }
   Dialog loadingdialog;
@@ -127,17 +129,62 @@ class _CheckOutScreenState extends State<CheckOutScreen> {
 
     _focusNode = new FocusNode();
     _focusNode.addListener(_onOnFocusNodeEvent);
+    _focusNode2 = new FocusNode();
+    _focusNode2.addListener(_onOnFocusNodeEvent);
     _add();
 
     getodercount();
     DataStream.PromoCode=null;
     setuplist();
     DeliverCharges = DataStream.DeliverCharges ;
+    getUserDetails();
 
     }
 
  int DeliverCharges ;
  int Discount =0;
+
+ bool userdetails=false;
+
+ bool gotuserdata=false;
+  void getUserDetails(){
+
+    appuser= new AppUser("","","","","");
+
+    final locationDbRef = FirebaseDatabase.instance.reference().child("Users").child(DataStream.UserId);
+
+    locationDbRef.once().then((value) async {
+      if(value.value!=null){
+        appuser= new AppUser(value.value["first_name"], value.value["last_name"],value.value["phone"] , value.value["email"],value.value["userTokenID"]);
+
+
+        DataStream.appuser=appuser;
+
+
+
+        userdetails=true;
+        setState(() {
+
+        });
+      }else{
+
+      }
+
+
+
+    });
+
+    if(  DataStream.appuser.first_name==""||DataStream.appuser.last_name==""||DataStream.appuser.email==""||
+        DataStream.appuser.first_name==null||DataStream.appuser.last_name==null||DataStream.appuser.email==null) {
+      gotuserdata=false;
+
+    }else{
+      gotuserdata=true;
+
+
+    }
+
+  }
 
   void getodercount(){
     final locationDbRef = FirebaseDatabase.instance.reference().child("User Orders").child(DataStream.UserId).child("Order Count");
@@ -182,6 +229,11 @@ class _CheckOutScreenState extends State<CheckOutScreen> {
     });
 
   }
+  bool profileedit =false;
+  final firstname = TextEditingController();
+  final lasename = TextEditingController();
+  final email = TextEditingController();
+  AppUser appuser=DataStream.appuser;
 
   String useraddress = "";
 
@@ -566,21 +618,283 @@ class _CheckOutScreenState extends State<CheckOutScreen> {
                                   children: [
 
 
-                                    SizedBox(height: 5,),
-                                    Row(
-                                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+
+
+
+                                    Column(
+                                      crossAxisAlignment:CrossAxisAlignment.start,
                                       children: [
-                                        Text(
-                                          'Contact info ',
-                                          style: TextStyle(fontSize: 16, fontWeight: FontWeight.w300,color: Colors.black),
+
+                                            DataStream.appuser.first_name==""||DataStream.appuser.last_name==""||DataStream.appuser.email==""||
+                                            DataStream.appuser.first_name==null||DataStream.appuser.last_name==null||DataStream.appuser.email==null?
+                                        Row(
+                                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                                          children: [
+                                            Row(
+
+                                              children: [
+                                                Icon(Icons.warning,color: Colors.amber[900],),
+                                                SizedBox(width: 5,),
+
+                                                Text(
+                                                  'Contact Details Missing',
+                                                  style: TextStyle(fontSize: 16, fontWeight: FontWeight.w500,color: Colors.black),
+                                                ),
+
+
+                                              ],
+                                            ),
+                                            profileedit?
+                                            Visibility(
+                                              visible: profileedit,
+                                              child: GestureDetector(
+                                                  onTap: (){
+                                                    if(profileedit) {
+                                                      profileedit = false;
+                                                    }else{
+                                                      profileedit = true;
+
+                                                    }
+                                                    setState(() {
+
+                                                    });
+                                                  },
+                                                  child: Icon(Icons.cancel,color: Colors.redAccent,)),
+                                            ):
+                                            GestureDetector(
+                                              onTap: (){
+
+                                                firstname.text=appuser.first_name;
+                                                lasename.text=appuser.last_name;
+                                                email.text=appuser.email;
+
+
+                                                if(profileedit) {
+                                                  profileedit = false;
+                                                }else{
+                                                  profileedit = true;
+
+                                                }
+                                                setState(() {
+
+                                                });
+                                              },
+                                              child: Text(
+                                                profileedit?'':'Add Details',
+                                                style: TextStyle(fontSize: 16, fontWeight: FontWeight.w600,color: Colors.green),
+                                              ),
+                                            ),
+
+                                          ],
+                                        ):SizedBox(),
+
+                                        DataStream.appuser.first_name==""||DataStream.appuser.last_name==""||DataStream.appuser.email==""||
+                                            DataStream.appuser.first_name==null||DataStream.appuser.last_name==null||DataStream.appuser.email==null?
+                                        SizedBox(height: 20,):SizedBox(),
+
+                                        profileedit?
+                                        Column(children: [
+                                          Row(
+                                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+
+                                            children: [
+                                              Container(
+                                                width: (screenWidth(context)/2)-70,
+
+                                                child: TextField(
+
+                                                  controller: firstname,
+                                                  decoration: InputDecoration(
+                                                    border: InputBorder.none,
+                                                    hintText: 'First Name',
+
+                                                    enabledBorder: UnderlineInputBorder(
+                                                      borderSide: BorderSide(color: Colors.green),
+                                                    ),
+                                                    focusedBorder: UnderlineInputBorder(
+                                                      borderSide: BorderSide(color: Colors.green),
+                                                    ),
+
+                                                  ),
+                                                ),
+                                              ),
+                                              Container(
+                                                width: (screenWidth(context)/2)-70,
+
+                                                child: TextField(
+                                                  controller: lasename,
+
+                                                  decoration: InputDecoration(
+                                                    border: InputBorder.none,
+                                                    hintText: 'Last Name',
+                                                    enabledBorder: UnderlineInputBorder(
+                                                      borderSide: BorderSide(color: Colors.green),
+                                                    ),
+                                                    focusedBorder: UnderlineInputBorder(
+                                                      borderSide: BorderSide(color: Colors.green),
+                                                    ),
+
+                                                  ),
+                                                ),
+                                              ),
+                                            ],
+                                          ),
+
+
+                                          SizedBox(height: 10,),
+
+                                          TextField(
+                                            controller: email,
+
+                                            decoration: InputDecoration(
+                                              border: InputBorder.none,
+                                              hintText: 'E-mail',
+
+                                              enabledBorder: UnderlineInputBorder(
+                                                borderSide: BorderSide(color: Colors.green),
+                                              ),
+                                              focusedBorder: UnderlineInputBorder(
+                                                borderSide: BorderSide(color: Colors.green),
+                                              ),
+
+                                            ),
+                                          ),
+                                          SizedBox(height: 10,),
+
+                                          TextField(
+
+                                            decoration: InputDecoration(
+                                              border: InputBorder.none,
+                                              hintText: "(Phone)  "+DataStream.PhoneNumber,
+                                              enabled: false,
+
+                                              enabledBorder: UnderlineInputBorder(
+                                                borderSide: BorderSide(color: Colors.green),
+                                              ),
+                                              focusedBorder: UnderlineInputBorder(
+                                                borderSide: BorderSide(color: Colors.green),
+                                              ),
+
+                                            ),
+                                          ),
+
+
+                                          Row(
+                                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                                            children: [
+                                              SizedBox(width: 20,),
+
+                                              FlatButton(
+                                                shape: RoundedRectangleBorder(
+                                                    borderRadius: BorderRadius.circular(8)),
+                                                child: Padding(
+                                                    padding: EdgeInsets.fromLTRB(15, 7, 15, 7),
+                                                    child: Text("Save")),
+                                                textColor: Colors.white,
+                                                color: Colors.green,
+                                                onPressed: () async {
+
+
+                                                  FirebaseDatabase database = new FirebaseDatabase();
+                                                  DatabaseReference db = database.reference()
+                                                      .child('Users').child(DataStream.UserId);
+
+                                                  db.set(<dynamic, dynamic>{
+                                                    'first_name': firstname.text,
+                                                    'last_name': lasename.text,
+                                                    'phone':DataStream.PhoneNumber,
+                                                    'email': email.text,
+
+
+                                                  }).then((value) {
+
+                                                    getUserDetails();
+
+                                                    if(profileedit) {
+                                                      profileedit = false;
+                                                    }else{
+                                                      profileedit = true;
+
+                                                    }
+                                                    setState(() {
+
+                                                    });
+                                                    DataStream.appuser.first_name=firstname.text;
+                                                    DataStream.appuser.last_name=lasename.text;
+                                                    DataStream.appuser.email=email.text;
+
+                                                    ToastUtils.showCustomToast(
+                                                        context, "Saved", true);
+
+                                                  });
+
+
+                                                },
+                                              ),
+                                            ],
+                                          )
+                                        ],)
+
+                                            :
+                                        Column(
+                                          children: [
+                                            Row(
+                                              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                                              children: [
+                                                Text(
+                                                  'Username ',
+                                                  style: TextStyle(fontSize: 16, fontWeight: FontWeight.w300,color: Colors.black),
+                                                ),
+                                                Text(
+                                                  appuser.first_name+" "+appuser.last_name,
+                                                  style: TextStyle(fontSize: 16, fontWeight: FontWeight.w300,color: Colors.black),
+                                                ),
+
+                                              ],
+                                            ),
+
+                                            SizedBox(height: 8,),
+
+                                            Row(
+                                              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                                              children: [
+                                                Text(
+                                                  'Phone ',
+                                                  style: TextStyle(fontSize: 16, fontWeight: FontWeight.w300,color: Colors.black),
+                                                ),
+                                                Text(
+                                                  DataStream.PhoneNumber+"",
+                                                  style: TextStyle(fontSize: 16, fontWeight: FontWeight.w300,color: Colors.black),
+                                                ),
+
+                                              ],
+                                            ),
+
+
+                                            SizedBox(height: 8,),
+
+                                            Row(
+                                              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                                              children: [
+                                                Text(
+                                                  'E-mail ',
+                                                  style: TextStyle(fontSize: 16, fontWeight: FontWeight.w300,color: Colors.black),
+                                                ),
+                                                Text(
+                                                  appuser.email+"",
+                                                  style: TextStyle(fontSize: 16, fontWeight: FontWeight.w300,color: Colors.black),
+                                                ),
+
+                                              ],
+                                            ),
+                                          ],
                                         ),
-                                        Text(
-                                          DataStream.PhoneNumber,
-                                          style: TextStyle(fontSize: 16, fontWeight: FontWeight.w300,color: Colors.black),
-                                        ),
+
+
 
                                       ],
                                     ),
+
                                     SizedBox(height: 15,),
                                     Container(
                                       height: 1,
@@ -688,57 +1002,65 @@ class _CheckOutScreenState extends State<CheckOutScreen> {
                                     Form(
                                       key: _formKey,
 
-                                      child: Container(
-                                        margin: EdgeInsets.only(bottom: 18.0),
-                                        child: Row(
-                                          children: <Widget>[
-                                            Icon(Icons.home),
-                                            //   Image.asset("assets/icons/user-grey.png", height: 16.0, width: 16.0,),
-                                            Container(
-                                              width: screenWidth(context)*0.7,
-                                              child: TextFormField(
-                                                cursorColor: primaryDark, cursorRadius: Radius.circular(1.0), cursorWidth: 1.0,
-                                                keyboardType: TextInputType.text,
-                                                 onSaved: (String value) => useraddress = value,
-                                                onChanged: (text) {
+                                      child: Column(
+                                        children: [
+                                          Container(
+                                            margin: EdgeInsets.only(bottom: 18.0),
+                                            child: Row(
+                                              children: <Widget>[
+                                                Icon(Icons.home),
+                                                //   Image.asset("assets/icons/user-grey.png", height: 16.0, width: 16.0,),
+                                                Container(
+                                                  width: screenWidth(context)*0.7,
+                                                  child: TextFormField(
+                                                    cursorColor: primaryDark, cursorRadius: Radius.circular(1.0), cursorWidth: 1.0,
+                                                    keyboardType: TextInputType.text,
+                                                     onSaved: (String value) => useraddress = value,
+                                                    onChanged: (text) {
 
-                                                  if(text.length>5){
-                                                    isaddressaded=true;
-                                                  }else{
-                                                    isaddressaded=false;
+                                                      if(text.length>5){
+                                                        isaddressaded=true;
+                                                      }else{
+                                                        isaddressaded=false;
 
-                                                  }
+                                                      }
 
-                                                  useraddress = text.toString();
+                                                      useraddress = text.toString();
 
-                                                  setState(() {
+                                                      setState(() {
 
-                                                  });
-                                                 },
-                                                validator: (String value) {
-                                                  if(value.isEmpty)
-                                                    return 'Please Enter Your Address';
-                                                  else
-                                                    return null;
-                                                },
-                                                decoration: InputDecoration(
-                                                  contentPadding: EdgeInsets.only(left: 10.0, right: 0.0, top: 10.0, bottom: 12.0),
-                                                  border: OutlineInputBorder(
-                                                      borderSide: BorderSide.none
+                                                      });
+                                                     },
+                                                    validator: (String value) {
+                                                      if(value.isEmpty)
+                                                        return 'Please Enter Your Address';
+                                                      else
+                                                        return null;
+                                                    },
+                                                    decoration: InputDecoration(
+                                                      contentPadding: EdgeInsets.only(left: 10.0, right: 0.0, top: 10.0, bottom: 12.0),
+                                                      border: OutlineInputBorder(
+                                                          borderSide: BorderSide.none
+                                                      ),
+                                                      labelText: "Delivery Address",
+                                                    ),
+                                                    focusNode: _focusNode,
                                                   ),
-                                                  labelText: "Delivery Address",
                                                 ),
-                                                focusNode: _focusNode,
+                                              ],
+                                            ),
+                                            decoration: new BoxDecoration(
+                                              border: new Border(
+                                                bottom: BorderSide(color: _focusNode.hasFocus ? primaryDark : border, style: BorderStyle.solid, width: 2.0),
                                               ),
                                             ),
-                                          ],
-                                        ),
-                                        decoration: new BoxDecoration(
-                                          border: new Border(
-                                            bottom: BorderSide(color: _focusNode.hasFocus ? primaryDark : border, style: BorderStyle.solid, width: 2.0),
                                           ),
-                                        ),
+
+
+
+                                        ],
                                       ),
+
                                     ),
 
 
@@ -794,7 +1116,7 @@ class _CheckOutScreenState extends State<CheckOutScreen> {
               child: Container(
                     height: 60,
                     decoration: BoxDecoration(
-                      color: isaddressaded?Colors.green:Colors.grey,
+                      color: isaddressaded&&gotuserdata?Colors.green:Colors.grey,
                       borderRadius: BorderRadius.only(
                           topLeft: Radius.circular(10),
                           topRight: Radius.circular(10),
@@ -803,7 +1125,7 @@ class _CheckOutScreenState extends State<CheckOutScreen> {
                       ),
                       boxShadow: [
                         BoxShadow(
-                        color: isaddressaded?Colors.green.withOpacity(0.5):Colors.grey.withOpacity(0.5),
+                        color: isaddressaded&&gotuserdata?Colors.green.withOpacity(0.5):Colors.grey.withOpacity(0.5),
                           spreadRadius: 5,
                           blurRadius: 7,
                           offset: Offset(0, 3),
@@ -815,30 +1137,32 @@ class _CheckOutScreenState extends State<CheckOutScreen> {
                       shape: RoundedRectangleBorder(
                         borderRadius: BorderRadius.circular(18.0),
                       ),
-                      color: isaddressaded?Colors.green:Colors.grey,
+                      color: isaddressaded&&gotuserdata?Colors.green:Colors.grey,
                       onPressed: (){
 
 
+                        if(  DataStream.appuser.first_name==""||DataStream.appuser.last_name==""||DataStream.appuser.email==""||
+                            DataStream.appuser.first_name==null||DataStream.appuser.last_name==null||DataStream.appuser.email==null) {
 
+                          ToastUtils.showCustomToast(
+                              context, "Contact Details Missing", false);
 
-                        if(DataStream.PromoCode!=null) {
-
-
-
-                         if(DataStream.PromoCode.min_order<calSubtotal()){
-                           placeOrder();
-
-                         }else{
-                           ToastUtils.showCustomToast(context, "Minimum Order \n is Rs. "+DataStream.PromoCode.min_order.toString()+" \n for Promo Code",null);
-
-                         }
 
                         }else{
-
-                          placeOrder();
-
+                          if (DataStream.PromoCode != null) {
+                            if (DataStream.PromoCode.min_order <
+                                calSubtotal()) {
+                              placeOrder();
+                            } else {
+                              ToastUtils.showCustomToast(
+                                  context, "Minimum Order \n is Rs. " +
+                                  DataStream.PromoCode.min_order.toString() +
+                                  " \n for Promo Code", null);
+                            }
+                          } else {
+                            placeOrder();
+                          }
                         }
-
 
                       },
                       child: Row(
@@ -856,7 +1180,7 @@ class _CheckOutScreenState extends State<CheckOutScreen> {
                               crossAxisAlignment: CrossAxisAlignment.center,
                               children: [
 
-                                Text(carts.length.toString(),style: TextStyle(color: isaddressaded?Colors.green:Colors.grey,fontSize: 14),),
+                                Text(carts.length.toString(),style: TextStyle(color: isaddressaded&&gotuserdata?Colors.green:Colors.grey,fontSize: 14),),
                               ],
                             ),
                           ),
@@ -940,157 +1264,106 @@ class _CheckOutScreenState extends State<CheckOutScreen> {
   }
 
   void placeOrder() {
-    if(isaddressaded){
 
-      showLoadingDialogue("Placing Order");
-      String orderID=getRandomString(4)+"-"+getRandomString(3);
-      FirebaseDatabase database = new FirebaseDatabase();
+    if(gotuserdata) {
+      if (isaddressaded) {
+        showLoadingDialogue("Placing Order");
+        String orderID = getRandomString(4) + "-" + getRandomString(3);
+        FirebaseDatabase database = new FirebaseDatabase();
 
-      DatabaseReference ordercount = database.reference()
-          .child('User Orders').child(DataStream.UserId).child("Order Count");
+        DatabaseReference ordercount = database.reference()
+            .child('User Orders').child(DataStream.UserId).child("Order Count");
 
-      DatabaseReference _userRef = database.reference()
-          .child('User Orders').child(DataStream.UserId).child("Active").child(orderID);
+        DatabaseReference _userRef = database.reference()
+            .child('User Orders').child(DataStream.UserId)
+            .child("Active")
+            .child(orderID);
 
-      DatabaseReference shoporder = database.reference()
-          .child('Shops');
+        DatabaseReference shoporder = database.reference()
+            .child('Shops');
 
-      DatabaseReference adminorder = database.reference()
-          .child('Admin').child("Orders");
+        DatabaseReference adminorder = database.reference()
+            .child('Admin').child("Orders");
 
-      var now = new DateTime.now();
-      var date = new DateFormat('yyyy-MM-dd');
-      var time = new DateFormat('hh:mm');
-
-
-      ordercount.set(<dynamic, dynamic>{
-        'no_of_orders': order_count+1,
-
-      }).then((value) {
+        var now = new DateTime.now();
+        var date = new DateFormat('yyyy-MM-dd');
+        var time = new DateFormat('hh:mm');
 
 
-
-        if(DataStream.PromoCode!=null) {
-
-
-          DatabaseReference promoref = database
-              .reference()
-              .child('Users').child(
-              DataStream.UserId)
-              .child("Promo")
-              .child(DataStream.PromoCode.promoID);
-
-
-
-
-          promoref.set(<dynamic, dynamic>{
-            'status':"used",
-
-          });
-
-
-        }
-
-
-
-
-        HomePage.getodercount();
-
-        _userRef.set(<dynamic, dynamic>{
-          'no_of_items': '${carts.length}',
-          'userID':DataStream.UserId,
-          'bill': '${caltotal()}',
-          'status': 'pending',
-          'orderDate': date.format(now),
-          'orderTime': time.format(now),
-          'phonenumber':DataStream.PhoneNumber,
-          'orderID': orderID,
-          'address': Useraddress+"\n"+useraddress,
-          'location':"${deliverylocation.latitude},${deliverylocation.longitude}",
+        ordercount.set(<dynamic, dynamic>{
+          'no_of_orders': order_count + 1,
 
         }).then((value) {
+          if (DataStream.PromoCode != null) {
+            DatabaseReference promoref = database
+                .reference()
+                .child('Users').child(
+                DataStream.UserId)
+                .child("Promo")
+                .child(DataStream.PromoCode.promoID);
 
 
-          for(int i=0;i<=carts.length-1;i++){
-
-            adminorder
-                .child("Active")
-            //.child(DataStream.UserId)
-                .child(orderID)
-                .set(<dynamic, dynamic>{
-              'no_of_items': '${carts.length}',
-              'userID':DataStream.UserId,
-              'bill': '${caltotal()}',
-              'status': 'pending',
-              'orderDate': date.format(now),
-              'orderTime': time.format(now),
-              'phonenumber': DataStream.PhoneNumber,
-              'orderID': orderID,
-              'address': Useraddress+"\n"+useraddress,
-              'location': "${deliverylocation
-                  .latitude},${deliverylocation.longitude}",
-
-            }).then((value) {
-
-              adminorder
-                  .child("Active")
-              // .child(DataStream.UserId)
-                  .child(orderID).child("items").push().set(
-                  <dynamic, dynamic>{
-                    'no_of_items': carts[i].no_of_items,
-                    'cardid': carts[i].cardid.toString(),
-                    'cardname': carts[i].cardname.toString(),
-                    'unit':carts[i].unit,
-
-                    'cardimage': carts[i].cardimage.toString(),
-                    'cardprice': carts[i].cardprice,
-                    'shopcatagory':carts[i].shopcatagory,
-                    'shopid': carts[i].shopid,
-
-                  }
-              );
+            promoref.set(<dynamic, dynamic>{
+              'status': "used",
 
             });
+          }
 
 
+          HomePage.getodercount();
 
-            shoporder.child(
-                carts[i].shopcatagory).child(
-                carts[i].shopid).child("Orders")
-                .child("Active")
-                .child(orderID)
-                .set(<dynamic, dynamic>{
-              'no_of_items': '${carts.length}',
-              'userID':DataStream.UserId,
-              'bill': '${caltotal()}',
-              'status': 'pending',
-              'orderDate': date.format(now),
-              'orderTime': time.format(now),
-              'phonenumber': DataStream.PhoneNumber,
-              'orderID': orderID,
-              'address': Useraddress+"\n"+useraddress,
-              'location': "${deliverylocation
-                  .latitude},${deliverylocation.longitude}",
+          _userRef.set(<dynamic, dynamic>{
+            'no_of_items': '${carts.length}',
+            'userID': DataStream.UserId,
+            'bill': '${caltotal()}',
+            'status': 'pending',
+            'orderDate': date.format(now),
+            'orderTime': time.format(now),
+            'phonenumber': DataStream.PhoneNumber,
+            'orderID': orderID,
+            'address': Useraddress + "\n" + useraddress,
+            'location': "${deliverylocation.latitude},${deliverylocation
+                .longitude}",
 
-            }).then((value) {
+          }).then((value) {
+            for (int i = 0; i <= carts.length - 1; i++) {
+              adminorder
+                  .child("Active")
+              //.child(DataStream.UserId)
+                  .child(orderID)
+                  .set(<dynamic, dynamic>{
+                'no_of_items': '${carts.length}',
+                'userID': DataStream.UserId,
+                'bill': '${caltotal()}',
+                'status': 'pending',
+                'orderDate': date.format(now),
+                'orderTime': time.format(now),
+                'phonenumber': DataStream.PhoneNumber,
+                'orderID': orderID,
+                'address': Useraddress + "\n" + useraddress,
+                'location': "${deliverylocation
+                    .latitude},${deliverylocation.longitude}",
 
-              shoporder.child(carts[i].shopcatagory).child(carts[i].shopid).child("Orders")
-                  .child("Active").child(orderID).child("items").push().set(
-                  <dynamic, dynamic>{
-                    'no_of_items': carts[i].no_of_items,
-                    'cardid': carts[i].cardid.toString(),
-                    'cardname': carts[i].cardname.toString(),
-                    'unit':carts[i].unit,
+              }).then((value) {
+                adminorder
+                    .child("Active")
+                // .child(DataStream.UserId)
+                    .child(orderID).child("items").push().set(
+                    <dynamic, dynamic>{
+                      'no_of_items': carts[i].no_of_items,
+                      'cardid': carts[i].cardid.toString(),
+                      'cardname': carts[i].cardname.toString(),
+                      'unit': carts[i].unit,
 
-                    'cardimage': carts[i].cardimage.toString(),
-                    'cardprice': carts[i].cardprice,
-                    'shopcatagory':carts[i].shopcatagory,
-                    'shopid': carts[i].shopid,
+                      'cardimage': carts[i].cardimage.toString(),
+                      'cardprice': carts[i].cardprice,
+                      'shopcatagory': carts[i].shopcatagory,
+                      'shopid': carts[i].shopid,
 
-                  }
-              );
+                    }
+                );
+              });
 
-            }).then((value) {
 
               shoporder.child(
                   carts[i].shopcatagory).child(
@@ -1099,106 +1372,137 @@ class _CheckOutScreenState extends State<CheckOutScreen> {
                   .child(orderID)
                   .set(<dynamic, dynamic>{
                 'no_of_items': '${carts.length}',
-                'userID':DataStream.UserId,
+                'userID': DataStream.UserId,
                 'bill': '${caltotal()}',
                 'status': 'pending',
                 'orderDate': date.format(now),
                 'orderTime': time.format(now),
                 'phonenumber': DataStream.PhoneNumber,
                 'orderID': orderID,
-                'address': Useraddress+"\n"+useraddress,
+                'address': Useraddress + "\n" + useraddress,
                 'location': "${deliverylocation
                     .latitude},${deliverylocation.longitude}",
 
               }).then((value) {
-
-                shoporder.child(carts[i].shopcatagory).child(carts[i].shopid).child("Orders")
-                    .child("Active").child(orderID).child("items").push().set(
+                shoporder.child(carts[i].shopcatagory).child(carts[i].shopid)
+                    .child("Orders")
+                    .child("Active").child(orderID).child("items").push()
+                    .set(
                     <dynamic, dynamic>{
                       'no_of_items': carts[i].no_of_items,
                       'cardid': carts[i].cardid.toString(),
                       'cardname': carts[i].cardname.toString(),
+                      'unit': carts[i].unit,
+
                       'cardimage': carts[i].cardimage.toString(),
                       'cardprice': carts[i].cardprice,
-                      'unit':carts[i].unit,
-                      'shopcatagory':carts[i].shopcatagory,
+                      'shopcatagory': carts[i].shopcatagory,
                       'shopid': carts[i].shopid,
 
                     }
                 );
+              }).then((value) {
+                shoporder.child(
+                    carts[i].shopcatagory).child(
+                    carts[i].shopid).child("Orders")
+                    .child("Active")
+                    .child(orderID)
+                    .set(<dynamic, dynamic>{
+                  'no_of_items': '${carts.length}',
+                  'userID': DataStream.UserId,
+                  'bill': '${caltotal()}',
+                  'status': 'pending',
+                  'orderDate': date.format(now),
+                  'orderTime': time.format(now),
+                  'phonenumber': DataStream.PhoneNumber,
+                  'orderID': orderID,
+                  'address': Useraddress + "\n" + useraddress,
+                  'location': "${deliverylocation
+                      .latitude},${deliverylocation.longitude}",
 
-              });
-            });
+                }).then((value) {
+                  shoporder.child(carts[i].shopcatagory).child(carts[i].shopid)
+                      .child("Orders")
+                      .child("Active").child(orderID).child("items").push()
+                      .set(
+                      <dynamic, dynamic>{
+                        'no_of_items': carts[i].no_of_items,
+                        'cardid': carts[i].cardid.toString(),
+                        'cardname': carts[i].cardname.toString(),
+                        'cardimage': carts[i].cardimage.toString(),
+                        'cardprice': carts[i].cardprice,
+                        'unit': carts[i].unit,
+                        'shopcatagory': carts[i].shopcatagory,
+                        'shopid': carts[i].shopid,
 
-
-
-            _userRef.child("items").push().set(<dynamic, dynamic>{
-              'no_of_items': carts[i].no_of_items,
-              'cardid': carts[i].cardid.toString(),
-              'cardname': carts[i].cardname.toString(),
-              'cardimage': carts[i].cardimage.toString(),
-              'cardprice': carts[i].cardprice,
-              'unit':carts[i].unit,
-              'shopcatagory':carts[i].shopcatagory,
-              'shopid': carts[i].shopid,
-
-
-            }).then((value) {
-              FirebaseDatabase database = new FirebaseDatabase();
-              DatabaseReference _userRef = database.reference()
-                  .child('Cart').child(DataStream.UserId);
-              _userRef.remove();
-
-
-
-
-
-
-            });
-          }
-          final locationDbRef = FirebaseDatabase.instance.reference().child("Admin").child("Delivery");
-
-          locationDbRef.once().then((value) async {
-            print(value.value["delivery_charges"]);
-
-            DataStream.DeliverCharges = value.value['delivery_charges'];
-
-
-
-
-            hideLoadingDialogue();
-
-            showDialog(context: context,
-                builder: (BuildContext context){
-                  return CustomDialogBox(
-                    title: "Order Placed",
-                    descriptions: "Your Order has been placed tarck you order with the order ID",
-                    orderId: "# "+orderID,
-                    text: "Ok",
-
+                      }
                   );
-                }
+                });
+              });
+
+
+              _userRef.child("items").push().set(<dynamic, dynamic>{
+                'no_of_items': carts[i].no_of_items,
+                'cardid': carts[i].cardid.toString(),
+                'cardname': carts[i].cardname.toString(),
+                'cardimage': carts[i].cardimage.toString(),
+                'cardprice': carts[i].cardprice,
+                'unit': carts[i].unit,
+                'shopcatagory': carts[i].shopcatagory,
+                'shopid': carts[i].shopid,
+
+
+              }).then((value) {
+                FirebaseDatabase database = new FirebaseDatabase();
+                DatabaseReference _userRef = database.reference()
+                    .child('Cart').child(DataStream.UserId);
+                _userRef.remove();
+              });
+            }
+            final locationDbRef = FirebaseDatabase.instance.reference().child(
+                "Admin").child("Delivery");
+
+            locationDbRef.once().then((value) async {
+              print(value.value["delivery_charges"]);
+
+              DataStream.DeliverCharges = value.value['delivery_charges'];
+
+
+              hideLoadingDialogue();
+
+              showDialog(context: context,
+                  builder: (BuildContext context) {
+                    return CustomDialogBox(
+                      title: "Order Placed",
+                      descriptions: "Your Order has been placed track your order with the order ID",
+                      orderId: "# " + orderID,
+                      text: "Ok",
+
+                    );
+                  }
+              );
+              ToastUtils.showCustomToast(context, "Order Placed", true);
+
+
+              //  Navigator.of(context).pop();
+            }
             );
-            ToastUtils.showCustomToast(context, "Order Placed", true);
-
-
-
-            //  Navigator.of(context).pop();
-          }
-          );
-
-
+          });
         });
-      });
-
-    }else{
-      ToastUtils.showCustomToast(context, "Add Delivery Address", null);
-      final FormState form = _formKey.currentState;
-      if (!form.validate()) {
-        return;
       }
 
+      else {
+        ToastUtils.showCustomToast(context, "Add Delivery Address", null);
+        final FormState form = _formKey.currentState;
+        if (!form.validate()) {
+          return;
+        }
+      }
+    }else{
+      ToastUtils.showCustomToast(context, "Contact Details Missing", null);
+
     }
+
   }
 
 }

@@ -136,20 +136,29 @@ class _ProductCatalogState extends State<ProductCatalog> {
     tempcategory = new List();
     carts = new List();
 
+    _controller.addListener(() {
+      if (_controller.position.atEdge) {
+        if (_controller.position.pixels == 0) {
+
+        }else {
+          if(selectfilter=="ALL"){
+            loadmore(lastProductKet);
+          }else{
+            loadmorecat(lastProductKet);
+
+          }
+        }
+        setState(() {
+
+        });
+      }
+    });
 
     img="https://firebasestorage.googleapis.com/v0/b/doorstep-fdb26.appspot.com/o/images%2Fimg_missing.png?alt=media&token=60b4508f-9d43-41db-a85d-5e16240a4466";
 
 
-    if(itemcategory!=null) {
-      selectfilter = itemcategory.toUpperCase();
-      filterProductCatagory(selectfilter);
-
-    }
 
     setuplist();
-
-
-
 
     FirebaseAuth.instance.currentUser().then((firebaseUser){
 
@@ -160,7 +169,6 @@ class _ProductCatalogState extends State<ProductCatalog> {
 
     });
 
-    //  filterProductCatagory("fruit");
 
 
     FirebaseAuth.instance.currentUser().then((firebaseUser){
@@ -211,84 +219,230 @@ class _ProductCatalogState extends State<ProductCatalog> {
   }
 
 
-  filterProducts(String filter) {
+  // filterProducts(String filter) {
+  //
+  //   products.clear();
+  //   productsItemcount.clear();
+  //   for(int i=0;i<=productscat.length-1;i++){
+  //     if(productscat[i].cardname.toLowerCase().contains(filter.toLowerCase())){
+  //       products.add(productscat[i]);
+  //       productsItemcount.add(0);
+  //     }
+  //
+  //   }
+  //   setState(() {
+  //
+  //   });
+  //
+  // }
 
-    products.clear();
-    productsItemcount.clear();
-    for(int i=0;i<=productscat.length-1;i++){
-      if(productscat[i].cardname.toLowerCase().contains(filter.toLowerCase())){
-        products.add(productscat[i]);
-        productsItemcount.add(0);
-      }
 
-    }
-    setState(() {
+  filterProductSearch(String filter) {
 
-    });
-
-  }
-
-
-
-  filterProductCatagory(String filter) {
-
-    if(filter=="All"){
-      products.clear();
-      productsItemcount.clear();
-
-      for (int i = 0; i <= productscat.length - 1; i++) {
-
-        products.add(productscat[i]);
-        productsItemcount.add(0);
-      }
-    }else {
-      products.clear();
-      productsItemcount.clear();
-
-      for (int i = 0; i <= productscat.length - 1; i++) {
-        if (productscat[i].category.toLowerCase().contains(
-            filter.toLowerCase())) {
-          products.add(productscat[i]);
-          productsItemcount.add(0);
-        }
-      }
-    }
-    setState(() {
-
-    });
-
-  }
-  Future<void> setuplist() async {
 
     products.clear();
     productsItemcount.clear();
 
     final FirebaseDatabase database = FirebaseDatabase.instance;
     volunteerRef = database.reference().child("Shops").child(DataStream.ShopCatagory).child(shop.shopid).child("Products");
-    volunteerRef.onChildAdded.listen(_onEntryAdded);
+    volunteerRef.orderByChild("cardname").startAt(filter.toUpperCase()).endAt(filter.toLowerCase()).limitToFirst(12).onChildAdded.listen(
+            (event){
+          isLoaded=true;
 
-  }
+          if(Product.fromSnapshot(event.snapshot).cardname.toUpperCase()==filter.toUpperCase()){
+            products.add(Product.fromSnapshot(event.snapshot));
+            productsItemcount.add(0);
+            productscat.add(Product.fromSnapshot(event.snapshot));
 
-
-
-
-  _onEntryAdded(Event event) {
-
-    isLoaded=true;
-    products.add(Product.fromSnapshot(event.snapshot));
-    productsItemcount.add(0);
-    productscat.add(Product.fromSnapshot(event.snapshot));
-
-    tempcategory.add("All");
+            tempcategory.add("ALL");
 
 
-    tempcategory.add(Product.fromSnapshot(event.snapshot).category.toUpperCase().trim());
-    tempcategory = tempcategory.toSet().toList();
+            tempcategory.add(Product.fromSnapshot(event.snapshot).category.toUpperCase().trim());
+            tempcategory = tempcategory.toSet().toList();
+
+          }
+
+          setState(() {
+
+          });
+        }
+    );
+
 
     setState(() {
 
     });
 
+  }
+
+  
+  
+  filterProductCatagory(String filter) {
+
+    products.clear();
+    productsItemcount.clear();
+
+    final FirebaseDatabase database = FirebaseDatabase.instance;
+    volunteerRef = database.reference().child("Shops").child(DataStream.ShopCatagory).child(shop.shopid).child("Products");
+    volunteerRef.orderByChild("category").equalTo(filter.toUpperCase()).onChildAdded.listen(
+            (event) {
+
+                isLoaded=true;
+                products.add(Product.fromSnapshot(event.snapshot));
+                productsItemcount.add(0);
+                productscat.add(Product.fromSnapshot(event.snapshot));
+
+                tempcategory.add("ALL");
+
+
+                tempcategory.add(Product.fromSnapshot(event.snapshot).category.toUpperCase().trim());
+                tempcategory = tempcategory.toSet().toList();
+
+                setState(() {
+
+                });
+
+
+
+        }
+    );
+
+
+  }
+
+  String lastProductKet;
+  Future<void> loadmore(String last) async {
+
+    // products.clear();
+    //  productsItemcount.clear();
+
+    final FirebaseDatabase database = FirebaseDatabase.instance;
+    volunteerRef = database.reference().child("Shops").child(DataStream.ShopCatagory).child(shop.shopid).child("Products");
+    volunteerRef.orderByKey().startAt(last).limitToFirst(12).onChildAdded.listen(
+            (event) {
+
+          isLoaded=true;
+          products.add(Product.fromSnapshot(event.snapshot));
+          productsItemcount.add(0);
+          productscat.add(Product.fromSnapshot(event.snapshot));
+
+          tempcategory.add("ALL");
+
+
+          tempcategory.add(Product.fromSnapshot(event.snapshot).category.toUpperCase().trim());
+          tempcategory = tempcategory.toSet().toList();
+
+          setState(() {
+
+          });
+
+        }
+    );
+
+  }
+  Future<void> loadmorecat(String last) async {
+
+    // products.clear();
+    //  productsItemcount.clear();
+
+    final FirebaseDatabase database = FirebaseDatabase.instance;
+    volunteerRef = database.reference().child("Shops").child(DataStream.ShopCatagory).child(shop.shopid).child("Products");
+    volunteerRef.orderByKey().startAt(last).limitToFirst(100).onChildAdded.listen(
+            (event) {
+
+              if(Product.fromSnapshot(event.snapshot).category.toUpperCase()==selectfilter.toUpperCase()) {
+                isLoaded = true;
+                products.add(Product.fromSnapshot(event.snapshot));
+                productsItemcount.add(0);
+                productscat.add(Product.fromSnapshot(event.snapshot));
+
+                tempcategory.add("ALL");
+
+
+                tempcategory.add(Product
+                    .fromSnapshot(event.snapshot)
+                    .category
+                    .toUpperCase()
+                    .trim());
+                tempcategory = tempcategory.toSet().toList();
+
+                setState(() {
+
+                });
+              }
+
+        }
+    );
+
+  }
+ Future<void> setuplist() async {
+
+    products.clear();
+    productsItemcount.clear();
+
+    final FirebaseDatabase database = FirebaseDatabase.instance;
+    volunteerRef = database.reference().child("Shops").child(DataStream.ShopCatagory).child(shop.shopid).child("Products");
+    volunteerRef.orderByKey().limitToFirst(12).onChildAdded.listen(
+            (event) {
+
+          isLoaded=true;
+          products.add(Product.fromSnapshot(event.snapshot));
+          productsItemcount.add(0);
+          productscat.add(Product.fromSnapshot(event.snapshot));
+
+          tempcategory.add("ALL");
+
+
+          tempcategory.add(Product.fromSnapshot(event.snapshot).category.toUpperCase().trim());
+          tempcategory = tempcategory.toSet().toList();
+
+          setState(() {
+
+          });
+
+        }
+    );
+
+  }
+
+  bool checkTime(String open, String close){
+
+    if(open==null||close==null){
+      return true;
+    }
+
+    final currentTime = DateTime.now();
+
+    final startTime = DateTime(currentTime.year, currentTime.month, currentTime.day,int.parse(open.split(":")[0]) , int.parse(open.split(":")[1]));
+    final endTime = DateTime(currentTime.year, currentTime.month, currentTime.day,int.parse(close.split(":")[0]) , int.parse(close.split(":")[1]));
+
+
+
+    if(startTime.isBefore(endTime)) {
+      // print("day shop");
+
+      if (currentTime.isBefore(startTime) || currentTime.isAfter(endTime)) {
+        return false;
+      } else {
+        // if(currentTime.isBefore(startTime) && currentTime.isAfter(endTime)){
+        return true;
+
+
+      }
+    }else{
+
+      // print("night shop");
+
+      if (currentTime.isAfter(startTime) || currentTime.isBefore(endTime)) {
+
+        return true;
+      } else {
+        // if(currentTime.isBefore(startTime) && currentTime.isAfter(endTime)){
+        return false;
+
+
+      }
+    }
   }
 
 
@@ -297,6 +451,9 @@ class _ProductCatalogState extends State<ProductCatalog> {
   }
 
   List<Product> products;
+
+  List<Product> shopProducts;
+
   List<int> productsItemcount;
 
   List<Product> productscat;
@@ -305,11 +462,12 @@ class _ProductCatalogState extends State<ProductCatalog> {
 
   List<String> category;
 
-  String selectfilter="All";
+  String selectfilter="ALL";
 
   DatabaseReference volunteerRef;
 
 
+  bool _buttonShowing = true;
 
   final TextEditingController _searchTextController =
   TextEditingController();
@@ -318,6 +476,7 @@ class _ProductCatalogState extends State<ProductCatalog> {
   String catsearch="";
 
   bool searchVisiblity=false;
+  ScrollController _controller = ScrollController();
 
   @override
   Widget build(BuildContext context) {
@@ -327,7 +486,11 @@ class _ProductCatalogState extends State<ProductCatalog> {
         children: [
           Scaffold(
 
-            body: NestedScrollView(
+            body:  NestedScrollView(
+             // physics: ClampingScrollPhysics(),
+              controller: ScrollController(keepScrollOffset: true),
+
+              // controller: _controller,
               headerSliverBuilder: (BuildContext context, bool innerBoxIsScrolled) {
                 return <Widget>[
 
@@ -389,15 +552,10 @@ class _ProductCatalogState extends State<ProductCatalog> {
                                   DateFormat("h:mma").format(DateFormat("hh:mm").parse(shop.openTime))  +"  -  "+ DateFormat("h:mma").format(DateFormat("hh:mm").parse(shop.closeTime)),
                                   style: TextStyle(fontSize: 28, fontWeight: FontWeight.w400,color: Colors.white),
                                 ),
-                                Text(
-                                  "Delivery 30 - 60 min",
-                                  style: TextStyle(fontSize: 20, fontWeight: FontWeight.w300,color: Colors.white),
-                                ),
-                                Text(
-                                  "Depending on your location",
-                                  style: TextStyle(fontSize: 12, fontWeight: FontWeight.w200,color: Colors.white),
-                                ),
-
+                                // Text(
+                                //   "Delivery "+ ((shop.distanceInKM*3)+20).toString().split(".")[0] +" - "+((shop.distanceInKM*3)+30).toString().split(".")[0]+" min",
+                                //   style: TextStyle(fontSize: 20, fontWeight: FontWeight.w300,color: Colors.white),
+                                // ),
 
 
                               ],
@@ -443,13 +601,15 @@ class _ProductCatalogState extends State<ProductCatalog> {
 
                                     search = value;
 
-                                    filterProducts(search);
+                                    // filterProducts(search);
 
-
+                                    if(search.length>3) {
+                                 //     filterProductSearch(search);
+                                    }
                                     // final FormState form = _formKey.currentState;
                                     //   form.save();
                                   },
-                                
+
                                   decoration: InputDecoration(
                                     contentPadding: EdgeInsets.only(left: 10.0, right: 0.0, top: 10.0, bottom: 12.0),
                                     border: OutlineInputBorder(
@@ -470,8 +630,9 @@ class _ProductCatalogState extends State<ProductCatalog> {
                                   child: GestureDetector(
                                       onTap: (){
                                         search="";
-                                        filterProducts(search);
+                                      //  filterProducts(search);
                                         _searchTextController.clear();
+
 
                                       },
                                       child: Icon(Icons.cancel,color: Colors.redAccent,))),
@@ -516,12 +677,21 @@ class _ProductCatalogState extends State<ProductCatalog> {
                                 child: FlatButton(
                                   onPressed: (){
                                     search="";
-                                    filterProducts(search);
+                                 //   filterProducts(search);
                                     _searchTextController.clear();
 
 
-                                    selectfilter=char;
-                                    filterProductCatagory(char);
+                                    selectfilter=char.toUpperCase();
+                                    setState(() {
+
+                                    });
+
+                                    if(selectfilter=="ALL"){
+                                      setuplist();
+                                    }else{
+                                      filterProductCatagory(char.toUpperCase());
+
+                                    }
 
                                   },
                                   shape: RoundedRectangleBorder(
@@ -555,11 +725,19 @@ class _ProductCatalogState extends State<ProductCatalog> {
 
                   Flexible(
                     flex: 1,
-                    child: Container(
+                    child:
+
+
+
+
+                    Container(
                         child:
 
                         isLoaded?
+
                         GridView.builder(
+                          controller: _controller,
+
                           //SliverGridDelegateWithFixedCrossAxisCount
                           gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
                             crossAxisCount: 3,
@@ -573,6 +751,8 @@ class _ProductCatalogState extends State<ProductCatalog> {
                           itemBuilder: (BuildContext context, int index) {
 
 
+                            lastProductKet=products[index].key;
+
                             for(int i=0;i<=carts.length-1;i++){
 
                               for(int j=0;j<=products.length-1;j++) {
@@ -584,11 +764,8 @@ class _ProductCatalogState extends State<ProductCatalog> {
                             }
 
 
-
-
                             return Stack(
                               children: [
-
                                 GestureDetector(
 
                                   onLongPress: (){
@@ -646,11 +823,10 @@ class _ProductCatalogState extends State<ProductCatalog> {
                                     }
 
                                   },
-                                  child:
-
-                                  Padding(
+                                  child:Padding(
                                     padding: const EdgeInsets.all(4.0),
                                     child: Container(
+
 
                                       decoration: BoxDecoration(
                                           boxShadow: [
@@ -680,7 +856,7 @@ class _ProductCatalogState extends State<ProductCatalog> {
                                                 height: (screenWidth(context)/3)-20,
                                                 width:  (screenWidth(context)/3)-20,
                                                 decoration: BoxDecoration(
-
+                                                  color: Colors.grey[100],
                                                   shape: BoxShape.rectangle,
                                                   borderRadius: BorderRadius.all(Radius.circular(5.0)),
                                                   image: DecorationImage(
@@ -690,7 +866,7 @@ class _ProductCatalogState extends State<ProductCatalog> {
                                                   ),
                                                 ),
                                               ),
-                                              products[index].stock=="out_of_stock"?
+                                              products[index].stock=="out_of_stock"||!checkTime(products[index].timeopen,products[index].timeclose)?
 
 
                                               Container(
@@ -758,68 +934,7 @@ class _ProductCatalogState extends State<ProductCatalog> {
                                   ),
 
 
-                                  // Padding(
-                                  //   padding: EdgeInsets.all(5),
-                                  //   child: Container(
-                                  //
-                                  //     height: double.infinity,
-                                  //     width: double.infinity,
-                                  //     decoration: BoxDecoration(
-                                  //
-                                  //       shape: BoxShape.rectangle,
-                                  //       borderRadius: BorderRadius.all(Radius.circular(15.0)),
-                                  //       image: DecorationImage(
-                                  //         image: CacheImage(products[index].cardimage),
-                                  //         fit: BoxFit.cover,
-                                  //       ),
-                                  //     ),
-                                  //     child:  Padding(
-                                  //       padding: EdgeInsets.all(0),
-                                  //       child: Container(
-                                  //
-                                  //         decoration: BoxDecoration(
-                                  //           shape: BoxShape.rectangle,
-                                  //           borderRadius: BorderRadius.all(Radius.circular(15.0)),
-                                  //           gradient: new LinearGradient(
-                                  //
-                                  //               colors: [
-                                  //                 Colors.black.withOpacity(0.7),
-                                  //                 const Color(0x19000000),
-                                  //               ],
-                                  //
-                                  //               begin: const FractionalOffset(0.0, 1.0),
-                                  //               end: const FractionalOffset(0.0, 0.0),
-                                  //               stops: [0.0, 1.0],
-                                  //               tileMode: TileMode.clamp),
-                                  //         ),
-                                  //         child: Padding(
-                                  //           padding: EdgeInsets.all(10),
-                                  //           child: Column(
-                                  //             crossAxisAlignment: CrossAxisAlignment.start,
-                                  //             mainAxisAlignment: MainAxisAlignment.end,
-                                  //             children: [
-                                  //
-                                  //
-                                  //               Text(
-                                  //                 products[index].cardname,
-                                  //                 style: TextStyle(fontSize: 10, fontWeight: FontWeight.w500,color: Colors.white),
-                                  //               ),
-                                  //               Text('Rs. ${products[index].cardprice} / ${products[index].unit}'
-                                  //                 ,
-                                  //                 style: TextStyle(fontSize: 8, fontWeight: FontWeight.w300,color: Colors.white),
-                                  //               ),
-                                  //
-                                  //               Text('${products[index].category} '
-                                  //                 ,
-                                  //                 style: TextStyle(fontSize: 8, fontWeight: FontWeight.w300,color: Colors.white),
-                                  //               ),
-                                  //             ],
-                                  //           ),
-                                  //         ),
-                                  //       ),
-                                  //     ), /* add child content here */
-                                  //   ),
-                                  // ),
+
                                 ),
 
                                 productsItemcount[index]>0?
@@ -910,37 +1025,36 @@ class _ProductCatalogState extends State<ProductCatalog> {
                                 SizedBox(),
                               ],
                             );
-
-
                           },
 
-                        ):
-                        Center(child: Column(
+                        )
+
+                            :Center(child: Column(
                           mainAxisAlignment: MainAxisAlignment.center,
                           crossAxisAlignment: CrossAxisAlignment.center,
                           children: <Widget>[
                             Stack(
-                  alignment: Alignment.center,
-                  children: [
-                    Image.asset("assets/icons/logo.png",height: 23,width: 23, ),
+                              alignment: Alignment.center,
+                              children: [
+                                Image.asset("assets/icons/logo.png",height: 23,width: 23, ),
 
-                    SpinKitFadingCircle(
-                      size: 60,
-                      itemBuilder: (BuildContext context, int index) {
-                        return DecoratedBox(
-                          decoration: BoxDecoration(
-                            color: index==1 ? Colors.green[900] :index==2 ?Colors.green[800] : index==3 ?Colors.green[700] : index==4 ?
-                            Colors.green[600] :index==5 ?Colors.green[500] : index==6 ?Colors.green[400]:
-                            index==1 ?Colors.green[300] : index==1 ?Colors.green[200] : index==1 ?Colors.green[100] : index==1 ?
-                            Colors.green[100] :index==1 ?Colors.green[100] :Colors.green[900]
-                            ,
-                            borderRadius: BorderRadius.all(Radius.circular(30.0)),
-                          ),
-                        );
-                      },
-                    ),
-                  ],
-                ),
+                                SpinKitFadingCircle(
+                                  size: 60,
+                                  itemBuilder: (BuildContext context, int index) {
+                                    return DecoratedBox(
+                                      decoration: BoxDecoration(
+                                        color: index==1 ? Colors.green[900] :index==2 ?Colors.green[800] : index==3 ?Colors.green[700] : index==4 ?
+                                        Colors.green[600] :index==5 ?Colors.green[500] : index==6 ?Colors.green[400]:
+                                        index==1 ?Colors.green[300] : index==1 ?Colors.green[200] : index==1 ?Colors.green[100] : index==1 ?
+                                        Colors.green[100] :index==1 ?Colors.green[100] :Colors.green[900]
+                                        ,
+                                        borderRadius: BorderRadius.all(Radius.circular(30.0)),
+                                      ),
+                                    );
+                                  },
+                                ),
+                              ],
+                            ),
                             SizedBox(height: 2,),
 
                             Text("Loading", style: TextStyle(fontSize: 16,color: Colors.black),),
@@ -957,38 +1071,20 @@ class _ProductCatalogState extends State<ProductCatalog> {
                 ],
               ),
             ),
+
           ),
           Positioned(
-            bottom: 25,
-            right: 25,
-            child: Container(
-              height: 50,
-              decoration: BoxDecoration(
-                color: Colors.green,
-                borderRadius: BorderRadius.only(
-                    topLeft: Radius.circular(10),
-                    topRight: Radius.circular(10),
-                    bottomLeft: Radius.circular(10),
-                    bottomRight: Radius.circular(10)
-                ),
-                boxShadow: [
-                  BoxShadow(
-                    color: Colors.green.withOpacity(0.5),
-                    spreadRadius: 5,
-                    blurRadius: 7,
-                    offset: Offset(0, 3),
-                  ),
-                ],
-              ),
-              width: (screenWidth(context))-50,
-              child: FlatButton(
+            bottom: 20,
+            right: 20,
+            child:  Visibility(
+              visible: _buttonShowing,
+              child: FloatingActionButton(
                 shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(18.0),
+                  borderRadius: BorderRadius.circular(15.0),
                 ),
-                color: Colors.green,
+                // color: Colors.green,
                 onPressed: (){
                   //   Navigator.push( context, MaterialPageRoute( builder: (BuildContext context) => CartScreen(),),);
-
 
                   if(user!=null) {
                     Navigator.of(context).pushReplacement(
@@ -1000,7 +1096,8 @@ class _ProductCatalogState extends State<ProductCatalog> {
                             builder: (context) => SignIn()));
                   }
                 },
-                child: Text(user!=null?'My Cart':'Sign In',style: TextStyle(color: Colors.white,fontWeight: FontWeight.w500, fontSize: 16),),
+                child: Icon(Icons.shopping_cart),
+                //   child: Text(user!=null?'My Cart':'Sign In',style: TextStyle(color: Colors.white,fontWeight: FontWeight.w500, fontSize: 16),),
               ),
             ),
           ),

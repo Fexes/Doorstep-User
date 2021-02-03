@@ -11,9 +11,11 @@ class Product {
   String unit;
   String category;
   String stock;
+  String timeopen;
+  String timeclose;
 
 
-  Product(this.key,this.cardid,this.cardname,this.cardimage,this.cardprice,this.carddiscription,this.unit,this.category,this.stock);
+  Product(this.key,this.cardid,this.cardname,this.cardimage,this.cardprice,this.carddiscription,this.unit,this.category,this.stock,this.timeopen,this.timeclose);
 
 
   Product.fromSnapshot(DataSnapshot snapshot):
@@ -25,6 +27,8 @@ class Product {
         carddiscription = snapshot.value["carddiscription"],
         unit = snapshot.value["unit"],
         category = snapshot.value["category"],
+        timeopen = snapshot.value["timeopen"],
+        timeclose = snapshot.value["timeclose"],
         stock = snapshot.value["stock"];
 
 
@@ -39,6 +43,8 @@ class Product {
       "carddiscription": carddiscription,
       "unit": unit,
       "category": category,
+      "timeopen": timeopen,
+      "timeclose": timeclose,
       "stock": stock,
 
     };
