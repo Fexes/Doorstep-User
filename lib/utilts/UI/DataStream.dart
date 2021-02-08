@@ -23,6 +23,7 @@ class DataStream{
   static String ShopCatagory;
   static String ShopName;
   static int DeliverCharges;
+  static int DeliverChargesPharmacy;
   static int OrderRadius;
   static int Discount=0;
   static int MinOrder=0;
@@ -30,6 +31,9 @@ class DataStream{
   static int order_count=0;
 
   static Promo PromoCode;
+
+  static String prescriptionImage;
+
 
   List<Cart> carts;
 

@@ -458,6 +458,7 @@ bool error=false;
             print(value.value["delivery_charges"]);
 
             DataStream.DeliverCharges = value.value['delivery_charges'];
+            DataStream.DeliverChargesPharmacy = value.value['delivery_charges_pharmacy'];
 
             final locationDbRef = FirebaseDatabase.instance.reference().child(
                 "Admin").child("Radius");

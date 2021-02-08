@@ -4,8 +4,8 @@ admin.initializeApp(functions.config().functions);
 
 exports.pushNotification = functions.https.onRequest(async(request, response) => {
 
-//    var notificationTitle = request.query.notificationTitle;
-//    var notificationBody = request.query.notificationBody;
+  //  var notificationTitle = request.query.notificationTitle;
+  //  var notificationBody = request.query.notificationBody;
     var deviceTokenID = request.query.deviceTokenID;
 
   //  response.send(deviceTokenID)

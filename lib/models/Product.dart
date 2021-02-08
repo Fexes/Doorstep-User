@@ -23,7 +23,7 @@ class Product {
         cardid = snapshot.value["cardid"],
         cardname = snapshot.value["cardname"],
         cardimage = snapshot.value["cardimage"],
-        cardprice = snapshot.value["cardprice"],
+        cardprice = snapshot.value["cardprice"].round(),
         carddiscription = snapshot.value["carddiscription"],
         unit = snapshot.value["unit"],
         category = snapshot.value["category"],

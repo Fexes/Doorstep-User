@@ -15,6 +15,7 @@ import 'package:Doorstep/screens/home/single_product.dart';
 import 'package:Doorstep/utilts/UI/DataStream.dart';
 import 'package:badges/badges.dart';
 import 'package:bubble_bottom_bar/bubble_bottom_bar.dart';
+import 'package:cache_image/cache_image.dart';
 import 'package:carousel_slider/carousel_options.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_database/firebase_database.dart';
@@ -397,9 +398,12 @@ class HomePage extends State<Home> {
                                       }
                                     }
                                     },
-                                  child: Image.network(
-                                    item.image, fit: BoxFit.cover, width: 1000.0),
-                                ),
+                                  child:Image(image: CacheImage(item.image),fit: BoxFit.cover, width: 1000.0),
+
+
+                            // Image.network(
+                                  //   item.image, fit: BoxFit.cover, width: 1000.0),
+                               ),
 
                           ),
                         ),
@@ -585,30 +589,30 @@ class HomePage extends State<Home> {
                                                   enlargeCenterPage: true,
                                                   aspectRatio: 2.0,
                                                   onPageChanged: (index, reason) {
-                                                    setState(() {
-                                                      _current = index;
-                                                    });
+                                                    // setState(() {
+                                                    //   _current = index;
+                                                    // });
                                                   }
                                               ),
                                             ),
-
-                                            Row(
-                                              mainAxisAlignment: MainAxisAlignment.center,
-                                              children: imgList.map((url) {
-                                                int index = imgList.indexOf(url);
-                                                return Container(
-                                                  width: 8.0,
-                                                  height: 8.0,
-                                                  margin: EdgeInsets.symmetric(vertical: 10.0, horizontal: 2.0),
-                                                  decoration: BoxDecoration(
-                                                    shape: BoxShape.circle,
-                                                    color: _current == index
-                                                        ? Color.fromRGBO(0, 0, 0, 0.9)
-                                                        : Color.fromRGBO(0, 0, 0, 0.4),
-                                                  ),
-                                                );
-                                              }).toList(),
-                                            ),
+                                            //
+                                            // Row(
+                                            //   mainAxisAlignment: MainAxisAlignment.center,
+                                            //   children: imgList.map((url) {
+                                            //     int index = imgList.indexOf(url);
+                                            //     return Container(
+                                            //       width: 8.0,
+                                            //       height: 8.0,
+                                            //       margin: EdgeInsets.symmetric(vertical: 10.0, horizontal: 2.0),
+                                            //       decoration: BoxDecoration(
+                                            //         shape: BoxShape.circle,
+                                            //         color: _current == index
+                                            //             ? Color.fromRGBO(0, 0, 0, 0.9)
+                                            //             : Color.fromRGBO(0, 0, 0, 0.4),
+                                            //       ),
+                                            //     );
+                                            //   }).toList(),
+                                            // ),
                                           ]
                                       ):
                                       SizedBox(height: 5,),
@@ -777,7 +781,6 @@ class HomePage extends State<Home> {
                                       ),
 
 
-
                                     ],
                                   ):
 
@@ -807,7 +810,7 @@ class HomePage extends State<Home> {
                                                       shape: BoxShape.rectangle,
                                                       borderRadius: BorderRadius.all(Radius.circular(15.0)),
                                                       image: DecorationImage(
-                                                        image: NetworkImage(shopcat[index-1].CategoryImage),
+                                                        image: CacheImage(shopcat[index-1].CategoryImage),
                                                         fit: BoxFit.cover,
                                                       ),
                                                     ),
@@ -886,7 +889,7 @@ class HomePage extends State<Home> {
                                                       shape: BoxShape.rectangle,
                                                       borderRadius: BorderRadius.all(Radius.circular(15.0)),
                                                       image: DecorationImage(
-                                                        image: NetworkImage(shopcat2[index-1].CategoryImage),
+                                                        image: CacheImage(shopcat2[index-1].CategoryImage),
 
                                                         fit: BoxFit.cover,
                                                       ),
@@ -960,7 +963,7 @@ class HomePage extends State<Home> {
                                                       shape: BoxShape.rectangle,
                                                       borderRadius: BorderRadius.all(Radius.circular(15.0)),
                                                       image: DecorationImage(
-                                                        image: NetworkImage(shopcat3[index-1].CategoryImage),
+                                                        image: CacheImage(shopcat3[index-1].CategoryImage),
                                                         fit: BoxFit.cover,
                                                       ),
                                                     ),
@@ -1719,144 +1722,165 @@ class HomePage extends State<Home> {
         ),
         body:
         user!=null?
-        Center(
-          child: Column(
-            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-             children: [
+        SingleChildScrollView(
+          child: Center(
+            child: Column(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+               children: [
+
+                 Column(
+                    children: [
+                      appuser==null?
+                      SizedBox(height: 10,):
 
 
-
-
-               Column(
-                  children: [
-                    appuser==null?
-                    SizedBox(height: 10,):
-
-
-                    Padding(
-                      padding: const EdgeInsets.fromLTRB(15, 15, 15, 15),
-                      child: Container(
-                        decoration: BoxDecoration(
-                          color: Colors.white,
-                          borderRadius: BorderRadius.only(
-                              topLeft: Radius.circular(10),
-                              topRight: Radius.circular(10),
-                              bottomLeft: Radius.circular(10),
-                              bottomRight: Radius.circular(10)
-                          ),
-                          boxShadow: [
-                            BoxShadow(
-                              color: Colors.grey.withOpacity(0.75),
-                              spreadRadius: 5,
-                              blurRadius: 7,
-                              offset: Offset(0, 3),
+                      Padding(
+                        padding: const EdgeInsets.fromLTRB(15, 15, 15, 15),
+                        child: Container(
+                          decoration: BoxDecoration(
+                            color: Colors.white,
+                            borderRadius: BorderRadius.only(
+                                topLeft: Radius.circular(10),
+                                topRight: Radius.circular(10),
+                                bottomLeft: Radius.circular(10),
+                                bottomRight: Radius.circular(10)
                             ),
-                          ],
-                        ),
-                        width: screenWidth(context)-10,
-                        child: Padding(
-                          padding: EdgeInsets.all(20),
-                          child: Column(
-                            crossAxisAlignment:CrossAxisAlignment.start,
-                            children: [
+                            boxShadow: [
+                              BoxShadow(
+                                color: Colors.grey.withOpacity(0.75),
+                                spreadRadius: 5,
+                                blurRadius: 7,
+                                offset: Offset(0, 3),
+                              ),
+                            ],
+                          ),
+                          width: screenWidth(context)-10,
+                          child: Padding(
+                            padding: EdgeInsets.all(20),
+                            child: Column(
+                              crossAxisAlignment:CrossAxisAlignment.start,
+                              children: [
 
-                              Row(
-                                mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                                children: [
-                                  Row(
+                                Row(
+                                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                                  children: [
+                                    Row(
 
-                                     children: [
-                                      Icon(Icons.account_box),
-                                      SizedBox(width: 5,),
+                                       children: [
+                                        Icon(Icons.account_box),
+                                        SizedBox(width: 5,),
 
-                                      Text(
-                                        'Contact Details ',
-                                        style: TextStyle(fontSize: 16, fontWeight: FontWeight.w500,color: Colors.black),
+                                        Text(
+                                          'Contact Details ',
+                                          style: TextStyle(fontSize: 16, fontWeight: FontWeight.w500,color: Colors.black),
+                                        ),
+
+
+                                      ],
+                                    ),
+                                    profileedit?
+                                    Visibility(
+                                      visible: profileedit,
+                                      child: GestureDetector(
+                                          onTap: (){
+                                            if(profileedit) {
+                                              profileedit = false;
+                                            }else{
+                                              profileedit = true;
+
+                                            }
+                                            setState(() {
+
+                                            });
+                                          },
+                                          child: Icon(Icons.cancel,color: Colors.redAccent,)),
+                                    ):
+                                    GestureDetector(
+                                      onTap: (){
+
+                                        firstname.text=appuser.first_name;
+                                        lasename.text=appuser.last_name;
+                                        email.text=appuser.email;
+
+
+                                        if(profileedit) {
+                                          profileedit = false;
+                                        }else{
+                                          profileedit = true;
+
+                                        }
+                                        setState(() {
+
+                                        });
+                                      },
+                                      child: Text(
+                                        profileedit?'':'Edit',
+                                        style: TextStyle(fontSize: 16, fontWeight: FontWeight.w600,color: Colors.green),
+                                      ),
+                                    ),
+
+                                  ],
+                                ),
+                                SizedBox(height: 20,),
+                                profileedit?
+                                    Column(children: [
+                                      Row(
+                                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+
+                                        children: [
+                                          Container(
+                                            width: (screenWidth(context)/2)-70,
+
+                                            child: TextField(
+
+                                              controller: firstname,
+                                              decoration: InputDecoration(
+                                                  border: InputBorder.none,
+                                                  hintText: 'First Name',
+
+                                                enabledBorder: UnderlineInputBorder(
+                                                  borderSide: BorderSide(color: Colors.green),
+                                                ),
+                                                focusedBorder: UnderlineInputBorder(
+                                                  borderSide: BorderSide(color: Colors.green),
+                                                ),
+
+                                              ),
+                                            ),
+                                          ),
+                                           Container(
+                                            width: (screenWidth(context)/2)-70,
+
+                                            child: TextField(
+                                              controller: lasename,
+
+                                              decoration: InputDecoration(
+                                                  border: InputBorder.none,
+                                                  hintText: 'Last Name',
+                                                  enabledBorder: UnderlineInputBorder(
+                                              borderSide: BorderSide(color: Colors.green),
+                                            ),
+                                            focusedBorder: UnderlineInputBorder(
+                                              borderSide: BorderSide(color: Colors.green),
+                                            ),
+
+                                          ),
+                                            ),
+                                          ),
+                                        ],
                                       ),
 
 
-                                    ],
-                                  ),
-                                  profileedit?
-                                  Visibility(
-                                    visible: profileedit,
-                                    child: GestureDetector(
-                                        onTap: (){
-                                          if(profileedit) {
-                                            profileedit = false;
-                                          }else{
-                                            profileedit = true;
+                                      SizedBox(height: 10,),
 
-                                          }
-                                          setState(() {
+                                      TextField(
+                                        controller: email,
 
-                                          });
-                                        },
-                                        child: Icon(Icons.cancel,color: Colors.redAccent,)),
-                                  ):
-                                  GestureDetector(
-                                    onTap: (){
+                                        decoration: InputDecoration(
+                                          border: InputBorder.none,
+                                          hintText: 'E-mail',
 
-                                      firstname.text=appuser.first_name;
-                                      lasename.text=appuser.last_name;
-                                      email.text=appuser.email;
-
-
-                                      if(profileedit) {
-                                        profileedit = false;
-                                      }else{
-                                        profileedit = true;
-
-                                      }
-                                      setState(() {
-
-                                      });
-                                    },
-                                    child: Text(
-                                      profileedit?'':'Edit',
-                                      style: TextStyle(fontSize: 16, fontWeight: FontWeight.w600,color: Colors.green),
-                                    ),
-                                  ),
-
-                                ],
-                              ),
-                              SizedBox(height: 20,),
-                              profileedit?
-                                  Column(children: [
-                                    Row(
-                                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
-
-                                      children: [
-                                        Container(
-                                          width: (screenWidth(context)/2)-70,
-
-                                          child: TextField(
-
-                                            controller: firstname,
-                                            decoration: InputDecoration(
-                                                border: InputBorder.none,
-                                                hintText: 'First Name',
-
-                                              enabledBorder: UnderlineInputBorder(
-                                                borderSide: BorderSide(color: Colors.green),
-                                              ),
-                                              focusedBorder: UnderlineInputBorder(
-                                                borderSide: BorderSide(color: Colors.green),
-                                              ),
-
-                                            ),
-                                          ),
-                                        ),
-                                         Container(
-                                          width: (screenWidth(context)/2)-70,
-
-                                          child: TextField(
-                                            controller: lasename,
-
-                                            decoration: InputDecoration(
-                                                border: InputBorder.none,
-                                                hintText: 'Last Name',
-                                                enabledBorder: UnderlineInputBorder(
+                                          enabledBorder: UnderlineInputBorder(
                                             borderSide: BorderSide(color: Colors.green),
                                           ),
                                           focusedBorder: UnderlineInputBorder(
@@ -1864,446 +1888,424 @@ class HomePage extends State<Home> {
                                           ),
 
                                         ),
+                                      ),
+                                      SizedBox(height: 10,),
+
+                                      TextField(
+
+                                        decoration: InputDecoration(
+                                          border: InputBorder.none,
+                                          hintText: "(Phone)  "+DataStream.PhoneNumber,
+                                          enabled: false,
+
+                                          enabledBorder: UnderlineInputBorder(
+                                            borderSide: BorderSide(color: Colors.green),
                                           ),
+                                          focusedBorder: UnderlineInputBorder(
+                                            borderSide: BorderSide(color: Colors.green),
+                                          ),
+
                                         ),
+                                      ),
+
+
+                                      Row(
+                                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                                        children: [
+                                          SizedBox(width: 20,),
+
+                                          FlatButton(
+                                            shape: RoundedRectangleBorder(
+                                                borderRadius: BorderRadius.circular(8)),
+                                            child: Padding(
+                                                padding: EdgeInsets.fromLTRB(15, 7, 15, 7),
+                                                child: Text("Save")),
+                                            textColor: Colors.white,
+                                            color: Colors.green,
+                                            onPressed: () async {
+
+
+                                               FirebaseDatabase database = new FirebaseDatabase();
+                                              DatabaseReference db = database.reference()
+                                                  .child('Users').child(DataStream.UserId);
+
+                                              db.set(<dynamic, dynamic>{
+                                                'first_name': firstname.text,
+                                                'last_name': lasename.text,
+                                                'phone':DataStream.PhoneNumber,
+                                                'email': email.text,
+                                                'userTokenID':DataStream.userTokenID,
+
+
+                                              }).then((value) {
+
+                                                getUserDetails();
+
+                                                if(profileedit) {
+                                                  profileedit = false;
+                                                }else{
+                                                  profileedit = true;
+
+                                                }
+                                                setState(() {
+
+                                                });
+                                                DataStream.appuser.first_name=firstname.text;
+                                                DataStream.appuser.first_name=lasename.text;
+                                                ToastUtils.showCustomToast(
+                                                    context, "Saved", true);
+
+                                              });
+
+
+                                            },
+                                          ),
+                                        ],
+                                      )
+                                    ],)
+
+                               :
+                                Column(
+                                  children: [
+                                    Row(
+                                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                                      children: [
+                                        Text(
+                                          'Username ',
+                                          style: TextStyle(fontSize: 16, fontWeight: FontWeight.w300,color: Colors.black),
+                                        ),
+                                        Text(
+                                          appuser.first_name+" "+appuser.last_name,
+                                          style: TextStyle(fontSize: 16, fontWeight: FontWeight.w300,color: Colors.black),
+                                        ),
+
                                       ],
                                     ),
 
-
-                                    SizedBox(height: 10,),
-
-                                    TextField(
-                                      controller: email,
-
-                                      decoration: InputDecoration(
-                                        border: InputBorder.none,
-                                        hintText: 'E-mail',
-
-                                        enabledBorder: UnderlineInputBorder(
-                                          borderSide: BorderSide(color: Colors.green),
-                                        ),
-                                        focusedBorder: UnderlineInputBorder(
-                                          borderSide: BorderSide(color: Colors.green),
-                                        ),
-
-                                      ),
-                                    ),
-                                    SizedBox(height: 10,),
-
-                                    TextField(
-
-                                      decoration: InputDecoration(
-                                        border: InputBorder.none,
-                                        hintText: "(Phone)  "+DataStream.PhoneNumber,
-                                        enabled: false,
-
-                                        enabledBorder: UnderlineInputBorder(
-                                          borderSide: BorderSide(color: Colors.green),
-                                        ),
-                                        focusedBorder: UnderlineInputBorder(
-                                          borderSide: BorderSide(color: Colors.green),
-                                        ),
-
-                                      ),
-                                    ),
-
+                                    SizedBox(height: 8,),
 
                                     Row(
                                       mainAxisAlignment: MainAxisAlignment.spaceBetween,
                                       children: [
-                                        SizedBox(width: 20,),
-
-                                        FlatButton(
-                                          shape: RoundedRectangleBorder(
-                                              borderRadius: BorderRadius.circular(8)),
-                                          child: Padding(
-                                              padding: EdgeInsets.fromLTRB(15, 7, 15, 7),
-                                              child: Text("Save")),
-                                          textColor: Colors.white,
-                                          color: Colors.green,
-                                          onPressed: () async {
-
-
-                                             FirebaseDatabase database = new FirebaseDatabase();
-                                            DatabaseReference db = database.reference()
-                                                .child('Users').child(DataStream.UserId);
-
-                                            db.set(<dynamic, dynamic>{
-                                              'first_name': firstname.text,
-                                              'last_name': lasename.text,
-                                              'phone':DataStream.PhoneNumber,
-                                              'email': email.text,
-
-
-                                            }).then((value) {
-
-                                              getUserDetails();
-
-                                              if(profileedit) {
-                                                profileedit = false;
-                                              }else{
-                                                profileedit = true;
-
-                                              }
-                                              setState(() {
-
-                                              });
-                                              DataStream.appuser.first_name=firstname.text;
-                                              DataStream.appuser.first_name=lasename.text;
-                                              ToastUtils.showCustomToast(
-                                                  context, "Saved", true);
-
-                                            });
-
-
-                                          },
+                                        Text(
+                                          'Phone ',
+                                          style: TextStyle(fontSize: 16, fontWeight: FontWeight.w300,color: Colors.black),
                                         ),
+                                        Text(
+                                          DataStream.PhoneNumber+"",
+                                          style: TextStyle(fontSize: 16, fontWeight: FontWeight.w300,color: Colors.black),
+                                        ),
+
                                       ],
-                                    )
-                                  ],)
-
-                             :
-                              Column(
-                                children: [
-                                  Row(
-                                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                                    children: [
-                                      Text(
-                                        'Username ',
-                                        style: TextStyle(fontSize: 16, fontWeight: FontWeight.w300,color: Colors.black),
-                                      ),
-                                      Text(
-                                        appuser.first_name+" "+appuser.last_name,
-                                        style: TextStyle(fontSize: 16, fontWeight: FontWeight.w300,color: Colors.black),
-                                      ),
-
-                                    ],
-                                  ),
-
-                                  SizedBox(height: 8,),
-
-                                  Row(
-                                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                                    children: [
-                                      Text(
-                                        'Phone ',
-                                        style: TextStyle(fontSize: 16, fontWeight: FontWeight.w300,color: Colors.black),
-                                      ),
-                                      Text(
-                                        DataStream.PhoneNumber+"",
-                                        style: TextStyle(fontSize: 16, fontWeight: FontWeight.w300,color: Colors.black),
-                                      ),
-
-                                    ],
-                                  ),
-
-
-                                  SizedBox(height: 8,),
-
-                                  Row(
-                                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                                    children: [
-                                      Text(
-                                        'E-mail ',
-                                        style: TextStyle(fontSize: 16, fontWeight: FontWeight.w300,color: Colors.black),
-                                      ),
-                                      Text(
-                                        appuser.email+"",
-                                        style: TextStyle(fontSize: 16, fontWeight: FontWeight.w300,color: Colors.black),
-                                      ),
-
-                                    ],
-                                  ),
-                                ],
-                              ),
-
-
-
-                            ],
-                          ),
-                        ),
-
-                      ),
-                    ),
-                    Padding(
-                      padding: const EdgeInsets.fromLTRB(15, 0, 15, 15),
-                      child: Container(
-                        decoration: BoxDecoration(
-                          shape: BoxShape.rectangle,
-                          borderRadius: BorderRadius.all(Radius.circular(10.0)),
-                          color: Colors.white,
-
-                          boxShadow: [
-                            BoxShadow(
-                              color: Colors.grey.withOpacity(0.75),
-                              spreadRadius: 5,
-                              blurRadius: 7,
-                              offset: Offset(0, 3),
-                            ),
-                          ],
-                        ),
-
-                        width: screenWidth(context)-10,
-                        child: Padding(
-                          padding: EdgeInsets.all(15),
-                          child: Column(
-                            crossAxisAlignment:CrossAxisAlignment.start,
-                            children: [
-
-                              Row(
-                                mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                                children: [
-
-                                  Row(
-                                    children: [
-                                      Icon(Icons.location_on),
-                                      SizedBox(width: 10,),
-
-                                      Container(
-                                        width: screenWidth(context)/2,
-                                        child: Text(
-
-                                          PickedAddress,
-                                          style: TextStyle(fontSize: 12, fontWeight: FontWeight.w300,color: Colors.black),
-                                          textAlign: TextAlign.left,
-                                          maxLines: 4,
-                                        ),
-                                      ),
-                                    ],
-                                  ),
-                                  GestureDetector(
-                                    onTap: (){
-
-                                      Dialog errorDialog = Dialog(
-                                        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12.0)), //this right here
-                                        child: Container(
-                                          height: 180.0,
-                                          width: screenWidth(context),
-
-                                          child: Column(
-                                            mainAxisAlignment: MainAxisAlignment.center,
-                                            children: <Widget>[
-                                              SizedBox(height: 20,),
-
-                                              Padding(
-                                                padding:  EdgeInsets.all(1.0),
-                                                child: Text('Change Location', style: TextStyle(color: Colors.red,fontSize: 18,fontWeight: FontWeight.w500),),
-                                              ),
-                                              // SizedBox(height: 20,),
-
-
-                                              Padding(
-                                                padding:  EdgeInsets.all(20.0),
-                                                child: Text('Changing your location will clear your Cart are you sure you want to change your Location ?', style: TextStyle(color: Colors.black,fontSize: 14),),
-                                              ),
-
-
-
-                                              SizedBox(height: 10,),
-                                              Row(
-                                                mainAxisAlignment: MainAxisAlignment.end,
-                                                crossAxisAlignment: CrossAxisAlignment.end,
-                                                children: [
-                                                  FlatButton(
-
-                                                      onPressed: (){
-                                                        Navigator.of(context).pop();
-
-                                                      },
-                                                      child: Text('Dismiss', style: TextStyle(color: Colors.grey, fontSize: 14.0),)),
-
-                                                  FlatButton(onPressed: (){
-
-                                                    FirebaseDatabase database = new FirebaseDatabase();
-
-                                                    DatabaseReference del = database
-                                                        .reference();
-
-
-                                                    del =
-                                                        database.reference()
-                                                            .child("Cart")
-                                                            .child(
-                                                            DataStream
-                                                                .UserId);
-                                                    del.remove().then((
-                                                        value) {
-                                                      carts.clear();
-                                                      Navigator.of(context)
-                                                          .pop();
-
-                                                      addLocation().then((value) {setupBanner();});
-
-                                                      setState(() {
-
-                                                      });
-                                                    });
-
-
-                                                  },
-                                                      child: Text('Change Location', style: TextStyle(color: Colors.redAccent, fontSize: 14.0),)),
-                                                ],
-                                              )
-                                            ],
-                                          ),
-                                        ),
-                                      );
-
-
-                                      if(carts.length>0) {
-                                        showDialog(context: context,
-                                            builder: (
-                                                BuildContext context) => errorDialog);
-                                      }else{
-                                        addLocation().then((value) {setupBanner();});
-
-                                      }
-
-
-                                      setState(() {
-
-                                      });
-                                    },
-
-
-                                    child: Text(
-                                      'Change',
-                                      style: TextStyle(fontSize: 16, fontWeight: FontWeight.w600,color: Colors.green),
                                     ),
-                                  ),
-
-                                ],
-                              ),
-                              //SizedBox(height: 20,),
 
 
+                                    SizedBox(height: 8,),
+
+                                    Row(
+                                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                                      children: [
+                                        Text(
+                                          'E-mail ',
+                                          style: TextStyle(fontSize: 16, fontWeight: FontWeight.w300,color: Colors.black),
+                                        ),
+                                        Text(
+                                          appuser.email+"",
+                                          style: TextStyle(fontSize: 16, fontWeight: FontWeight.w300,color: Colors.black),
+                                        ),
+
+                                      ],
+                                    ),
+                                  ],
+                                ),
 
 
 
-                            ],
-                          ),
-                        ),
-
-                      ),
-                    ),
-                    Padding(
-                      padding: const EdgeInsets.all(15),
-                      child: Container(
-                        height: 45,
-                        decoration: BoxDecoration(
-                          color: Colors.redAccent,
-                          borderRadius: BorderRadius.only(
-                              topLeft: Radius.circular(10),
-                              topRight: Radius.circular(10),
-                              bottomLeft: Radius.circular(10),
-                              bottomRight: Radius.circular(10)
-                          ),
-
-                          boxShadow: [
-                            BoxShadow(
-                              color: Colors.redAccent[100],
-                              spreadRadius: 3,
-                              blurRadius: 4,
-                              offset: Offset(0, 3),
+                              ],
                             ),
-                          ],
-                        ),
-                   //   width: screenWidth(context)-40,
-                        child: FlatButton(
-                          shape: RoundedRectangleBorder(
-                            borderRadius: BorderRadius.circular(8.0),
                           ),
-                          color: Colors.redAccent,
-                          onPressed: (){
 
+                        ),
+                      ),
+                      // Padding(
+                      //   padding: const EdgeInsets.fromLTRB(15, 0, 15, 15),
+                      //   child: Container(
+                      //     decoration: BoxDecoration(
+                      //       shape: BoxShape.rectangle,
+                      //       borderRadius: BorderRadius.all(Radius.circular(10.0)),
+                      //       color: Colors.white,
+                      //
+                      //       boxShadow: [
+                      //         BoxShadow(
+                      //           color: Colors.grey.withOpacity(0.75),
+                      //           spreadRadius: 5,
+                      //           blurRadius: 7,
+                      //           offset: Offset(0, 3),
+                      //         ),
+                      //       ],
+                      //     ),
+                      //
+                      //     width: screenWidth(context)-10,
+                      //     child: Padding(
+                      //       padding: EdgeInsets.all(15),
+                      //       child: Column(
+                      //         crossAxisAlignment:CrossAxisAlignment.start,
+                      //         children: [
+                      //
+                      //           Row(
+                      //             mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      //             children: [
+                      //
+                      //               Row(
+                      //                 children: [
+                      //                   Icon(Icons.location_on),
+                      //                   SizedBox(width: 10,),
+                      //
+                      //                   Container(
+                      //                     width: screenWidth(context)/2,
+                      //                     child: Text(
+                      //
+                      //                       PickedAddress,
+                      //                       style: TextStyle(fontSize: 12, fontWeight: FontWeight.w300,color: Colors.black),
+                      //                       textAlign: TextAlign.left,
+                      //                       maxLines: 4,
+                      //                     ),
+                      //                   ),
+                      //                 ],
+                      //               ),
+                      //               GestureDetector(
+                      //                 onTap: (){
+                      //
+                      //                   Dialog errorDialog = Dialog(
+                      //                     shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12.0)), //this right here
+                      //                     child: Container(
+                      //                       height: 180.0,
+                      //                       width: screenWidth(context),
+                      //
+                      //                       child: Column(
+                      //                         mainAxisAlignment: MainAxisAlignment.center,
+                      //                         children: <Widget>[
+                      //                           SizedBox(height: 20,),
+                      //
+                      //                           Padding(
+                      //                             padding:  EdgeInsets.all(1.0),
+                      //                             child: Text('Change Location', style: TextStyle(color: Colors.red,fontSize: 18,fontWeight: FontWeight.w500),),
+                      //                           ),
+                      //                           // SizedBox(height: 20,),
+                      //
+                      //
+                      //                           Padding(
+                      //                             padding:  EdgeInsets.all(20.0),
+                      //                             child: Text('Changing your location will clear your Cart are you sure you want to change your Location ?', style: TextStyle(color: Colors.black,fontSize: 14),),
+                      //                           ),
+                      //
+                      //
+                      //
+                      //                           SizedBox(height: 10,),
+                      //                           Row(
+                      //                             mainAxisAlignment: MainAxisAlignment.end,
+                      //                             crossAxisAlignment: CrossAxisAlignment.end,
+                      //                             children: [
+                      //                               FlatButton(
+                      //
+                      //                                   onPressed: (){
+                      //                                     Navigator.of(context).pop();
+                      //
+                      //                                   },
+                      //                                   child: Text('Dismiss', style: TextStyle(color: Colors.grey, fontSize: 14.0),)),
+                      //
+                      //                               FlatButton(onPressed: (){
+                      //
+                      //                                 FirebaseDatabase database = new FirebaseDatabase();
+                      //
+                      //                                 DatabaseReference del = database
+                      //                                     .reference();
+                      //
+                      //
+                      //                                 del =
+                      //                                     database.reference()
+                      //                                         .child("Cart")
+                      //                                         .child(
+                      //                                         DataStream
+                      //                                             .UserId);
+                      //                                 del.remove().then((
+                      //                                     value) {
+                      //                                   carts.clear();
+                      //                                   Navigator.of(context)
+                      //                                       .pop();
+                      //
+                      //                                   addLocation().then((value) {setupBanner();});
+                      //
+                      //                                   setState(() {
+                      //
+                      //                                   });
+                      //                                 });
+                      //
+                      //
+                      //                               },
+                      //                                   child: Text('Change Location', style: TextStyle(color: Colors.redAccent, fontSize: 14.0),)),
+                      //                             ],
+                      //                           )
+                      //                         ],
+                      //                       ),
+                      //                     ),
+                      //                   );
+                      //
+                      //
+                      //                   if(carts.length>0) {
+                      //                     showDialog(context: context,
+                      //                         builder: (
+                      //                             BuildContext context) => errorDialog);
+                      //                   }else{
+                      //                     addLocation().then((value) {setupBanner();});
+                      //
+                      //                   }
+                      //
+                      //
+                      //                   setState(() {
+                      //
+                      //                   });
+                      //                 },
+                      //
+                      //
+                      //                 child: Text(
+                      //                   'Change',
+                      //                   style: TextStyle(fontSize: 16, fontWeight: FontWeight.w600,color: Colors.green),
+                      //                 ),
+                      //               ),
+                      //
+                      //             ],
+                      //           ),
+                      //           //SizedBox(height: 20,),
+                      //
+                      //
+                      //
+                      //
+                      //
+                      //         ],
+                      //       ),
+                      //     ),
+                      //
+                      //   ),
+                      // ),
+                      Padding(
+                        padding: const EdgeInsets.fromLTRB(15, 0, 15, 15),
+                        child: Container(
+                          height: 45,
+                          decoration: BoxDecoration(
+                            color: Colors.redAccent,
+                            borderRadius: BorderRadius.only(
+                                topLeft: Radius.circular(10),
+                                topRight: Radius.circular(10),
+                                bottomLeft: Radius.circular(10),
+                                bottomRight: Radius.circular(10)
+                            ),
 
-                            FirebaseAuth.instance.currentUser().then((firebaseUser) async {
-                              if(firebaseUser != null){
-                                await FirebaseAuth.instance.signOut();
-
-                                Navigator.of(context).pushReplacement(MaterialPageRoute(builder: (context) => SignIn()));
-
-                              }
-
-                            });
-
-                          },
-                          child: Row(
-                            mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-
-                            children: [
-
-                              Text('Logout',style: TextStyle(color: Colors.white,fontWeight: FontWeight.w500, fontSize: 18),),
-
+                            boxShadow: [
+                              BoxShadow(
+                                color: Colors.redAccent[100],
+                                spreadRadius: 3,
+                                blurRadius: 4,
+                                offset: Offset(0, 3),
+                              ),
                             ],
+                          ),
+                     //   width: screenWidth(context)-40,
+                          child: FlatButton(
+                            shape: RoundedRectangleBorder(
+                              borderRadius: BorderRadius.circular(8.0),
+                            ),
+                            color: Colors.redAccent,
+                            onPressed: (){
+
+
+                              FirebaseAuth.instance.currentUser().then((firebaseUser) async {
+                                if(firebaseUser != null){
+                                  await FirebaseAuth.instance.signOut();
+
+                                  Navigator.of(context).pushReplacement(MaterialPageRoute(builder: (context) => SignIn()));
+
+                                }
+
+                              });
+
+                            },
+                            child: Row(
+                              mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+
+                              children: [
+
+                                Text('Logout',style: TextStyle(color: Colors.white,fontWeight: FontWeight.w500, fontSize: 18),),
+
+                              ],
+                            ),
                           ),
                         ),
                       ),
-                    ),
-                  ],
-                ),
+                    ],
+                  ),
 
 
+                 Column(
+                   children: [
 
-               Column(
-                 children: [
+                     // Padding(
+                     //   padding: const EdgeInsets.fromLTRB(0, 5, 0, 20),
+                     //   child: Text('Terms and Conditions',
+                     //     style: TextStyle(fontSize: 16, fontWeight: FontWeight.w300,color: Colors.black,),),
+                     // ),
 
-                   // Padding(
-                   //   padding: const EdgeInsets.fromLTRB(0, 5, 0, 20),
-                   //   child: Text('Terms and Conditions',
-                   //     style: TextStyle(fontSize: 16, fontWeight: FontWeight.w300,color: Colors.black,),),
-                   // ),
+                     SizedBox(height: 20,),
+                     GestureDetector(
+                       onTap: (){
+                         _launchCaller();
 
-                   SizedBox(height: 20,),
-                   GestureDetector(
-                     onTap: (){
-                       _launchCaller();
-
-                     },
-                     child: Padding(
-                       padding: const EdgeInsets.fromLTRB(0, 5, 0, 5),
-                       child: Text('Contact Us',
-                         style: TextStyle(fontSize: 14, fontWeight: FontWeight.w300,color: Colors.blue[500], decoration: TextDecoration.underline,
-                         ),),
+                       },
+                       child: Padding(
+                         padding: const EdgeInsets.fromLTRB(0, 5, 0, 5),
+                         child: Text('Contact Us',
+                           style: TextStyle(fontSize: 14, fontWeight: FontWeight.w300,color: Colors.blue[500], decoration: TextDecoration.underline,
+                           ),),
+                       ),
                      ),
-                   ),
-                   GestureDetector(
-                     onTap: (){
-                       //https://doorsteppolicy.web.app/
+                     GestureDetector(
+                       onTap: (){
+                         //https://doorsteppolicy.web.app/
 
-                       UrlLauncher.launch('https://doorsteppolicy.web.app');
+                         UrlLauncher.launch('https://doorsteppolicy.web.app');
 
-                     },
+                       },
 
-                     child: Padding(
-                       padding: const EdgeInsets.fromLTRB(0, 0, 0, 0),
-                       child: Text('Privacy Policy',
-                         style: TextStyle(fontSize: 14, fontWeight: FontWeight.w300,color: Colors.blue[500], decoration: TextDecoration.underline,
+                       child: Padding(
+                         padding: const EdgeInsets.fromLTRB(0, 0, 0, 0),
+                         child: Text('Privacy Policy',
+                           style: TextStyle(fontSize: 14, fontWeight: FontWeight.w300,color: Colors.blue[500], decoration: TextDecoration.underline,
+                           ),
                          ),
                        ),
                      ),
-                   ),
-                   // GestureDetector(
-                   //   onTap: (){
-                   //     //https://doorsteppolicy.web.app/
-                   //
-                   //     UrlLauncher.launch('https://doorsteppolicy.web.app');
-                   //   },
-                   //   child: Padding(
-                   //     padding: const EdgeInsets.fromLTRB(0, 5, 0, 5),
-                   //     child: Text('Terms & Conditions',
-                   //       style: TextStyle(fontSize: 14, fontWeight: FontWeight.w300,color: Colors.blue[500], decoration: TextDecoration.underline,
-                   //       ),
-                   //     ),
-                   //   ),
-                   // ),
-                 //  SizedBox(height: 5,),
+                     // GestureDetector(
+                     //   onTap: (){
+                     //     //https://doorsteppolicy.web.app/
+                     //
+                     //     UrlLauncher.launch('https://doorsteppolicy.web.app');
+                     //   },
+                     //   child: Padding(
+                     //     padding: const EdgeInsets.fromLTRB(0, 5, 0, 5),
+                     //     child: Text('Terms & Conditions',
+                     //       style: TextStyle(fontSize: 14, fontWeight: FontWeight.w300,color: Colors.blue[500], decoration: TextDecoration.underline,
+                     //       ),
+                     //     ),
+                     //   ),
+                     // ),
+                   //  SizedBox(height: 5,),
 
 
-                   SizedBox(height: 10,),
-                 ],
-               )
-            ],
+                     SizedBox(height: 10,),
+                   ],
+                 )
+              ],
+            ),
           ),
         ):
         Center(

@@ -4,7 +4,6 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:Doorstep/styles/styles.dart';
 import 'package:Doorstep/screens/first-screen.dart';
-
 import 'screens/auth/sign-in.dart';
 
 void main() async {

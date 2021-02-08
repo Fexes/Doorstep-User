@@ -85,7 +85,7 @@ class _SignInState extends State<SignIn> {
 
   final GlobalKey<FormState> _formKey = GlobalKey<FormState>();
 
-  bool checkRemember = true;
+ // bool checkRemember = true;
   bool showText = true;
 
   FocusNode _focusNode, _focusNode2;
@@ -216,57 +216,37 @@ class _SignInState extends State<SignIn> {
                   ),
                   SizedBox(height: 50,),
 
-                  Container(
-                    alignment: AlignmentDirectional.topStart,
-                    padding: EdgeInsets.only(left: 16.0, top: 28.0, bottom: 4.0, right: 16.0),
-                    child: Column(
-                      mainAxisAlignment: MainAxisAlignment.start,
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: <Widget>[
-                        SizedBox(height: 20,),
-                        mobile,
-//                        Text("Password", ),
-//                        SizedBox(height: 10,),
-//                        passwordForm,
-                      ],
-                    ),
+                  Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Container(
+                        alignment: AlignmentDirectional.topStart,
+                        padding: EdgeInsets.only(left: 16.0, top: 28.0, bottom: 4.0, right: 16.0),
+                        child: Column(
+                          mainAxisAlignment: MainAxisAlignment.start,
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: <Widget>[
+                            SizedBox(height: 20,),
+                            mobile,
+
+                          ],
+                        ),
+                      ),
+                      Padding(
+                        padding: EdgeInsets.only(left: 16.0, bottom: 4.0, right: 16.0),
+                        child: Text("Please Enter Your Phone Number to Continue",),
+                      ),
+
+                    ],
                   ),
 
-//                  Row(
-//                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
-//                    crossAxisAlignment: CrossAxisAlignment.center,
-//                    children: <Widget>[
-//                      Row(
-//                        children: <Widget>[
-//                          Checkbox(
-//                            activeColor: primaryDark,
-//                            value: checkRemember,
-//                            onChanged: (bool value) {
-//                              setState(() {
-//                                checkRemember = value;
-//                              });
-//                            },
-//                          ),
-//                          Text("Remember me",),
-//                        ],
-//                      ),
-//                      FlatButton(
-//                        onPressed: (){
-//                          ToastUtils.showCustomToast(context, "Under Development \n Use existing account to login", null);
-//
-//                       //   Navigator.push( context, MaterialPageRoute( builder: (BuildContext context) => ForgotPassword(), ),);
-//                        },
-//                        child: Text("Forgot password?"),
-//                      )
-//                    ],
-//                  ),
                   SizedBox(height: 50,),
 
                   SizedBox(
                     width:200,
                     child: RaisedButton(
                       shape: RoundedRectangleBorder(
-                        borderRadius: new BorderRadius.circular(18.0),
+                        borderRadius: new BorderRadius.circular(20),
 
                       ),
 
@@ -460,6 +440,7 @@ class _SignInState extends State<SignIn> {
                                 'last_name': "",
                                 'phone': user.phoneNumber,
                                 'email': "",
+                                'userTokenID':DataStream.userTokenID,
 
 
                               });

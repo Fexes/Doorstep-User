@@ -9,10 +9,11 @@ class Cart {
   String cardimage;
   String unit;
   String shopcatagory;
+  String itemcatagory;
   String shopid;
   int cardprice;
 
-   Cart(this.key,this.no_of_items,this.cardid,this.cardname,this.cardimage,this.cardprice,this.shopcatagory,this.shopid,this.unit);
+   Cart(this.key,this.no_of_items,this.cardid,this.cardname,this.cardimage,this.cardprice,this.shopcatagory,this.itemcatagory,this.shopid,this.unit);
 
 
   Cart.fromSnapshot(DataSnapshot snapshot):
@@ -23,6 +24,7 @@ class Cart {
         cardprice = snapshot.value["cardprice"],
         no_of_items = snapshot.value["no_of_items"],
         shopcatagory = snapshot.value["shopcatagory"],
+        itemcatagory = snapshot.value["itemcatagory"],
         shopid = snapshot.value["shopid"],
         unit = snapshot.value["unit"];
 
@@ -36,6 +38,7 @@ class Cart {
       "cardprice": cardprice,
       "no_of_items": no_of_items,
       "shopcatagory": shopcatagory,
+      "itemcatagory": itemcatagory,
       "shopid": shopid,
       "unit": unit,
 

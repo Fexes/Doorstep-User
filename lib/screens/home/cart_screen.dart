@@ -140,8 +140,11 @@ class _CartScreenState extends State<CartScreen> {
   List<Cart> carts;
   String userid;
    DatabaseReference volunteerRef;
+
+   bool hasPharmacy=false;
   Future<void> setuplist() async {
 
+    hasPharmacy=false;
     carts.clear();
     FirebaseAuth.instance.currentUser().then((firebaseUser){
       if(firebaseUser == null)
@@ -183,6 +186,11 @@ class _CartScreenState extends State<CartScreen> {
   _onEntryAdded(Event event) {
     setState(() {
       carts.add(Cart.fromSnapshot(event.snapshot));
+      if(Cart.fromSnapshot(event.snapshot).shopcatagory=="Pharmacy"){
+        hasPharmacy=true;
+        caltotal();
+
+      }
 
     });
   }
@@ -212,7 +220,11 @@ class _CartScreenState extends State<CartScreen> {
       total=total+(carts[i].no_of_items*carts[i].cardprice);
     }
 
-    return (total+DataStream.DeliverCharges)-DataStream.Discount;
+    if(hasPharmacy){
+    return (total + DataStream.DeliverChargesPharmacy)-DataStream.Discount;
+    }else {
+      return (total + DataStream.DeliverCharges) - DataStream.Discount;
+    }
   }
 
 
@@ -277,8 +289,9 @@ class _CartScreenState extends State<CartScreen> {
                                 print(userid);
                                 final FirebaseDatabase _databaseCustom = FirebaseDatabase.instance;
                                 _databaseCustom.reference().child("Cart").child(userid).child(snapshot.key).remove().then((value) {
-                                  setuplist();
                                   setState(() {
+                                    caltotal();
+                                    setuplist();
 
                                   });
                                  });
@@ -288,15 +301,16 @@ class _CartScreenState extends State<CartScreen> {
                             // setuplist();
                               },
                               child: Padding(
-                                  padding:EdgeInsets.fromLTRB(10, 0, 20, 0),
+                                  padding:EdgeInsets.fromLTRB(10, 0, 10, 0),
                                   child: Icon(Icons.clear,color: Colors.redAccent,size: 35,)),
                             ),
 
                             Container(
-                              height: 100,
-                              width: 100,
+                              height: 80,
+                              width: 80,
 
                               decoration: BoxDecoration(
+                                color: Colors.grey[300],
                                 boxShadow: [
                                   BoxShadow(
                                     color: Colors.grey.withOpacity(0.5),
@@ -358,282 +372,286 @@ class _CartScreenState extends State<CartScreen> {
                 )
               ),
 
-              Flexible(
-                flex: 4,
-                child: SizedBox(height: 90,),
+              Padding(
+                padding: const EdgeInsets.fromLTRB(0, 0, 0, 25),
+                child: Column(
+                  mainAxisAlignment: MainAxisAlignment.end,
+                  crossAxisAlignment: CrossAxisAlignment.center,
+                  children: [
+                    Container(
+                      height: 150,
+                      width: screenWidth(context)-40,
 
-              )
-            ],
-          ),
-          Positioned(
-            bottom: 0,
-            child: Padding(
-              padding: const EdgeInsets.fromLTRB(30.0, 30.0, 30.0, 20),
-              child: Column(
-                children: [
-                  Container(
-                    height: 150,
-                    decoration: BoxDecoration(
-                      color: Colors.white,
-                      borderRadius: BorderRadius.only(
-                          topLeft: Radius.circular(10),
-                          topRight: Radius.circular(10),
-                          bottomLeft: Radius.circular(10),
-                          bottomRight: Radius.circular(10)
-                      ),
-                      boxShadow: [
-                        BoxShadow(
-                          color: Colors.grey.withOpacity(0.5),
-                          spreadRadius: 5,
-                          blurRadius: 7,
-                          offset: Offset(0, 3), // changes position of shadow
+                      decoration: BoxDecoration(
+                        color: Colors.white,
+                        borderRadius: BorderRadius.only(
+                            topLeft: Radius.circular(10),
+                            topRight: Radius.circular(10),
+                            bottomLeft: Radius.circular(10),
+                            bottomRight: Radius.circular(10)
                         ),
-                      ],
-                    ),
-                    width: screenWidth(context)-60,
-                    child: Padding(
-                      padding: EdgeInsets.all(20),
-                      child: Column(
-                        children: [
-
-                          Row(
-                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                            children: [
-                              Text(
-                                'Subtotal ',
-                                style: TextStyle(fontSize: 16, fontWeight: FontWeight.w300,color: Colors.black),
-                              ),
-                              Text(
-                                'Rs. ${calSubtotal()}',
-                                style: TextStyle(fontSize: 16, fontWeight: FontWeight.w300,color: Colors.black),
-                              ),
-                            ],
-                          ),
-                          SizedBox(height: 5,),
-                          Row(
-                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                            children: [
-                              Text(
-                                'Delivery Charges ',
-                                style: TextStyle(fontSize: 16, fontWeight: FontWeight.w300,color: Colors.black),
-                              ),
-                              Text(
-                                'Rs. ${DataStream.DeliverCharges}',
-                                style: TextStyle(fontSize: 16, fontWeight: FontWeight.w300,color: Colors.black),
-                              ),
-                            ],
-                          ),
-                          SizedBox(height: 5,),
-                          Row(
-                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                            children: [
-                              Text(
-                                'Discount ',
-                                style: TextStyle(fontSize: 16, fontWeight: FontWeight.w300,color: Colors.black),
-                              ),
-                              Text(
-                                'Rs. ${DataStream.Discount}',
-                                style: TextStyle(fontSize: 16, fontWeight: FontWeight.w300,color: Colors.black),
-                              ),
-                            ],
-                          ),
-                          SizedBox(height: 10,),
-                          Container(
-                            height: 1,
-                            color: Colors.grey[400],
-                          ),
-                          SizedBox(height: 10,),
-                          Row(
-                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                            children: [
-                              Row(
-                                mainAxisAlignment: MainAxisAlignment.end,
-                                crossAxisAlignment: CrossAxisAlignment.end,
-                                children: [
-                                  Text(
-                                    'Total ',
-                                    style: TextStyle(fontSize: 16, fontWeight: FontWeight.w500,color: Colors.black),
-                                  ),
-                                  Text(
-                                    '(incl. VAT)',
-                                    style: TextStyle(fontSize: 12, fontWeight: FontWeight.w300,color: Colors.black),
-                                  ),
-                                ],
-                              ),
-                              Text(
-                                'Rs. ${caltotal()}',
-                                style: TextStyle(fontSize: 16, fontWeight: FontWeight.w500,color: Colors.black),
-                              ),
-                            ],
+                        boxShadow: [
+                          BoxShadow(
+                            color: Colors.grey.withOpacity(0.5),
+                            spreadRadius: 5,
+                            blurRadius: 7,
+                            offset: Offset(0, 3), // changes position of shadow
                           ),
                         ],
                       ),
-                    ),
+                      child: Padding(
+                        padding: EdgeInsets.all(20),
+                        child: Column(
+                          children: [
 
-                  ),
-                  SizedBox(height: 10,),
-                  Row(
-                    children: [
-                      Container(
-                        height: 60,
-                        width: 60,
-                        decoration: BoxDecoration(
-                          color: Colors.redAccent,
-                          borderRadius: BorderRadius.only(
-                              topLeft: Radius.circular(10),
-                              topRight: Radius.circular(10),
-                              bottomLeft: Radius.circular(10),
-                              bottomRight: Radius.circular(10)
-                          ),
-                          boxShadow: [
-                            BoxShadow(
-                              color: Colors.redAccent.withOpacity(0.5),
-                              spreadRadius: 5,
-                              blurRadius: 7,
-                              offset: Offset(0, 3),
+                            Row(
+                              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                              children: [
+                                Text(
+                                  'Subtotal ',
+                                  style: TextStyle(fontSize: 16, fontWeight: FontWeight.w300,color: Colors.black),
+                                ),
+                                Text(
+                                  'Rs. ${calSubtotal()}',
+                                  style: TextStyle(fontSize: 16, fontWeight: FontWeight.w300,color: Colors.black),
+                                ),
+                              ],
                             ),
-                          ],
-                        ),
-                         child: FlatButton(
-                          shape: RoundedRectangleBorder(
-                            borderRadius: BorderRadius.circular(18.0),
-                          ),
-                          color: Colors.redAccent,
-                          onPressed: (){
-
-
-                            Dialog errorDialog = Dialog(
-                              shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12.0)), //this right here
-                              child: Container(
-                                height: 180.0,
-                                width: screenWidth(context),
-
-                                child: Column(
-                                  mainAxisAlignment: MainAxisAlignment.center,
-                                  children: <Widget>[
-                                    SizedBox(height: 20,),
-
-                                    Padding(
-                                      padding:  EdgeInsets.all(1.0),
-                                      child: Text('Clear Cart', style: TextStyle(color: Colors.red,fontSize: 18,fontWeight: FontWeight.w500),),
+                            SizedBox(height: 5,),
+                            Row(
+                              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                              children: [
+                                Text(
+                                  'Delivery Charges ',
+                                  style: TextStyle(fontSize: 16, fontWeight: FontWeight.w300,color: Colors.black),
+                                ),
+                                hasPharmacy?
+                                Text(
+                                  'Rs. ${DataStream.DeliverChargesPharmacy}',
+                                  style: TextStyle(fontSize: 16, fontWeight: FontWeight.w300,color: Colors.black),
+                                ):
+                                Text(
+                                  'Rs. ${DataStream.DeliverCharges}',
+                                  style: TextStyle(fontSize: 16, fontWeight: FontWeight.w300,color: Colors.black),
+                                ),
+                              ],
+                            ),
+                            SizedBox(height: 5,),
+                            Row(
+                              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                              children: [
+                                Text(
+                                  'Discount ',
+                                  style: TextStyle(fontSize: 16, fontWeight: FontWeight.w300,color: Colors.black),
+                                ),
+                                Text(
+                                  'Rs. ${DataStream.Discount}',
+                                  style: TextStyle(fontSize: 16, fontWeight: FontWeight.w300,color: Colors.black),
+                                ),
+                              ],
+                            ),
+                            SizedBox(height: 10,),
+                            Container(
+                              height: 1,
+                              color: Colors.grey[400],
+                            ),
+                            SizedBox(height: 10,),
+                            Row(
+                              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                              children: [
+                                Row(
+                                  mainAxisAlignment: MainAxisAlignment.end,
+                                  crossAxisAlignment: CrossAxisAlignment.end,
+                                  children: [
+                                    Text(
+                                      'Total ',
+                                      style: TextStyle(fontSize: 16, fontWeight: FontWeight.w500,color: Colors.black),
                                     ),
-                                    // SizedBox(height: 20,),
-
-
-                                    Padding(
-                                      padding:  EdgeInsets.all(20.0),
-                                      child: Text('Are yoy sure you want to clear your Cart ?', style: TextStyle(color: Colors.black,fontSize: 14),),
+                                    Text(
+                                      '(incl. VAT)',
+                                      style: TextStyle(fontSize: 12, fontWeight: FontWeight.w300,color: Colors.black),
                                     ),
-
-
-
-                                    SizedBox(height: 10,),
-                                    Row(
-                                      mainAxisAlignment: MainAxisAlignment.end,
-                                      crossAxisAlignment: CrossAxisAlignment.end,
-                                      children: [
-                                        FlatButton(
-
-                                            onPressed: (){
-                                              Navigator.of(context).pop();
-
-                                            },
-                                            child: Text('Dismiss', style: TextStyle(color: Colors.grey, fontSize: 14.0),)),
-
-                                        FlatButton(onPressed: (){
-
-
-                                          FirebaseDatabase database = new FirebaseDatabase();
-
-                                          DatabaseReference del = database.reference();
-
-
-                                          del = database.reference()
-                                              .child("Cart").child(DataStream.UserId);
-                                          del.remove().then((value) {
-                                            carts.clear();
-                                            Navigator.of(context).pop();
-
-                                            setState(() {
-
-                                            });
-                                          });
-
-
-
-
-                                        },
-                                            child: Text('Clear', style: TextStyle(color: Colors.redAccent, fontSize: 14.0),)),
-                                      ],
-                                    )
                                   ],
                                 ),
-                              ),
-                            );
-
-
-
-                              showDialog(context: context,
-                                  builder: (
-                                      BuildContext context) => errorDialog);
-
-
-
-
-
-
-
-
-
-
-
-
-                          },
-                          child: Icon(Icons.delete,color: Colors.white,size: 30,)
-                        ),
-                      ),
-                      SizedBox(width: 10,),
-                      Container(
-                        height: 60,
-                        width: screenWidth(context)-130,
-                        decoration: BoxDecoration(
-                          color: Colors.green,
-                          borderRadius: BorderRadius.only(
-                              topLeft: Radius.circular(10),
-                              topRight: Radius.circular(10),
-                              bottomLeft: Radius.circular(10),
-                              bottomRight: Radius.circular(10)
-                          ),
-                          boxShadow: [
-                            BoxShadow(
-                              color: Colors.green.withOpacity(0.5),
-                              spreadRadius: 5,
-                              blurRadius: 7,
-                              offset: Offset(0, 3),
+                                Text(
+                                  'Rs. ${caltotal()}',
+                                  style: TextStyle(fontSize: 16, fontWeight: FontWeight.w500,color: Colors.black),
+                                ),
+                              ],
                             ),
                           ],
                         ),
-                         child: FlatButton(
-                          shape: RoundedRectangleBorder(
-                            borderRadius: BorderRadius.circular(18.0),
-                          ),
-                          color: Colors.green,
-                          onPressed: (){
-                            Navigator.of(context).pushReplacement(
-                                MaterialPageRoute(
-                                    builder: (context) => CheckOutScreen())).then((value) {setupCart();});
-
-
-                          },
-                          child: Text('Checkout',style: TextStyle(color: Colors.white,fontWeight: FontWeight.w500, fontSize: 18),),
-                        ),
                       ),
-                    ],
-                  ),
-                ],
+
+                    ),
+                    SizedBox(height: 10,),
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      crossAxisAlignment: CrossAxisAlignment.center,
+                      children: [
+                        Container(
+                          height: 60,
+                          width: 60,
+                          decoration: BoxDecoration(
+                            color: Colors.redAccent,
+                            borderRadius: BorderRadius.only(
+                                topLeft: Radius.circular(10),
+                                topRight: Radius.circular(10),
+                                bottomLeft: Radius.circular(10),
+                                bottomRight: Radius.circular(10)
+                            ),
+                            boxShadow: [
+                              BoxShadow(
+                                color: Colors.redAccent.withOpacity(0.5),
+                                spreadRadius: 5,
+                                blurRadius: 7,
+                                offset: Offset(0, 3),
+                              ),
+                            ],
+                          ),
+                          child: FlatButton(
+                              shape: RoundedRectangleBorder(
+                                borderRadius: BorderRadius.circular(18.0),
+                              ),
+                              color: Colors.redAccent,
+                              onPressed: (){
+
+
+                                Dialog errorDialog = Dialog(
+                                  shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12.0)), //this right here
+                                  child: Container(
+                                    height: 180.0,
+                                    width: screenWidth(context),
+
+                                    child: Column(
+                                      mainAxisAlignment: MainAxisAlignment.center,
+                                      children: <Widget>[
+                                        SizedBox(height: 20,),
+
+                                        Padding(
+                                          padding:  EdgeInsets.all(1.0),
+                                          child: Text('Clear Cart', style: TextStyle(color: Colors.red,fontSize: 18,fontWeight: FontWeight.w500),),
+                                        ),
+                                        // SizedBox(height: 20,),
+
+
+                                        Padding(
+                                          padding:  EdgeInsets.all(20.0),
+                                          child: Text('Are yoy sure you want to clear your Cart ?', style: TextStyle(color: Colors.black,fontSize: 14),),
+                                        ),
+
+
+
+                                        SizedBox(height: 10,),
+                                        Row(
+                                          mainAxisAlignment: MainAxisAlignment.end,
+                                          crossAxisAlignment: CrossAxisAlignment.end,
+                                          children: [
+                                            FlatButton(
+
+                                                onPressed: (){
+                                                  Navigator.of(context).pop();
+
+                                                },
+                                                child: Text('Dismiss', style: TextStyle(color: Colors.grey, fontSize: 14.0),)),
+
+                                            FlatButton(onPressed: (){
+
+
+                                              FirebaseDatabase database = new FirebaseDatabase();
+
+                                              DatabaseReference del = database.reference();
+
+
+                                              del = database.reference()
+                                                  .child("Cart").child(DataStream.UserId);
+                                              del.remove().then((value) {
+                                                carts.clear();
+                                                Navigator.of(context).pop();
+
+                                                setState(() {
+
+                                                });
+                                              });
+
+
+
+
+                                            },
+                                                child: Text('Clear', style: TextStyle(color: Colors.redAccent, fontSize: 14.0),)),
+                                          ],
+                                        )
+                                      ],
+                                    ),
+                                  ),
+                                );
+
+
+
+                                showDialog(context: context,
+                                    builder: (
+                                        BuildContext context) => errorDialog);
+
+
+
+
+
+
+
+
+
+
+
+
+                              },
+                              child: Icon(Icons.delete,color: Colors.white,size: 30,)
+                          ),
+                        ),
+                        SizedBox(width: 10,),
+                        Container(
+                          height: 60,
+                          width: screenWidth(context)-110,
+                          decoration: BoxDecoration(
+                            color: Colors.green,
+                            borderRadius: BorderRadius.only(
+                                topLeft: Radius.circular(10),
+                                topRight: Radius.circular(10),
+                                bottomLeft: Radius.circular(10),
+                                bottomRight: Radius.circular(10)
+                            ),
+                            boxShadow: [
+                              BoxShadow(
+                                color: Colors.green.withOpacity(0.5),
+                                spreadRadius: 5,
+                                blurRadius: 7,
+                                offset: Offset(0, 3),
+                              ),
+                            ],
+                          ),
+                          child: FlatButton(
+                            shape: RoundedRectangleBorder(
+                              borderRadius: BorderRadius.circular(18.0),
+                            ),
+                            color: Colors.green,
+                            onPressed: (){
+                              Navigator.of(context).pushReplacement(
+                                  MaterialPageRoute(
+                                      builder: (context) => CheckOutScreen())).then((value) {setupCart();});
+
+
+                            },
+                            child: Text('Checkout',style: TextStyle(color: Colors.white,fontWeight: FontWeight.w500, fontSize: 18),),
+                          ),
+                        ),
+                      ],
+                    ),
+                  ],
+                ),
               ),
-            ),
+
+            ],
           ),
+
         ],
       ):
       Center(child: Text("Empty")),

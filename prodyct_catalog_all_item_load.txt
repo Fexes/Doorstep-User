@@ -157,26 +157,18 @@ class _ProductCatalogState extends State<ProductCatalog> {
       filterProductCatagory(selectfilter);
 
     }
-    Future.delayed(const Duration(milliseconds: 500), () {
 
-// Here you can write your code
-
-      setupessentials();
-
-    });
-
-
-
-  }
-
-  void setupessentials(){
     setuplist();
 
 
 
 
     FirebaseAuth.instance.currentUser().then((firebaseUser){
+
+
       user=firebaseUser;
+
+
 
     });
 
@@ -204,6 +196,7 @@ class _ProductCatalogState extends State<ProductCatalog> {
 
 
     });
+
   }
 
 
@@ -460,11 +453,10 @@ class _ProductCatalogState extends State<ProductCatalog> {
                                         DateFormat("h:mma").format(DateFormat("hh:mm").parse(shop.openTime))  +"  -  "+ DateFormat("h:mma").format(DateFormat("hh:mm").parse(shop.closeTime)),
                                         style: TextStyle(fontSize: 28, fontWeight: FontWeight.w400,color: Colors.white),
                                       ),
-                                      shop.distanceInKM!=null?
                                       Text(
                                         "Delivery "+ ((shop.distanceInKM*3)+20).toString().split(".")[0] +" - "+((shop.distanceInKM*3)+30).toString().split(".")[0]+" min",
                                         style: TextStyle(fontSize: 20, fontWeight: FontWeight.w300,color: Colors.white),
-                                      ):SizedBox(),
+                                      ),
 
 
                                     ],

@@ -10,6 +10,8 @@
 	<string>$(PRODUCT_BUNDLE_IDENTIFIER)</string>
 	<key>CFBundleInfoDictionaryVersion</key>
 	<string>6.0</string>
+	<key>CFBundleName</key>
+	<string>Doorstep</string>
 	<key>CFBundlePackageType</key>
 	<string>APPL</string>
 	<key>CFBundleShortVersionString</key>
@@ -29,12 +31,16 @@
 	</array>
 	<key>CFBundleVersion</key>
 	<string>$(FLUTTER_BUILD_NUMBER)</string>
+	<key>LSApplicationCategoryType</key>
+	<string></string>
 	<key>LSRequiresIPhoneOS</key>
 	<true/>
 	<key>NSAppleMusicUsageDescription</key>
 	<string>Your permission is required to use apple music service in your app</string>
 	<key>NSCalendarsUsageDescription</key>
 	<string>Your permission is required to use calender in your app</string>
+	<key>NSCameraUsageDescription</key>
+	<string></string>
 	<key>NSContactsUsageDescription</key>
 	<string>Your permission is required to use contacts in your app</string>
 	<key>NSLocationAlwaysAndWhenInUseUsageDescription</key>
@@ -53,6 +59,7 @@
 	<string>Your permission is required to use speech recognition service in your app</string>
 	<key>UIBackgroundModes</key>
 	<array>
+		<string>external-accessory</string>
 		<string>fetch</string>
 		<string>remote-notification</string>
 	</array>
