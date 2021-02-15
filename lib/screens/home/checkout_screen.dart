@@ -1616,45 +1616,49 @@ class _CheckOutScreenState extends State<CheckOutScreen> {
                     .longitude}",
 
               }).then((value) {
+
+                adminorder
+                    .child("Active")
+                //.child(DataStream.UserId)
+                    .child(orderID)
+                    .set(<dynamic, dynamic>{
+                  'no_of_items': '${carts.length}',
+                  'userID': DataStream.UserId,
+                  'bill': '${caltotal()}',
+                  'status': 'pending',
+                  'orderDate': date.format(now),
+                  'orderTime': time.format(now),
+                  'phonenumber': DataStream.PhoneNumber,
+                  'orderID': orderID,
+                  'prescription':prescriptiondownloadUrl,
+
+                  'address': Useraddress + "\n" + useraddress,
+                  'location': "${deliverylocation
+                      .latitude},${deliverylocation.longitude}",
+
+                });
+
+
                 for (int i = 0; i <= carts.length - 1; i++) {
+
+
                   adminorder
                       .child("Active")
-                  //.child(DataStream.UserId)
-                      .child(orderID)
-                      .set(<dynamic, dynamic>{
-                    'no_of_items': '${carts.length}',
-                    'userID': DataStream.UserId,
-                    'bill': '${caltotal()}',
-                    'status': 'pending',
-                    'orderDate': date.format(now),
-                    'orderTime': time.format(now),
-                    'phonenumber': DataStream.PhoneNumber,
-                    'orderID': orderID,
-                    'prescription':prescriptiondownloadUrl,
+                  // .child(DataStream.UserId)
+                      .child(orderID).child("items").push().set(
+                      <dynamic, dynamic>{
+                        'no_of_items': carts[i].no_of_items,
+                        'cardid': carts[i].cardid.toString(),
+                        'cardname': carts[i].cardname.toString(),
+                        'unit': carts[i].unit,
+                        'cardimage': carts[i].cardimage.toString(),
+                        'itemcatagory': carts[i].itemcatagory.toString(),
+                        'cardprice': carts[i].cardprice,
+                        'shopcatagory': carts[i].shopcatagory,
+                        'shopid': carts[i].shopid,
 
-                    'address': Useraddress + "\n" + useraddress,
-                    'location': "${deliverylocation
-                        .latitude},${deliverylocation.longitude}",
-
-                  }).then((value) {
-                    adminorder
-                        .child("Active")
-                    // .child(DataStream.UserId)
-                        .child(orderID).child("items").push().set(
-                        <dynamic, dynamic>{
-                          'no_of_items': carts[i].no_of_items,
-                          'cardid': carts[i].cardid.toString(),
-                          'cardname': carts[i].cardname.toString(),
-                          'unit': carts[i].unit,
-                          'cardimage': carts[i].cardimage.toString(),
-                          'itemcatagory': carts[i].itemcatagory.toString(),
-                          'cardprice': carts[i].cardprice,
-                          'shopcatagory': carts[i].shopcatagory,
-                          'shopid': carts[i].shopid,
-
-                        }
-                    );
-                  });
+                      }
+                  );
 
 
                   shoporder.child(
@@ -1677,93 +1681,68 @@ class _CheckOutScreenState extends State<CheckOutScreen> {
                     'location': "${deliverylocation
                         .latitude},${deliverylocation.longitude}",
 
-                  }).then((value) {
-                    shoporder.child(carts[i].shopcatagory).child(
-                        carts[i].shopid)
-                        .child("Orders")
-                        .child("Active").child(orderID).child("items").push()
-                        .set(
-                        <dynamic, dynamic>{
-                          'no_of_items': carts[i].no_of_items,
-                          'cardid': carts[i].cardid.toString(),
-                          'cardname': carts[i].cardname.toString(),
-                          'unit': carts[i].unit,
-
-                          'cardimage': carts[i].cardimage.toString(),
-                          'itemcatagory': carts[i].itemcatagory.toString(),
-                          'cardprice': carts[i].cardprice,
-                          'shopcatagory': carts[i].shopcatagory,
-                          'shopid': carts[i].shopid,
-
-                        }
-                    );
-                  }).then((value) {
-                    shoporder.child(
-                        carts[i].shopcatagory).child(
-                        carts[i].shopid).child("Orders")
-                        .child("Active")
-                        .child(orderID)
-                        .set(<dynamic, dynamic>{
-                      'no_of_items': '${carts.length}',
-                      'userID': DataStream.UserId,
-                      'bill': '${caltotal()}',
-                      'status': 'pending',
-                      'orderDate': date.format(now),
-                      'orderTime': time.format(now),
-                      'phonenumber': DataStream.PhoneNumber,
-                      'orderID': orderID,
-                      'prescription':prescriptiondownloadUrl,
-
-                      'address': Useraddress + "\n" + useraddress,
-                      'location': "${deliverylocation
-                          .latitude},${deliverylocation.longitude}",
-
-                    }).then((value) {
-                      shoporder.child(carts[i].shopcatagory).child(
-                          carts[i].shopid)
-                          .child("Orders")
-                          .child("Active").child(orderID).child("items").push()
-                          .set(
-                          <dynamic, dynamic>{
-                            'no_of_items': carts[i].no_of_items,
-                            'cardid': carts[i].cardid.toString(),
-                            'cardname': carts[i].cardname.toString(),
-                            'cardimage': carts[i].cardimage.toString(),
-                            'itemcatagory': carts[i].itemcatagory.toString(),
-                            'cardprice': carts[i].cardprice,
-                            'unit': carts[i].unit,
-                            'shopcatagory': carts[i].shopcatagory,
-                            'shopid': carts[i].shopid,
-
-                          }
-                      );
-                    });
                   });
+                  // print("shop Status Pending");
+                  // FirebaseDatabase databasestatus = new FirebaseDatabase();
+                  //
+                  // DatabaseReference _shopRefstatus = databasestatus.reference()
+                  //     .child('Shops').child(
+                  //     carts[i].shopcatagory).child(
+                  //     carts[i].shopid).child("Orders")
+                  //     .child("Active")
+                  //     .child(orderID);
+                  // _shopRefstatus.child("orderStatus").set(<dynamic, dynamic>{
+                  //
+                  //   'status': 'pending',
+                  //
+                  //
+                  // });
 
 
-                  _userRef.child("items").push().set(<dynamic, dynamic>{
-                    'no_of_items': carts[i].no_of_items,
-                    'cardid': carts[i].cardid.toString(),
-                    'cardname': carts[i].cardname.toString(),
-                    'cardimage': carts[i].cardimage.toString(),
-                    'itemcatagory': carts[i].itemcatagory.toString(),
-                    'cardprice': carts[i].cardprice,
-                    'unit': carts[i].unit,
-                    'shopcatagory': carts[i].shopcatagory,
-                    'shopid': carts[i].shopid,
-
-
-                  }).then((value) {
-                    FirebaseDatabase database = new FirebaseDatabase();
-                    DatabaseReference _userRef = database.reference()
-                        .child('Cart').child(DataStream.UserId);
-                    _userRef.remove();
-                  });
                 }
+
+
+                // FirebaseDatabase databasestatus = new FirebaseDatabase();
+                // print("user Status Pending");
+                //
+                // DatabaseReference _userRefstatus = databasestatus.reference()
+                //     .child('User Orders').child(DataStream.UserId)
+                //     .child("Active")
+                //     .child(orderID);
+                // _userRefstatus.child("orderStatus").set(<dynamic, dynamic>{
+                //
+                //   'status': 'pending',
+                //
+                //
+                // });
+                // print("admin Status Pending");
+                //
+                // DatabaseReference _adminRefstatus = databasestatus.reference()
+                //     .child('Admin').child("Orders").child("Active")
+                //     .child(orderID);
+                // _adminRefstatus.child("orderStatus").set(<dynamic, dynamic>{
+                //
+                //   'status': 'pending',
+                //
+                //
+                // });
+
+
+
+
+
+
+
+                FirebaseDatabase database = new FirebaseDatabase();
+                DatabaseReference _userRef = database.reference()
+                    .child('Cart').child(DataStream.UserId);
+                _userRef.remove();
+
                 final locationDbRef = FirebaseDatabase.instance.reference()
                     .child(
                     "Admin")
                     .child("Delivery");
+
 
                 locationDbRef.once().then((value) async {
                   print(value.value["delivery_charges"]);
@@ -1843,6 +1822,7 @@ class _CheckOutScreenState extends State<CheckOutScreen> {
             'no_of_orders': order_count + 1,
 
           }).then((value) {
+
             if (DataStream.PromoCode != null) {
               DatabaseReference promoref = database
                   .reference()
@@ -1853,6 +1833,18 @@ class _CheckOutScreenState extends State<CheckOutScreen> {
 
               promoref.set(<dynamic, dynamic>{
                 'status': "used",
+
+              });
+
+              DatabaseReference promouser = database
+                  .reference()
+                  .child('Admin').child("Promo")
+                  .child(DataStream.PromoCode.promoID).child("users");
+
+              promoref.push().set(<dynamic, dynamic>{
+                'userID': DataStream.UserId,
+                'orderID': orderID,
+                'userOrderNumber': order_count+ 1,
 
               });
             }
@@ -1869,54 +1861,56 @@ class _CheckOutScreenState extends State<CheckOutScreen> {
               'orderTime': time.format(now),
               'phonenumber': DataStream.PhoneNumber,
               'orderID': orderID,
+              'userOrderNumber': order_count+ 1,
               'prescription':prescriptiondownloadUrl,
-
               'address': Useraddress + "\n" + useraddress,
               'location': "${deliverylocation.latitude},${deliverylocation
                   .longitude}",
 
             }).then((value) {
+
+              adminorder
+                  .child("Active")
+              //.child(DataStream.UserId)
+                  .child(orderID)
+                  .set(<dynamic, dynamic>{
+                'no_of_items': '${carts.length}',
+                'userID': DataStream.UserId,
+                'bill': '${caltotal()}',
+                'status': 'pending',
+                'orderDate': date.format(now),
+                'orderTime': time.format(now),
+                'phonenumber': DataStream.PhoneNumber,
+                'orderID': orderID,
+                'prescription':prescriptiondownloadUrl,
+                'userOrderNumber': order_count+ 1,
+
+                'address': Useraddress + "\n" + useraddress,
+                'location': "${deliverylocation
+                    .latitude},${deliverylocation.longitude}",
+
+              });
+
+
               for (int i = 0; i <= carts.length - 1; i++) {
+
+
                 adminorder
                     .child("Active")
-                //.child(DataStream.UserId)
-                    .child(orderID)
-                    .set(<dynamic, dynamic>{
-                  'no_of_items': '${carts.length}',
-                  'userID': DataStream.UserId,
-                  'bill': '${caltotal()}',
-                  'status': 'pending',
-                  'orderDate': date.format(now),
-                  'orderTime': time.format(now),
-                  'phonenumber': DataStream.PhoneNumber,
-                  'orderID': orderID,
-                  'prescription':prescriptiondownloadUrl,
+                    .child(orderID).child("items").push().set(
+                    <dynamic, dynamic>{
+                      'no_of_items': carts[i].no_of_items,
+                      'cardid': carts[i].cardid.toString(),
+                      'cardname': carts[i].cardname.toString(),
+                      'unit': carts[i].unit,
+                      'cardimage': carts[i].cardimage.toString(),
+                      'itemcatagory': carts[i].itemcatagory.toString(),
+                      'cardprice': carts[i].cardprice,
+                      'shopcatagory': carts[i].shopcatagory,
+                      'shopid': carts[i].shopid,
 
-                  'address': Useraddress + "\n" + useraddress,
-                  'location': "${deliverylocation
-                      .latitude},${deliverylocation.longitude}",
-
-                }).then((value) {
-                  adminorder
-                      .child("Active")
-                  // .child(DataStream.UserId)
-                      .child(orderID).child("items").push().set(
-                      <dynamic, dynamic>{
-                        'no_of_items': carts[i].no_of_items,
-                        'cardid': carts[i].cardid.toString(),
-                        'cardname': carts[i].cardname.toString(),
-                        'unit': carts[i].unit,
-
-                        'cardimage': carts[i].cardimage.toString(),
-                        'itemcatagory': carts[i].itemcatagory.toString(),
-                        'cardprice': carts[i].cardprice,
-                        'shopcatagory': carts[i].shopcatagory,
-                        'shopid': carts[i].shopid,
-
-                      }
-                  );
-                });
-
+                    }
+                );
 
                 shoporder.child(
                     carts[i].shopcatagory).child(
@@ -1933,93 +1927,21 @@ class _CheckOutScreenState extends State<CheckOutScreen> {
                   'phonenumber': DataStream.PhoneNumber,
                   'orderID': orderID,
                   'prescription':prescriptiondownloadUrl,
-
+                  'userOrderNumber': order_count+ 1,
                   'address': Useraddress + "\n" + useraddress,
                   'location': "${deliverylocation
                       .latitude},${deliverylocation.longitude}",
 
-                }).then((value) {
-                  shoporder.child(carts[i].shopcatagory).child(carts[i].shopid)
-                      .child("Orders")
-                      .child("Active").child(orderID).child("items").push()
-                      .set(
-                      <dynamic, dynamic>{
-                        'no_of_items': carts[i].no_of_items,
-                        'cardid': carts[i].cardid.toString(),
-                        'cardname': carts[i].cardname.toString(),
-                        'unit': carts[i].unit,
-
-                        'cardimage': carts[i].cardimage.toString(),
-                        'itemcatagory': carts[i].itemcatagory.toString(),
-                        'cardprice': carts[i].cardprice,
-                        'shopcatagory': carts[i].shopcatagory,
-                        'shopid': carts[i].shopid,
-
-                      }
-                  );
-                }).then((value) {
-                  shoporder.child(
-                      carts[i].shopcatagory).child(
-                      carts[i].shopid).child("Orders")
-                      .child("Active")
-                      .child(orderID)
-                      .set(<dynamic, dynamic>{
-                    'no_of_items': '${carts.length}',
-                    'userID': DataStream.UserId,
-                    'bill': '${caltotal()}',
-                    'status': 'pending',
-                    'orderDate': date.format(now),
-                    'orderTime': time.format(now),
-                    'phonenumber': DataStream.PhoneNumber,
-                    'orderID': orderID,
-                    'prescription':prescriptiondownloadUrl,
-
-                    'address': Useraddress + "\n" + useraddress,
-                    'location': "${deliverylocation
-                        .latitude},${deliverylocation.longitude}",
-
-                  }).then((value) {
-                    shoporder.child(carts[i].shopcatagory).child(
-                        carts[i].shopid)
-                        .child("Orders")
-                        .child("Active").child(orderID).child("items").push()
-                        .set(
-                        <dynamic, dynamic>{
-                          'no_of_items': carts[i].no_of_items,
-                          'cardid': carts[i].cardid.toString(),
-                          'cardname': carts[i].cardname.toString(),
-                          'cardimage': carts[i].cardimage.toString(),
-                          'itemcatagory': carts[i].itemcatagory.toString(),
-                          'cardprice': carts[i].cardprice,
-                          'unit': carts[i].unit,
-                          'shopcatagory': carts[i].shopcatagory,
-                          'shopid': carts[i].shopid,
-
-                        }
-                    );
-                  });
                 });
 
 
-                _userRef.child("items").push().set(<dynamic, dynamic>{
-                  'no_of_items': carts[i].no_of_items,
-                  'cardid': carts[i].cardid.toString(),
-                  'cardname': carts[i].cardname.toString(),
-                  'cardimage': carts[i].cardimage.toString(),
-                  'itemcatagory': carts[i].itemcatagory.toString(),
-                  'cardprice': carts[i].cardprice,
-                  'unit': carts[i].unit,
-                  'shopcatagory': carts[i].shopcatagory,
-                  'shopid': carts[i].shopid,
-
-
-                }).then((value) {
-                  FirebaseDatabase database = new FirebaseDatabase();
-                  DatabaseReference _userRef = database.reference()
-                      .child('Cart').child(DataStream.UserId);
-                  _userRef.remove();
-                });
               }
+
+              FirebaseDatabase database = new FirebaseDatabase();
+              DatabaseReference _usercart = database.reference()
+                  .child('Cart').child(DataStream.UserId);
+              _usercart.remove();
+
               final locationDbRef = FirebaseDatabase.instance.reference().child(
                   "Admin").child("Delivery");
 

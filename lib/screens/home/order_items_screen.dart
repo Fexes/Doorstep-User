@@ -157,7 +157,7 @@ class _OrderItemsScreenState extends State<OrderItemsScreen> {
 
         userid=firebaseUser.uid;
         final FirebaseDatabase database = FirebaseDatabase.instance;
-        volunteerRef = database.reference().child("User Orders").child(DataStream.UserId).child(status).child(order.orderID).child("items");
+        volunteerRef = database.reference().child("Admin").child("Orders").child("Active").child(order.orderID).child("items");
         volunteerRef.onChildAdded.listen(_onEntryAdded);
         volunteerRef.onChildChanged.listen(_onEntryChanged);
         volunteerRef.onChildRemoved.listen(_onEntryRemoved);
@@ -171,7 +171,6 @@ class _OrderItemsScreenState extends State<OrderItemsScreen> {
     var old = ordereditems.singleWhere((entry) {
       return entry.key == event.snapshot.key;
     });
-
 
 //    for(int i=0;i<=ordereditems.length-1;i++){
 //      Subtotal=Subtotal+ordereditems[i].cardprice;
