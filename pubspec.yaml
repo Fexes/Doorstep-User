@@ -97,6 +97,7 @@ flutter:
     - assets/done.json
     - assets/coupon.json
     - assets/update.json
+    - assets/empty_cart.json
     - assets/logo.json
     - assets/prescription.json
     - assets/imgs/bk.jpg
