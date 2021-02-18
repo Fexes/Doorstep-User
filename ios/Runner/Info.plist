@@ -39,22 +39,20 @@
 	<string>Your permission is required to use apple music service in your app</string>
 	<key>NSCalendarsUsageDescription</key>
 	<string>Your permission is required to use calender in your app</string>
-	<key>NSCameraUsageDescription</key>
-	<string></string>
 	<key>NSContactsUsageDescription</key>
 	<string>Your permission is required to use contacts in your app</string>
 	<key>NSLocationAlwaysAndWhenInUseUsageDescription</key>
-	<string>Location</string>
+	<string>Your permission is required to use Location</string>
 	<key>NSLocationAlwaysUsageDescription</key>
-	<string>Location</string>
+	<string>Your permission is required to use Location</string>
 	<key>NSLocationUsageDescription</key>
-	<string>Location</string>
+	<string>Your permission is required to use Location</string>
 	<key>NSLocationWhenInUseUsageDescription</key>
-	<string> location description.</string>
+	<string>Your permission is required to use Location</string>
 	<key>NSMotionUsageDescription</key>
 	<string>Your permission is required to use motion service in your app</string>
 	<key>NSPhotoLibraryUsageDescription</key>
-	<string> photos description.</string>
+	<string>Your permission is required to use Photos</string>
 	<key>NSSpeechRecognitionUsageDescription</key>
 	<string>Your permission is required to use speech recognition service in your app</string>
 	<key>UIBackgroundModes</key>
