@@ -81,7 +81,7 @@ class _CustomDialogBoxState extends State<PromoDialogBox> {
                           },
                           validator: (String value) {
                             if(value.isEmpty)
-                              return 'Please Enter Your Address';
+                              return 'Please Enter Your Promo Code';
                             else
                               return null;
                           },
@@ -138,6 +138,7 @@ class _CustomDialogBoxState extends State<PromoDialogBox> {
                           String promoID;
                           String valid_till;
 
+
                           active = value.value["active"];
                           delivery = value.value["delivery"];
                           discount = value.value["discount"];
@@ -155,12 +156,15 @@ class _CustomDialogBoxState extends State<PromoDialogBox> {
 
 
                             if(value.value==null) {
+
+
                               ToastUtils.showCustomToast(
                                   context, "Promo Verified", true);
 
                               DataStream.PromoCode = new Promo(key, active, delivery, discount,  location, locationradius, message, min_order, promoID, valid_till);
 
                                Navigator.of(context).pop();
+
 
                             }else{
 

@@ -87,11 +87,11 @@ exports.orderArrivedNotification = functions.https.onRequest(async(request, resp
         notification: {
             title: "New Order",
             body: "We have a new Order. Lets prepared it",
-            sound: 'default',
+            sound: 'true',
         },
         data: {
-            push_key: 'Push Key Value',
-            key1: 'data',
+            push_key: 'click_action',
+            key1: 'FLUTTER_NOTIFICATION_CLICK',
 
         },
     };

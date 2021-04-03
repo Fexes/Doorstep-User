@@ -12,6 +12,7 @@ import 'package:Doorstep/screens/auth/sign-in.dart';
 import 'package:Doorstep/screens/home/product_catalog.dart';
 import 'package:Doorstep/screens/home/shops_screen.dart';
 import 'package:Doorstep/screens/home/single_product.dart';
+import 'package:Doorstep/utilts/UI/ChangeLocationDialogue.dart';
 import 'package:Doorstep/utilts/UI/DataStream.dart';
 import 'package:badges/badges.dart';
 import 'package:bubble_bottom_bar/bubble_bottom_bar.dart';
@@ -2028,167 +2029,200 @@ class HomePage extends State<Home> {
 
                         ),
                       ),
-                      // Padding(
-                      //   padding: const EdgeInsets.fromLTRB(15, 0, 15, 15),
-                      //   child: Container(
-                      //     decoration: BoxDecoration(
-                      //       shape: BoxShape.rectangle,
-                      //       borderRadius: BorderRadius.all(Radius.circular(10.0)),
-                      //       color: Colors.white,
-                      //
-                      //       boxShadow: [
-                      //         BoxShadow(
-                      //           color: Colors.grey.withOpacity(0.75),
-                      //           spreadRadius: 5,
-                      //           blurRadius: 7,
-                      //           offset: Offset(0, 3),
-                      //         ),
-                      //       ],
-                      //     ),
-                      //
-                      //     width: screenWidth(context)-10,
-                      //     child: Padding(
-                      //       padding: EdgeInsets.all(15),
-                      //       child: Column(
-                      //         crossAxisAlignment:CrossAxisAlignment.start,
-                      //         children: [
-                      //
-                      //           Row(
-                      //             mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                      //             children: [
-                      //
-                      //               Row(
-                      //                 children: [
-                      //                   Icon(Icons.location_on),
-                      //                   SizedBox(width: 10,),
-                      //
-                      //                   Container(
-                      //                     width: screenWidth(context)/2,
-                      //                     child: Text(
-                      //
-                      //                       PickedAddress,
-                      //                       style: TextStyle(fontSize: 12, fontWeight: FontWeight.w300,color: Colors.black),
-                      //                       textAlign: TextAlign.left,
-                      //                       maxLines: 4,
-                      //                     ),
-                      //                   ),
-                      //                 ],
-                      //               ),
-                      //               GestureDetector(
-                      //                 onTap: (){
-                      //
-                      //                   Dialog errorDialog = Dialog(
-                      //                     shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12.0)), //this right here
-                      //                     child: Container(
-                      //                       height: 180.0,
-                      //                       width: screenWidth(context),
-                      //
-                      //                       child: Column(
-                      //                         mainAxisAlignment: MainAxisAlignment.center,
-                      //                         children: <Widget>[
-                      //                           SizedBox(height: 20,),
-                      //
-                      //                           Padding(
-                      //                             padding:  EdgeInsets.all(1.0),
-                      //                             child: Text('Change Location', style: TextStyle(color: Colors.red,fontSize: 18,fontWeight: FontWeight.w500),),
-                      //                           ),
-                      //                           // SizedBox(height: 20,),
-                      //
-                      //
-                      //                           Padding(
-                      //                             padding:  EdgeInsets.all(20.0),
-                      //                             child: Text('Changing your location will clear your Cart are you sure you want to change your Location ?', style: TextStyle(color: Colors.black,fontSize: 14),),
-                      //                           ),
-                      //
-                      //
-                      //
-                      //                           SizedBox(height: 10,),
-                      //                           Row(
-                      //                             mainAxisAlignment: MainAxisAlignment.end,
-                      //                             crossAxisAlignment: CrossAxisAlignment.end,
-                      //                             children: [
-                      //                               FlatButton(
-                      //
-                      //                                   onPressed: (){
-                      //                                     Navigator.of(context).pop();
-                      //
-                      //                                   },
-                      //                                   child: Text('Dismiss', style: TextStyle(color: Colors.grey, fontSize: 14.0),)),
-                      //
-                      //                               FlatButton(onPressed: (){
-                      //
-                      //                                 FirebaseDatabase database = new FirebaseDatabase();
-                      //
-                      //                                 DatabaseReference del = database
-                      //                                     .reference();
-                      //
-                      //
-                      //                                 del =
-                      //                                     database.reference()
-                      //                                         .child("Cart")
-                      //                                         .child(
-                      //                                         DataStream
-                      //                                             .UserId);
-                      //                                 del.remove().then((
-                      //                                     value) {
-                      //                                   carts.clear();
-                      //                                   Navigator.of(context)
-                      //                                       .pop();
-                      //
-                      //                                   addLocation().then((value) {setupBanner();});
-                      //
-                      //                                   setState(() {
-                      //
-                      //                                   });
-                      //                                 });
-                      //
-                      //
-                      //                               },
-                      //                                   child: Text('Change Location', style: TextStyle(color: Colors.redAccent, fontSize: 14.0),)),
-                      //                             ],
-                      //                           )
-                      //                         ],
-                      //                       ),
-                      //                     ),
-                      //                   );
-                      //
-                      //
-                      //                   if(carts.length>0) {
-                      //                     showDialog(context: context,
-                      //                         builder: (
-                      //                             BuildContext context) => errorDialog);
-                      //                   }else{
-                      //                     addLocation().then((value) {setupBanner();});
-                      //
-                      //                   }
-                      //
-                      //
-                      //                   setState(() {
-                      //
-                      //                   });
-                      //                 },
-                      //
-                      //
-                      //                 child: Text(
-                      //                   'Change',
-                      //                   style: TextStyle(fontSize: 16, fontWeight: FontWeight.w600,color: Colors.green),
-                      //                 ),
-                      //               ),
-                      //
-                      //             ],
-                      //           ),
-                      //           //SizedBox(height: 20,),
-                      //
-                      //
-                      //
-                      //
-                      //
-                      //         ],
-                      //       ),
-                      //     ),
-                      //
-                      //   ),
-                      // ),
+          // AddressMenu(
+          //
+          //   icons: [
+          //     Icon(Icons.person),
+          //     Icon(Icons.settings),
+          //     Icon(Icons.credit_card),
+          //   ],
+          //   iconColor: Colors.white,
+          //   onChange: (index) {
+          //     print(index);
+          //   },
+          // ),
+                      Padding(
+                        padding: const EdgeInsets.fromLTRB(15, 0, 15, 15),
+                        child: Container(
+                          decoration: BoxDecoration(
+                            shape: BoxShape.rectangle,
+                            borderRadius: BorderRadius.all(Radius.circular(10.0)),
+                            color: Colors.white,
+
+                            boxShadow: [
+                              BoxShadow(
+                                color: Colors.grey.withOpacity(0.75),
+                                spreadRadius: 5,
+                                blurRadius: 7,
+                                offset: Offset(0, 3),
+                              ),
+                            ],
+                          ),
+
+                          width: screenWidth(context)-10,
+                          child: Padding(
+                            padding: EdgeInsets.all(15),
+                            child: Column(
+                              crossAxisAlignment:CrossAxisAlignment.start,
+                              children: [
+
+                                Row(
+                                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                                  children: [
+
+                                    Row(
+                                      children: [
+                                        Icon(Icons.location_on),
+                                        SizedBox(width: 10,),
+
+                                        Container(
+                                          width: screenWidth(context)/2,
+                                          child: Text(
+
+                                            PickedAddress,
+                                            style: TextStyle(fontSize: 12, fontWeight: FontWeight.w300,color: Colors.black),
+                                            textAlign: TextAlign.left,
+                                            maxLines: 4,
+                                          ),
+                                        ),
+                                      ],
+                                    ),
+                                    GestureDetector(
+                                      onTap: (){
+
+                                        Dialog errorDialog = Dialog(
+                                          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12.0)), //this right here
+                                          child: Container(
+                                            height: 180.0,
+                                            width: screenWidth(context),
+
+                                            child: Column(
+                                              mainAxisAlignment: MainAxisAlignment.center,
+                                              children: <Widget>[
+                                                SizedBox(height: 20,),
+
+                                                Padding(
+                                                  padding:  EdgeInsets.all(1.0),
+                                                  child: Text('Change Location', style: TextStyle(color: Colors.red,fontSize: 18,fontWeight: FontWeight.w500),),
+                                                ),
+                                                // SizedBox(height: 20,),
+
+
+                                                Padding(
+                                                  padding:  EdgeInsets.all(20.0),
+                                                  child: Text('Changing your location will clear your Cart are you sure you want to change your Location ?', style: TextStyle(color: Colors.black,fontSize: 14),),
+                                                ),
+
+
+
+                                                SizedBox(height: 10,),
+                                                Row(
+                                                  mainAxisAlignment: MainAxisAlignment.end,
+                                                  crossAxisAlignment: CrossAxisAlignment.end,
+                                                  children: [
+                                                    FlatButton(
+
+                                                        onPressed: (){
+                                                          Navigator.of(context).pop();
+
+                                                        },
+                                                        child: Text('Dismiss', style: TextStyle(color: Colors.grey, fontSize: 14.0),)),
+
+                                                    FlatButton(onPressed: (){
+
+                                                      FirebaseDatabase database = new FirebaseDatabase();
+
+                                                      DatabaseReference del = database
+                                                          .reference();
+
+
+                                                      del =
+                                                          database.reference()
+                                                              .child("Cart")
+                                                              .child(
+                                                              DataStream
+                                                                  .UserId);
+                                                      del.remove().then((
+                                                          value) {
+                                                        carts.clear();
+                                                        Navigator.of(context)
+                                                            .pop();
+
+                                                        addLocation().then((value) {setupBanner();});
+
+                                                        setState(() {
+
+                                                        });
+                                                      });
+
+
+                                                    },
+                                                        child: Text('Change Location', style: TextStyle(color: Colors.redAccent, fontSize: 14.0),)),
+                                                  ],
+                                                )
+                                              ],
+                                            ),
+                                          ),
+                                        );
+
+
+                                        if(carts.length>0) {
+                                          showDialog(context: context,
+                                              builder: (
+                                                  BuildContext context) => errorDialog);
+                                        }else{
+
+
+
+                                          showDialog(context: context,
+                                              builder: (BuildContext context) {
+                                                return ChangeLocationDialogue(
+                                                   // title: "Charge Location",
+                                                   // description: "Base Delivery Charges are Rs.${DataStream.DeliverCharges}, Delivery Charges for Pharmacies are Rs.${DataStream.DeliverChargesPharmacy} and Delivery Charges for each addition shop are Rs.${DataStream.delivery_charges_per_shop}",
+                                                    // orderId: "# " ,
+                                                  //  buttonText: "Ok",
+                                                   // context:context
+
+                                                );
+                                              }
+                                          ).then((value) {
+
+                                            setState(() {
+
+                                            });
+                                          });
+
+
+
+                                        }
+
+
+                                        setState(() {
+
+                                        });
+                                      },
+
+
+                                      child: Text(
+                                        'Change',
+                                        style: TextStyle(fontSize: 16, fontWeight: FontWeight.w600,color: Colors.green),
+                                      ),
+                                    ),
+
+                                  ],
+                                ),
+                                //SizedBox(height: 20,),
+
+
+
+
+
+                              ],
+                            ),
+                          ),
+
+                        ),
+                      ),
                       Padding(
                         padding: const EdgeInsets.fromLTRB(15, 0, 15, 15),
                         child: Container(

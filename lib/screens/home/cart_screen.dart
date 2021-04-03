@@ -5,7 +5,9 @@ import 'package:Doorstep/models/Product.dart';
 import 'package:Doorstep/models/Shops.dart';
 import 'package:Doorstep/screens/auth/sign-in.dart';
 import 'package:Doorstep/screens/first-screen.dart';
+import 'package:Doorstep/styles/CustomDialogBox.dart';
 import 'package:Doorstep/utilts/UI/DataStream.dart';
+import 'package:Doorstep/utilts/UI/info_dialogue.dart';
 import 'package:cache_image/cache_image.dart';
 import 'package:firebase_auth/firebase_auth.dart';
  import 'package:firebase_database/firebase_database.dart';
@@ -169,9 +171,15 @@ class _CartScreenState extends State<CartScreen> {
     });
 
   }
+  int shopcount=0;
+  String shopIDchk="";
 
 
   _onEntryChanged(Event event) {
+
+
+
+
     var old = carts.singleWhere((entry) {
       return entry.key == event.snapshot.key;
     });
@@ -184,6 +192,13 @@ class _CartScreenState extends State<CartScreen> {
   }
 
   _onEntryAdded(Event event) {
+
+    if(Cart.fromSnapshot(event.snapshot).shopid!=shopIDchk){
+      shopIDchk=Cart.fromSnapshot(event.snapshot).shopid;
+      shopcount++;
+
+    }
+
     setState(() {
       carts.add(Cart.fromSnapshot(event.snapshot));
       if(Cart.fromSnapshot(event.snapshot).shopcatagory=="Pharmacy"){
@@ -290,6 +305,8 @@ class _CartScreenState extends State<CartScreen> {
                                 final FirebaseDatabase _databaseCustom = FirebaseDatabase.instance;
                                 _databaseCustom.reference().child("Cart").child(userid).child(snapshot.key).remove().then((value) {
                                   setState(() {
+                                    shopcount=0;
+                                    shopIDchk="";
                                     caltotal();
                                     setuplist();
 
@@ -379,7 +396,7 @@ class _CartScreenState extends State<CartScreen> {
                   crossAxisAlignment: CrossAxisAlignment.center,
                   children: [
                     Container(
-                      height: 150,
+                      height: 175,
                       width: screenWidth(context)-40,
 
                       decoration: BoxDecoration(
@@ -417,25 +434,7 @@ class _CartScreenState extends State<CartScreen> {
                                 ),
                               ],
                             ),
-                            SizedBox(height: 5,),
-                            Row(
-                              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                              children: [
-                                Text(
-                                  'Delivery Charges ',
-                                  style: TextStyle(fontSize: 16, fontWeight: FontWeight.w300,color: Colors.black),
-                                ),
-                                hasPharmacy?
-                                Text(
-                                  'Rs. ${DataStream.DeliverChargesPharmacy}',
-                                  style: TextStyle(fontSize: 16, fontWeight: FontWeight.w300,color: Colors.black),
-                                ):
-                                Text(
-                                  'Rs. ${DataStream.DeliverCharges}',
-                                  style: TextStyle(fontSize: 16, fontWeight: FontWeight.w300,color: Colors.black),
-                                ),
-                              ],
-                            ),
+
                             SizedBox(height: 5,),
                             Row(
                               mainAxisAlignment: MainAxisAlignment.spaceBetween,
@@ -450,6 +449,73 @@ class _CartScreenState extends State<CartScreen> {
                                 ),
                               ],
                             ),
+                            SizedBox(height: 5,),
+                            Row(
+                              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                              children: [
+                                Text(
+                                  'Delivery Charges ',
+                                  style: TextStyle(fontSize: 16, fontWeight: FontWeight.w300,color: Colors.black),
+                                ),
+                                // hasPharmacy?
+                                // Text(
+                                //   'Rs. ${calDeliveryCharges()}',
+                                //   style: TextStyle(fontSize: 16, fontWeight: FontWeight.w300,color: Colors.black),
+                                // ):
+                                Text(
+                                  'Rs. ${calDeliveryCharges()}',
+                                  style: TextStyle(fontSize: 16, fontWeight: FontWeight.w300,color: Colors.black),
+                                ),
+                              ],
+                            ),
+                            SizedBox(height: 5,),
+
+                            shopcount>1?
+                            GestureDetector(
+                              onTap:() {
+                                showDialog(context: context,
+                                    builder: (BuildContext context) {
+                                      return InfoDialog(
+                                        title: "Delivery Charges",
+                                        description: "Base Delivery Charges are Rs.${DataStream.DeliverCharges}, Delivery Charges for Pharmacies are Rs.${DataStream.DeliverChargesPharmacy} and Delivery Charges for each addition shop are Rs.${DataStream.delivery_charges_per_shop}",
+                                       // orderId: "# " ,
+                                        buttonText: "Ok",
+
+                                      );
+                                    }
+                                );
+                              },
+                              child: Row(
+                                crossAxisAlignment: CrossAxisAlignment.center,
+                                mainAxisAlignment: MainAxisAlignment
+                                    .center,
+
+                                children: [
+                                  Icon(Icons.warning_amber_outlined,color: Colors.amber,size: 15,),
+                                  SizedBox(width: 10,),
+                                  Column(
+                                    children: [
+                                      //
+                                      Container(
+                                         width: screenWidth(context)-120,
+                                        child: Text(
+                                          'Multiple shops orders have additional delivery charges',
+                                          maxLines: 2,
+                                          textAlign: TextAlign.center,
+
+                                          style: TextStyle(fontSize: 12,
+
+                                              fontWeight: FontWeight.w300,
+                                              color: Colors.black),
+                                        ),
+                                      ),
+
+                                    ],
+                                  ),
+
+                                ],
+                              ),
+                            ):SizedBox(),
                             SizedBox(height: 10,),
                             Container(
                               height: 1,
@@ -555,7 +621,8 @@ class _CartScreenState extends State<CartScreen> {
                                                 },
                                                 child: Text('Dismiss', style: TextStyle(color: Colors.grey, fontSize: 14.0),)),
 
-                                            FlatButton(onPressed: (){
+                                            FlatButton(
+                                                onPressed: (){
 
 
                                               FirebaseDatabase database = new FirebaseDatabase();
@@ -657,6 +724,24 @@ class _CartScreenState extends State<CartScreen> {
       Center(child: Text("Empty")),
     );
 
+  }
+
+  int calDeliveryCharges(){
+
+    int baseCharges=0;
+    if(hasPharmacy){
+      baseCharges=DataStream.DeliverChargesPharmacy;
+    }else{
+      baseCharges=DataStream.DeliverCharges;
+
+    }
+
+    for(int i=1;i<=shopcount-1;i++){
+      baseCharges=baseCharges+DataStream.delivery_charges_per_shop;
+
+    }
+
+    return baseCharges;
   }
 
   void setupCart(){

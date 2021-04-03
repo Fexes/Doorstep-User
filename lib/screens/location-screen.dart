@@ -1,6 +1,7 @@
 import 'dart:convert';
 import 'dart:io';
 
+import 'package:Doorstep/models/Addresses.dart';
 import 'package:Doorstep/models/AppUser.dart';
 import 'package:Doorstep/screens/home/home_screen.dart';
 import 'package:Doorstep/styles/styles.dart';
@@ -129,7 +130,10 @@ class LocationScreenState extends State<LocationScreen> {
 
 
   static FirebaseUser userD;
+
   Future<Timer> loadData() async {
+
+    DataStream.addresses = new List();
 
 //    Timer(
 //        Duration(seconds: 3), () {
@@ -146,9 +150,9 @@ class LocationScreenState extends State<LocationScreen> {
 
 
 
-          final locationDbRef = FirebaseDatabase.instance.reference().child("Users").child(DataStream.UserId);
+          final userDbRef = FirebaseDatabase.instance.reference().child("Users").child(DataStream.UserId);
 
-          locationDbRef.once().then((value) async {
+          userDbRef.once().then((value) async {
             if(value.value!=null){
 
               DataStream.appuser= new AppUser(value.value["first_name"], value.value["last_name"],value.value["phone"] , value.value["email"],value.value["userTokenID"]);
@@ -161,17 +165,34 @@ class LocationScreenState extends State<LocationScreen> {
                 DatabaseReference db = database.reference()
                     .child('Users').child(DataStream.UserId);
 
-                db.set(<dynamic, dynamic>{
-                  'first_name':  DataStream.appuser.first_name,
-                  'last_name':  DataStream.appuser.last_name,
-                  'phone':  DataStream.appuser.phone,
-                  'email':  DataStream.appuser.email,
+                db.update({
                   'userTokenID':token,
-
-                }).then((value) {
-                  print("Token Set");
                 });
 
+                // db.set(<dynamic, dynamic>{
+                //   'first_name':  DataStream.appuser.first_name,
+                //   'last_name':  DataStream.appuser.last_name,
+                //   'phone':  DataStream.appuser.phone,
+                //   'email':  DataStream.appuser.email,
+                //
+                //   // 'first_name':  " ",
+                //   // 'last_name': " ",
+                //   // 'phone': "+921234567890",
+                //   // 'email':  " ",
+                //   'userTokenID':token,
+                //
+                // }).then((value) {
+                //   print("Token Set");
+                // });
+
+              });
+
+              final locationDbRef = FirebaseDatabase.instance.reference().child("Users").child(DataStream.UserId).child("addresses");
+              locationDbRef.onChildAdded.listen((event) {
+
+                DataStream.addresses.add(Addresses.fromSnapshot(event.snapshot));
+
+                print(Addresses.fromSnapshot(event.snapshot).key);
               });
 
 
@@ -179,9 +200,7 @@ class LocationScreenState extends State<LocationScreen> {
 
               });
             }
-
-
-
+            
           }
           );
         }
@@ -459,6 +478,7 @@ bool error=false;
 
             DataStream.DeliverCharges = value.value['delivery_charges'];
             DataStream.DeliverChargesPharmacy = value.value['delivery_charges_pharmacy'];
+            DataStream.delivery_charges_per_shop = value.value['delivery_charges_per_shop'];
 
             final locationDbRef = FirebaseDatabase.instance.reference().child(
                 "Admin").child("Radius");

@@ -11,6 +11,7 @@ import 'package:Doorstep/styles/PrescriptionDialogBox.dart';
 import 'package:Doorstep/styles/PrescriptionImageDialogBox.dart';
 import 'package:Doorstep/styles/PromoDialogBox.dart';
 import 'package:Doorstep/utilts/UI/DataStream.dart';
+import 'package:Doorstep/utilts/UI/info_dialogue.dart';
 import 'package:Doorstep/utilts/UI/promo_dialogue.dart';
 import 'package:firebase_auth/firebase_auth.dart';
  import 'package:firebase_database/firebase_database.dart';
@@ -150,13 +151,13 @@ class _CheckOutScreenState extends State<CheckOutScreen> {
     getodercount();
     DataStream.PromoCode = null;
     setuplist();
-    DeliverCharges = DataStream.DeliverCharges;
-    DeliverChargesPharmacy = DataStream.DeliverChargesPharmacy;
+  //  DeliverCharges = DataStream.DeliverCharges;
+  //  DeliverChargesPharmacy = DataStream.DeliverChargesPharmacy;
     getUserDetails();
   }
 
-  int DeliverCharges;
-  int DeliverChargesPharmacy;
+ // int DeliverCharges;
+ // int DeliverChargesPharmacy;
   int Discount = 0;
 
   bool userdetails = false;
@@ -301,11 +302,9 @@ class _CheckOutScreenState extends State<CheckOutScreen> {
     for (int i = 0; i <= carts.length - 1; i++) {
       total = total + (carts[i].no_of_items * carts[i].cardprice);
     }
-    if (hasPharmacy) {
-      return (total + DeliverChargesPharmacy) - Discount;
-    } else {
-      return (total + DeliverCharges) - Discount;
-    }
+
+      return (total + calDeliveryCharges()) - Discount;
+
   }
 
   bool hasNacotic = false;
@@ -527,7 +526,7 @@ class _CheckOutScreenState extends State<CheckOutScreen> {
                             padding: const EdgeInsets.all(5.0),
                             child: Container(
 
-                              height: 185,
+                              height: 205,
                               width: screenWidth(context) - 10,
                               child: Padding(
                                 padding: EdgeInsets.all(20),
@@ -567,12 +566,8 @@ class _CheckOutScreenState extends State<CheckOutScreen> {
                                                   null) {
                                                 Discount = DataStream.PromoCode
                                                     .discount;
-                                                DeliverCharges =
-                                                    DataStream.PromoCode
-                                                        .delivery;
-                                                DeliverChargesPharmacy =
-                                                    DataStream.PromoCode
-                                                        .delivery;
+
+
 
                                                 setState(() {
 
@@ -631,31 +626,7 @@ class _CheckOutScreenState extends State<CheckOutScreen> {
                                       ],
                                     ),
 
-                                    SizedBox(height: 5,),
-                                    Row(
-                                      mainAxisAlignment: MainAxisAlignment
-                                          .spaceBetween,
-                                      children: [
-                                        Text(
-                                          'Delivery Charges ',
-                                          style: TextStyle(fontSize: 16,
-                                              fontWeight: FontWeight.w300,
-                                              color: Colors.black),
-                                        ),
-                                        hasPharmacy ?
-                                        Text(
-                                          'Rs. ${DeliverChargesPharmacy}',
-                                          style: TextStyle(fontSize: 16,
-                                              fontWeight: FontWeight.w300,
-                                              color: Colors.black),
-                                        ) : Text(
-                                          'Rs. ${DeliverCharges}',
-                                          style: TextStyle(fontSize: 16,
-                                              fontWeight: FontWeight.w300,
-                                              color: Colors.black),
-                                        ),
-                                      ],
-                                    ),
+
                                     SizedBox(height: 5,),
                                     Row(
                                       mainAxisAlignment: MainAxisAlignment
@@ -675,6 +646,73 @@ class _CheckOutScreenState extends State<CheckOutScreen> {
                                         ),
                                       ],
                                     ),
+                                    SizedBox(height: 5,),
+                                    Row(
+                                      mainAxisAlignment: MainAxisAlignment
+                                          .spaceBetween,
+                                      children: [
+                                        Text(
+                                          'Delivery Charges ',
+                                          style: TextStyle(fontSize: 16,
+                                              fontWeight: FontWeight.w300,
+                                              color: Colors.black),
+                                        ),
+                                        Text(
+                                          'Rs. ${calDeliveryCharges()}',
+                                          style: TextStyle(fontSize: 16,
+                                              fontWeight: FontWeight.w300,
+                                              color: Colors.black),
+                                        ),
+                                      ],
+                                    ),
+                                    SizedBox(height: 5,),
+
+                                    shopcount>1?
+                                    GestureDetector(
+                                      onTap:() {
+                                        showDialog(context: context,
+                                            builder: (BuildContext context) {
+                                              return InfoDialog(
+                                                title: "Delivery Charges",
+                                                description: "Base Delivery Charges are Rs.${DataStream.DeliverCharges}, Delivery Charges for Pharmacies are Rs.${DataStream.DeliverChargesPharmacy} and Delivery Charges for each addition shop are Rs.${DataStream.delivery_charges_per_shop}",
+                                                // orderId: "# " ,
+                                                buttonText: "Ok",
+
+                                              );
+                                            }
+                                        );
+                                      },
+                                      child: Row(
+                                        crossAxisAlignment: CrossAxisAlignment.center,
+                                        mainAxisAlignment: MainAxisAlignment
+                                            .center,
+
+                                        children: [
+                                          Icon(Icons.warning_amber_outlined,color: Colors.amber,size: 15,),
+                                          SizedBox(width: 10,),
+                                          Column(
+                                            children: [
+                                              //
+                                              Container(
+                                                width: screenWidth(context)-120,
+                                                child: Text(
+                                                  'Multiple shops orders have additional delivery charges',
+                                                  maxLines: 2,
+                                                  textAlign: TextAlign.center,
+
+                                                  style: TextStyle(fontSize: 12,
+
+                                                      fontWeight: FontWeight.w300,
+                                                      color: Colors.black),
+                                                ),
+                                              ),
+
+                                            ],
+                                          ),
+
+                                        ],
+                                      ),
+                                    ):SizedBox(),
                                     SizedBox(height: 10,),
                                     Container(
                                       height: 1,
@@ -1251,6 +1289,30 @@ class _CheckOutScreenState extends State<CheckOutScreen> {
 
 
 
+
+                                    SizedBox(height: 10,),
+
+                                    Row(
+                                      mainAxisAlignment: MainAxisAlignment
+                                          .spaceBetween,
+                                      children: [
+                                        Text(
+                                          'Payment Method ',
+                                          style: TextStyle(fontSize: 16,
+                                              fontWeight: FontWeight.w300,
+                                              color: Colors.black),
+                                        ),
+                                        Text(
+                                          'Cash on delivery',
+                                          style: TextStyle(fontSize: 16,
+                                              fontWeight: FontWeight.w300,
+                                              color: Colors.black),
+                                        ),
+
+                                      ],
+                                    ),
+                                    SizedBox(height: 5,),
+
                                     Row(
                                       mainAxisAlignment: MainAxisAlignment
                                           .spaceBetween,
@@ -1282,7 +1344,7 @@ class _CheckOutScreenState extends State<CheckOutScreen> {
                                     Row(
                                       crossAxisAlignment: CrossAxisAlignment.center,
                                       mainAxisAlignment: MainAxisAlignment
-                                          .start,
+                                          .center,
 
                                       children: [
                                         Icon(Icons.warning_amber_outlined,color: Colors.amber,size: 15,),
@@ -1306,27 +1368,6 @@ class _CheckOutScreenState extends State<CheckOutScreen> {
 
                                       ],
                                     ):SizedBox(),
-                                    SizedBox(height: 10,),
-
-                                    Row(
-                                      mainAxisAlignment: MainAxisAlignment
-                                          .spaceBetween,
-                                      children: [
-                                        Text(
-                                          'Payment Method ',
-                                          style: TextStyle(fontSize: 16,
-                                              fontWeight: FontWeight.w300,
-                                              color: Colors.black),
-                                        ),
-                                        Text(
-                                          'Cash on delivery',
-                                          style: TextStyle(fontSize: 16,
-                                              fontWeight: FontWeight.w300,
-                                              color: Colors.black),
-                                        ),
-
-                                      ],
-                                    ),
                                     SizedBox(height: 15,),
                                     Container(
                                       height: 1,
@@ -1784,7 +1825,7 @@ class _CheckOutScreenState extends State<CheckOutScreen> {
 
               var now = new DateTime.now();
               var date = new DateFormat('yyyy-MM-dd');
-              var time = new DateFormat('hh:mm');
+              var time = new DateFormat('HH:mm');
 
 
               ordercount.set(<dynamic, dynamic>{
@@ -2012,7 +2053,7 @@ class _CheckOutScreenState extends State<CheckOutScreen> {
 
           var now = new DateTime.now();
           var date = new DateFormat('yyyy-MM-dd');
-          var time = new DateFormat('hh:mm');
+          var time = new DateFormat('HH:mm');
 
 
           ordercount.set(<dynamic, dynamic>{
@@ -2051,6 +2092,12 @@ class _CheckOutScreenState extends State<CheckOutScreen> {
             _userRef.set(<dynamic, dynamic>{
               'no_of_items': '${carts.length}',
               'userID': DataStream.UserId,
+              'delivery_charges':calDeliveryCharges(),
+              'sub_total':calSubtotal(),
+              'discount':Discount,
+              'first_name':DataStream.appuser.first_name,
+              'last_name':DataStream.appuser.last_name,
+
               'bill': '${caltotal()}',
               'status': 'pending',
               'orderDate': date.format(now),
@@ -2064,6 +2111,35 @@ class _CheckOutScreenState extends State<CheckOutScreen> {
                   .longitude}",
 
             }).then((value) {
+
+              adminorder
+                  .child("AdminListOrders")
+                  .child(date.format(now))
+                  .child(orderID)
+                  .set(<dynamic, dynamic>{
+                'no_of_items': '${carts.length}',
+                'userID': DataStream.UserId,
+                'delivery_charges':calDeliveryCharges(),
+                'sub_total':calSubtotal(),
+                'discount':Discount,
+                'first_name':DataStream.appuser.first_name,
+                'last_name':DataStream.appuser.last_name,
+                'bill': '${caltotal()}',
+                'status': 'pending',
+                'orderDate': date.format(now),
+                'orderTime': time.format(now),
+                'phonenumber': DataStream.PhoneNumber,
+                'orderID': orderID,
+                'prescription': prescriptiondownloadUrl,
+                'userOrderNumber': order_count + 1,
+
+                'address': Useraddress + "\n" + useraddress,
+                'location': "${deliverylocation
+                    .latitude},${deliverylocation.longitude}",
+
+              });
+
+
               adminorder
                   .child("Active")
               //.child(DataStream.UserId)
@@ -2071,6 +2147,11 @@ class _CheckOutScreenState extends State<CheckOutScreen> {
                   .set(<dynamic, dynamic>{
                 'no_of_items': '${carts.length}',
                 'userID': DataStream.UserId,
+                'delivery_charges':calDeliveryCharges(),
+                'sub_total':calSubtotal(),
+                'discount':Discount,
+                'first_name':DataStream.appuser.first_name,
+                'last_name':DataStream.appuser.last_name,
                 'bill': '${caltotal()}',
                 'status': 'pending',
                 'orderDate': date.format(now),
@@ -2115,6 +2196,11 @@ class _CheckOutScreenState extends State<CheckOutScreen> {
                     .set(<dynamic, dynamic>{
                   'no_of_items': '${carts.length}',
                   'userID': DataStream.UserId,
+                  'delivery_charges':calDeliveryCharges(),
+                  'sub_total':calSubtotal(),
+                  'discount':Discount,
+                  'first_name':DataStream.appuser.first_name,
+                  'last_name':DataStream.appuser.last_name,
                   'bill': '${caltotal()}',
                   'status': 'pending',
                   'orderDate': date.format(now),
@@ -2130,7 +2216,7 @@ class _CheckOutScreenState extends State<CheckOutScreen> {
                 });
 
 
-            //    getDeviceToken(carts[i].shopid);
+               getDeviceToken(carts[i].shopid);
 
               }
 
@@ -2239,8 +2325,7 @@ class _CheckOutScreenState extends State<CheckOutScreen> {
     locationDbRef.once().then((value) async {
       print(value.value["deviceTokenID"]);
 
-      String deviceTokenID = value.value['userTokenID'];
-      sendNotification(deviceTokenID);
+       sendNotification(value.value["deviceTokenID"]);
     });
   }
 
@@ -2249,6 +2334,8 @@ class _CheckOutScreenState extends State<CheckOutScreen> {
 
     var request;
     final client = HttpClient();
+
+
 
 
     request = await client.postUrl(Uri.parse(
@@ -2263,6 +2350,25 @@ class _CheckOutScreenState extends State<CheckOutScreen> {
     response.transform(utf8.decoder).listen((contents) async {
       print(contents);
     });
+  }
+
+
+  int calDeliveryCharges(){
+
+    int baseCharges=0;
+    if(hasPharmacy){
+      baseCharges=DataStream.DeliverChargesPharmacy;
+    }else{
+      baseCharges=DataStream.DeliverCharges;
+
+    }
+
+    for(int i=1;i<=shopcount-1;i++){
+      baseCharges=baseCharges+DataStream.delivery_charges_per_shop;
+
+    }
+
+    return baseCharges;
   }
 
   String getDeliverTime() {

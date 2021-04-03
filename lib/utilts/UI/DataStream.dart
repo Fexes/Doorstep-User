@@ -1,3 +1,4 @@
+import 'package:Doorstep/models/Addresses.dart';
 import 'package:Doorstep/models/AppUser.dart';
 import 'package:Doorstep/models/Cart.dart';
 import 'package:Doorstep/models/Promo.dart';
@@ -24,9 +25,11 @@ class DataStream{
   static String ShopName;
   static int DeliverCharges;
   static int DeliverChargesPharmacy;
+  static int delivery_charges_per_shop;
   static int OrderRadius;
   static int Discount=0;
   static int MinOrder=0;
+  static List<Addresses> addresses;
 
   static int order_count=0;
 
