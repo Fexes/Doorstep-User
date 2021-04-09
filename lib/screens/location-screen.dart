@@ -14,6 +14,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_spinkit/flutter_spinkit.dart';
 import 'package:Doorstep/styles/styles.dart';
 import 'package:geolocator/geolocator.dart';
+import 'package:glutton/glutton.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:lottie/lottie.dart';
 import 'package:package_info/package_info.dart';
@@ -155,6 +156,8 @@ class LocationScreenState extends State<LocationScreen> {
           userDbRef.once().then((value) async {
             if(value.value!=null){
 
+
+
               DataStream.appuser= new AppUser(value.value["first_name"], value.value["last_name"],value.value["phone"] , value.value["email"],value.value["userTokenID"]);
 
 
@@ -167,6 +170,15 @@ class LocationScreenState extends State<LocationScreen> {
 
                 db.update({
                   'userTokenID':token,
+                });
+
+                final locationDbRef = FirebaseDatabase.instance.reference().child("Users").child(DataStream.UserId).child("addresses");
+
+                locationDbRef.onChildAdded.listen((event) {
+
+                  DataStream.addresses.add(Addresses.fromSnapshot(event.snapshot));
+
+                  print(Addresses.fromSnapshot(event.snapshot).key);
                 });
 
                 // db.set(<dynamic, dynamic>{
@@ -185,43 +197,85 @@ class LocationScreenState extends State<LocationScreen> {
                 //   print("Token Set");
                 // });
 
+              }).then((value) async {
+
+                bool isExist = await Glutton.have("SavedAddress");
+
+                if(isExist){
+                  String data = await Glutton.vomit("SavedAddress");
+
+                  for(int i=0;i<=DataStream.addresses.length-1;i++){
+                    if(DataStream.addresses[i].key==data){
+
+                      DataStream.userlocation=new LatLng(double.parse(DataStream.addresses[i].location.split(",")[0]), double.parse(DataStream.addresses[i].location.split(",")[1]));
+                      DataStream.userAddress=DataStream.addresses[i].address;
+
+                      Navigator.of(context).pushReplacement(
+                          MaterialPageRoute(
+                              builder: (context) => Home()));
+
+                      break;
+
+
+                    }
+                  }
+
+
+
+                }else{
+                  _checkGps().then((value) {
+
+
+                    if(value){
+                      //  ToastUtils.showCustomToast(context, "Getting Location", null);
+                    }else{
+
+                      ToastUtils.showCustomToast(context, "Location Service Disabled", false);
+
+                    }
+
+                  }).whenComplete(() {
+
+
+                    addLocation();
+
+                  });
+                }
+
+
+
+
               });
 
-              final locationDbRef = FirebaseDatabase.instance.reference().child("Users").child(DataStream.UserId).child("addresses");
-              locationDbRef.onChildAdded.listen((event) {
-
-                DataStream.addresses.add(Addresses.fromSnapshot(event.snapshot));
-
-                print(Addresses.fromSnapshot(event.snapshot).key);
-              });
 
 
-              setState(() {
 
-              });
             }
+
             
           }
           );
-        }
-
-        _checkGps().then((value) {
+        }else{
+          _checkGps().then((value) {
 
 
             if(value){
-            //  ToastUtils.showCustomToast(context, "Getting Location", null);
+              //  ToastUtils.showCustomToast(context, "Getting Location", null);
             }else{
 
               ToastUtils.showCustomToast(context, "Location Service Disabled", false);
 
             }
 
-        }).whenComplete(() {
+          }).whenComplete(() {
 
 
-          addLocation();
+            addLocation();
 
-        });
+          });
+        }
+
+
 
         // _checkGps().then((value){
         //   if(value){

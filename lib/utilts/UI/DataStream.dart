@@ -16,7 +16,7 @@ class DataStream{
   static String googleAPIKey ="AIzaSyBoLgH-s1XnyhCQ2PZEUbIaH_Jj2RKhMSU";
 
    static LatLng userlocation;
-  static String userAddress="";
+  static String userAddress="Current Location";
 
   static AppUser appuser;
 

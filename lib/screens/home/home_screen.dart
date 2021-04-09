@@ -1,6 +1,7 @@
 import 'dart:io';
 import 'dart:math';
 
+import 'package:Doorstep/models/Addresses.dart';
 import 'package:Doorstep/models/Banners.dart';
 import 'package:Doorstep/models/Cart.dart';
 import 'package:Doorstep/models/Order.dart';
@@ -14,6 +15,7 @@ import 'package:Doorstep/screens/home/shops_screen.dart';
 import 'package:Doorstep/screens/home/single_product.dart';
 import 'package:Doorstep/utilts/UI/ChangeLocationDialogue.dart';
 import 'package:Doorstep/utilts/UI/DataStream.dart';
+import 'package:Doorstep/utilts/UI/SelectLocationDialogue.dart';
 import 'package:badges/badges.dart';
 import 'package:bubble_bottom_bar/bubble_bottom_bar.dart';
 import 'package:cache_image/cache_image.dart';
@@ -27,6 +29,7 @@ import 'package:flutter_spinkit/flutter_spinkit.dart';
 import 'package:Doorstep/utilts/UI/toast_utility.dart';
 import 'package:flutter/material.dart';
 import 'package:Doorstep/styles/styles.dart';
+import 'package:glutton/glutton.dart';
 
 import 'package:google_map_location_picker/google_map_location_picker.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
@@ -144,7 +147,8 @@ class HomePage extends State<Home> {
 
     FirebaseAuth.instance.currentUser().then((firebaseUser){
 
-
+       PickedAddress=DataStream.userAddress;
+       PickedLocation=DataStream.userlocation;
 
       user=firebaseUser;
 
@@ -156,6 +160,27 @@ class HomePage extends State<Home> {
         getodercount();
 
          getUserDetails();
+
+
+         if(DataStream.addresses.isEmpty){
+           showDialog(context: context,
+               builder: (BuildContext context) {
+                 return ChangeLocationDialogue(
+                   // title: "Charge Location",
+                   // description: "Base Delivery Charges are Rs.${DataStream.DeliverCharges}, Delivery Charges for Pharmacies are Rs.${DataStream.DeliverChargesPharmacy} and Delivery Charges for each addition shop are Rs.${DataStream.delivery_charges_per_shop}",
+                   // orderId: "# " ,
+                   //  buttonText: "Ok",
+                   // context:context
+
+                 );
+               }
+           ).then((value) {
+
+             setState(() {
+
+             });
+           });
+         }
 
       }else{
          setupBanner();
@@ -702,6 +727,7 @@ class HomePage extends State<Home> {
                                                                     FlatButton(
 
                                                                         onPressed: (){
+                                                                          PickedAddress="Current Location";
                                                                           Navigator.of(context).pop();
 
                                                                         },
@@ -724,10 +750,28 @@ class HomePage extends State<Home> {
                                                                       del.remove().then((
                                                                           value) {
                                                                         carts.clear();
-                                                                        Navigator.of(context)
-                                                                            .pop();
 
-                                                                        addLocation().then((value) {setupBanner();});
+
+                                                                       // addLocation().then((value) {setupBanner();});
+
+
+                                                                        showDialog(context: context,
+                                                                            builder: (BuildContext context) {
+                                                                              return SelectLocationDialogue(
+                                                                                // title: "Charge Location",
+                                                                                // description: "Base Delivery Charges are Rs.${DataStream.DeliverCharges}, Delivery Charges for Pharmacies are Rs.${DataStream.DeliverChargesPharmacy} and Delivery Charges for each addition shop are Rs.${DataStream.delivery_charges_per_shop}",
+                                                                                // orderId: "# " ,
+                                                                                //  buttonText: "Ok",
+                                                                                // context:context
+
+                                                                              );
+                                                                            }
+                                                                        ).then((value) {
+
+                                                                          setState(() {
+
+                                                                          });
+                                                                        });
 
                                                                         setState(() {
 
@@ -745,15 +789,46 @@ class HomePage extends State<Home> {
                                                         );
 
 
-                                                        if(carts.length>0) {
-                                                          showDialog(context: context,
-                                                              builder: (
-                                                                  BuildContext context) => errorDialog);
+                                                        if( FirebaseAuth.instance.currentUser()!=null) {
+                                                          if (carts.length >
+                                                              0) {
+                                                            showDialog(
+                                                                context: context,
+                                                                builder: (
+                                                                    BuildContext context) => errorDialog);
+                                                          } else {
+                                                            // addLocation().then((value) {setupBanner();});
+
+
+                                                            showDialog(
+                                                                context: context,
+                                                                builder: (
+                                                                    BuildContext context) {
+                                                                  return SelectLocationDialogue(
+                                                                    // title: "Charge Location",
+                                                                    // description: "Base Delivery Charges are Rs.${DataStream.DeliverCharges}, Delivery Charges for Pharmacies are Rs.${DataStream.DeliverChargesPharmacy} and Delivery Charges for each addition shop are Rs.${DataStream.delivery_charges_per_shop}",
+                                                                    // orderId: "# " ,
+                                                                    //  buttonText: "Ok",
+                                                                    // context:context
+
+                                                                  );
+                                                                }
+                                                            ).then((value) {
+                                                              setupBanner();
+                                                              PickedAddress =
+                                                                  DataStream
+                                                                      .userAddress;
+                                                              PickedLocation =
+                                                                  DataStream
+                                                                      .userlocation;
+                                                              setState(() {
+
+                                                              });
+                                                            });
+                                                          }
                                                         }else{
-                                                          addLocation().then((value) {setupBanner();});
-
+                                                          addLocation();
                                                         }
-
 
                                                         setState(() {
 
@@ -1931,7 +2006,7 @@ class HomePage extends State<Home> {
                                               DatabaseReference db = database.reference()
                                                   .child('Users').child(DataStream.UserId);
 
-                                              db.set(<dynamic, dynamic>{
+                                              db.update({
                                                 'first_name': firstname.text,
                                                 'last_name': lasename.text,
                                                 'phone':DataStream.PhoneNumber,
@@ -1977,7 +2052,7 @@ class HomePage extends State<Home> {
                                           style: TextStyle(fontSize: 16, fontWeight: FontWeight.w300,color: Colors.black),
                                         ),
                                         Text(
-                                          appuser.first_name+" "+appuser.last_name,
+                                          "${appuser.first_name} ${appuser.last_name}",
                                           style: TextStyle(fontSize: 16, fontWeight: FontWeight.w300,color: Colors.black),
                                         ),
 
@@ -2012,7 +2087,7 @@ class HomePage extends State<Home> {
                                           style: TextStyle(fontSize: 16, fontWeight: FontWeight.w300,color: Colors.black),
                                         ),
                                         Text(
-                                          appuser.email+"",
+                                          "${appuser.email}",
                                           style: TextStyle(fontSize: 16, fontWeight: FontWeight.w300,color: Colors.black),
                                         ),
 
@@ -2079,7 +2154,7 @@ class HomePage extends State<Home> {
                                           width: screenWidth(context)/2,
                                           child: Text(
 
-                                            PickedAddress,
+                                            "Add Address",
                                             style: TextStyle(fontSize: 12, fontWeight: FontWeight.w300,color: Colors.black),
                                             textAlign: TextAlign.left,
                                             maxLines: 4,
@@ -2123,12 +2198,13 @@ class HomePage extends State<Home> {
                                                     FlatButton(
 
                                                         onPressed: (){
-                                                          Navigator.of(context).pop();
+                                                           Navigator.of(context).pop();
 
                                                         },
                                                         child: Text('Dismiss', style: TextStyle(color: Colors.grey, fontSize: 14.0),)),
 
                                                     FlatButton(onPressed: (){
+
 
                                                       FirebaseDatabase database = new FirebaseDatabase();
 
@@ -2145,14 +2221,27 @@ class HomePage extends State<Home> {
                                                       del.remove().then((
                                                           value) {
                                                         carts.clear();
-                                                        Navigator.of(context)
-                                                            .pop();
 
-                                                        addLocation().then((value) {setupBanner();});
 
-                                                        setState(() {
 
-                                                        });
+
+                                                        showDialog(context: context,
+                                                            builder: (BuildContext context) {
+                                                              return ChangeLocationDialogue(
+                                                                // title: "Charge Location",
+                                                                // description: "Base Delivery Charges are Rs.${DataStream.DeliverCharges}, Delivery Charges for Pharmacies are Rs.${DataStream.DeliverChargesPharmacy} and Delivery Charges for each addition shop are Rs.${DataStream.delivery_charges_per_shop}",
+                                                                // orderId: "# " ,
+                                                                //  buttonText: "Ok",
+                                                                // context:context
+
+                                                              );
+                                                            }
+                                                        ).then((value) {
+
+
+                                                          setupBanner();});
+
+
                                                       });
 
 
@@ -2171,17 +2260,24 @@ class HomePage extends State<Home> {
                                               builder: (
                                                   BuildContext context) => errorDialog);
                                         }else{
+                                          DataStream.addresses.clear();
 
+                                          final locationDbRef = FirebaseDatabase.instance.reference().child("Users").child(DataStream.UserId).child("addresses");
+                                          locationDbRef.onChildAdded.listen((event) {
 
+                                            DataStream.addresses.add(Addresses.fromSnapshot(event.snapshot));
+
+                                            print(Addresses.fromSnapshot(event.snapshot).key);
+                                          });
 
                                           showDialog(context: context,
                                               builder: (BuildContext context) {
                                                 return ChangeLocationDialogue(
-                                                   // title: "Charge Location",
-                                                   // description: "Base Delivery Charges are Rs.${DataStream.DeliverCharges}, Delivery Charges for Pharmacies are Rs.${DataStream.DeliverChargesPharmacy} and Delivery Charges for each addition shop are Rs.${DataStream.delivery_charges_per_shop}",
-                                                    // orderId: "# " ,
+                                                  // title: "Charge Location",
+                                                  // description: "Base Delivery Charges are Rs.${DataStream.DeliverCharges}, Delivery Charges for Pharmacies are Rs.${DataStream.DeliverChargesPharmacy} and Delivery Charges for each addition shop are Rs.${DataStream.delivery_charges_per_shop}",
+                                                  // orderId: "# " ,
                                                   //  buttonText: "Ok",
-                                                   // context:context
+                                                  // context:context
 
                                                 );
                                               }
@@ -2191,6 +2287,12 @@ class HomePage extends State<Home> {
 
                                             });
                                           });
+                                          setState(() {
+
+                                          });
+
+
+
 
 
 
@@ -2204,7 +2306,7 @@ class HomePage extends State<Home> {
 
 
                                       child: Text(
-                                        'Change',
+                                        'Add',
                                         style: TextStyle(fontSize: 16, fontWeight: FontWeight.w600,color: Colors.green),
                                       ),
                                     ),
@@ -2256,9 +2358,14 @@ class HomePage extends State<Home> {
 
                               FirebaseAuth.instance.currentUser().then((firebaseUser) async {
                                 if(firebaseUser != null){
-                                  await FirebaseAuth.instance.signOut();
+                                  bool isSuccess =  await Glutton.flush();
 
-                                  Navigator.of(context).pushReplacement(MaterialPageRoute(builder: (context) => SignIn()));
+                                  if(isSuccess){
+                                    await FirebaseAuth.instance.signOut();
+
+                                    Navigator.of(context).pushReplacement(MaterialPageRoute(builder: (context) => SignIn()));
+                                  }
+
 
                                 }
 

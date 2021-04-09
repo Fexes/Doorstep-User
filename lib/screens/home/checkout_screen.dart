@@ -148,6 +148,10 @@ class _CheckOutScreenState extends State<CheckOutScreen> {
     _focusNode2.addListener(_onOnFocusNodeEvent);
     _add();
 
+    if(DataStream.userAddress!=""){
+      isaddressaded=true;
+    }
+
     getodercount();
     DataStream.PromoCode = null;
     setuplist();
@@ -244,6 +248,7 @@ class _CheckOutScreenState extends State<CheckOutScreen> {
   AppUser appuser = DataStream.appuser;
 
   String useraddress = "";
+  String usernote = "";
 
 
   bool ismultoshop=false;
@@ -1129,7 +1134,7 @@ class _CheckOutScreenState extends State<CheckOutScreen> {
                                                   .child('Users').child(
                                                   DataStream.UserId);
 
-                                              db.set(<dynamic, dynamic>{
+                                              db.update({
                                                 'first_name': firstname.text,
                                                 'last_name': lasename.text,
                                                 'phone': DataStream.PhoneNumber,
@@ -1194,8 +1199,8 @@ class _CheckOutScreenState extends State<CheckOutScreen> {
                                                   color: Colors.black),
                                             ),
                                             Text(
-                                              appuser.first_name + " " +
-                                                  appuser.last_name,
+                                              "${appuser.first_name} ${appuser.last_name}",
+
                                               style: TextStyle(fontSize: 16,
                                                   fontWeight: FontWeight.w300,
                                                   color: Colors.black),
@@ -1240,7 +1245,7 @@ class _CheckOutScreenState extends State<CheckOutScreen> {
                                                   color: Colors.black),
                                             ),
                                             Text(
-                                              appuser.email + "",
+                                              "${appuser.email}",
                                               style: TextStyle(fontSize: 16,
                                                   fontWeight: FontWeight.w300,
                                                   color: Colors.black),
@@ -1427,6 +1432,14 @@ class _CheckOutScreenState extends State<CheckOutScreen> {
                                                   markers.values),
                                             ),
                                           ),
+                                          SizedBox(height: 15,),
+
+                                          Text(
+                                            DataStream.userAddress,
+                                            style: TextStyle(fontSize: 14,
+                                                fontWeight: FontWeight.w400,
+                                                color: Colors.black),
+                                          ),
 
                                         ],
                                       ),
@@ -1434,11 +1447,13 @@ class _CheckOutScreenState extends State<CheckOutScreen> {
 
                                     SizedBox(height: 15,),
 
+
                                     Form(
                                       key: _formKey,
 
                                       child: Column(
                                         children: [
+                                          DataStream.userAddress==""?
                                           Container(
                                             margin: EdgeInsets.only(
                                                 bottom: 18.0),
@@ -1452,6 +1467,7 @@ class _CheckOutScreenState extends State<CheckOutScreen> {
                                                       0.7,
                                                   child: TextFormField(
                                                     maxLength: 150,
+                                                    initialValue: DataStream.userAddress,
 
                                                     cursorColor: primaryDark,
                                                     cursorRadius: Radius
@@ -1493,7 +1509,7 @@ class _CheckOutScreenState extends State<CheckOutScreen> {
                                                       ),
                                                       labelText: "Delivery Address",
                                                     ),
-                                                    focusNode: _focusNode,
+                                              //      focusNode: _focusNode,
                                                   ),
                                                 ),
                                               ],
@@ -1508,9 +1524,68 @@ class _CheckOutScreenState extends State<CheckOutScreen> {
                                                     width: 2.0),
                                               ),
                                             ),
-                                          ),
+                                          ):SizedBox(),
+
+                                          Container(
+                                            margin: EdgeInsets.only(
+                                                bottom: 18.0),
+                                            child: Row(
+
+                                              children: <Widget>[
+                                                Icon(Icons.note, size: 25,),
+                                                //   Image.asset("assets/icons/user-grey.png", height: 16.0, width: 16.0,),
+                                                Container(
+                                                  width: screenWidth(context) *
+                                                      0.7,
+                                                  child: TextFormField(
+                                                    maxLength: 150,
+
+                                                    cursorColor: primaryDark,
+                                                    cursorRadius: Radius
+                                                        .circular(1.0),
+                                                    cursorWidth: 1.0,
+                                                    keyboardType: TextInputType
+                                                        .text,
+
+                                                    onChanged: (text) {
 
 
+                                                      usernote =
+                                                          text.toString();
+
+                                                      setState(() {
+
+                                                      });
+                                                    },
+
+                                                    decoration: InputDecoration(
+                                                      contentPadding: EdgeInsets
+                                                          .only(left: 10.0,
+                                                          right: 0.0,
+                                                          top: 10.0,
+                                                          bottom: 12.0),
+                                                      border: OutlineInputBorder(
+                                                          borderSide: BorderSide
+                                                              .none
+                                                      ),
+                                                      labelText: "Note i.e Bring Change (Optional)",
+                                                    ),
+                                                   // focusNode: _focusNode,
+                                                  ),
+                                                ),
+                                              ],
+                                            ),
+                                            decoration: new BoxDecoration(
+                                              border: new Border(
+                                                bottom: BorderSide(
+                                                    color: _focusNode.hasFocus
+                                                        ? primaryDark
+                                                        : border,
+                                                    style: BorderStyle.solid,
+                                                    width: 2.0),
+                                              ),
+                                            ),
+                                          )
                                         ],
                                       ),
 
@@ -1860,6 +1935,7 @@ class _CheckOutScreenState extends State<CheckOutScreen> {
                   'orderID': orderID,
                   'prescription': prescriptiondownloadUrl,
                   'address': Useraddress + "\n" + useraddress,
+                  'usernote':usernote,
                   'location': "${deliverylocation.latitude},${deliverylocation
                       .longitude}",
 
@@ -1878,6 +1954,7 @@ class _CheckOutScreenState extends State<CheckOutScreen> {
                     'phonenumber': DataStream.PhoneNumber,
                     'orderID': orderID,
                     'prescription': prescriptiondownloadUrl,
+                    'usernote':usernote,
 
                     'address': Useraddress + "\n" + useraddress,
                     'location': "${deliverylocation
@@ -1921,6 +1998,7 @@ class _CheckOutScreenState extends State<CheckOutScreen> {
                       'phonenumber': DataStream.PhoneNumber,
                       'orderID': orderID,
                       'prescription': prescriptiondownloadUrl,
+                      'usernote':usernote,
 
                       'address': Useraddress + "\n" + useraddress,
                       'location': "${deliverylocation
@@ -2107,6 +2185,8 @@ class _CheckOutScreenState extends State<CheckOutScreen> {
               'userOrderNumber': order_count + 1,
               'prescription': prescriptiondownloadUrl,
               'address': Useraddress + "\n" + useraddress,
+              'usernote':usernote,
+
               'location': "${deliverylocation.latitude},${deliverylocation
                   .longitude}",
 
@@ -2132,6 +2212,7 @@ class _CheckOutScreenState extends State<CheckOutScreen> {
                 'orderID': orderID,
                 'prescription': prescriptiondownloadUrl,
                 'userOrderNumber': order_count + 1,
+                'usernote':usernote,
 
                 'address': Useraddress + "\n" + useraddress,
                 'location': "${deliverylocation
@@ -2161,6 +2242,7 @@ class _CheckOutScreenState extends State<CheckOutScreen> {
                 'prescription': prescriptiondownloadUrl,
                 'userOrderNumber': order_count + 1,
 
+                'usernote':usernote,
                 'address': Useraddress + "\n" + useraddress,
                 'location': "${deliverylocation
                     .latitude},${deliverylocation.longitude}",
@@ -2209,6 +2291,8 @@ class _CheckOutScreenState extends State<CheckOutScreen> {
                   'orderID': orderID,
                   'prescription': prescriptiondownloadUrl,
                   'userOrderNumber': order_count + 1,
+                  'usernote':usernote,
+
                   'address': Useraddress + "\n" + useraddress,
                   'location': "${deliverylocation
                       .latitude},${deliverylocation.longitude}",

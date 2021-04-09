@@ -341,11 +341,11 @@ class _SignInState extends State<SignIn> {
           DatabaseReference db = database.reference()
               .child('Users').child(DataStream.UserId);
 
-          db.set(<dynamic, dynamic>{
-            'first_name': "",
-            'last_name': "",
+          db.update({
+          //  'first_name': "",
+         //   'last_name': "",
             'phone': user.phoneNumber,
-            'email': "",
+          //  'email': "",
             'userTokenID':DataStream.userTokenID,
 
           });
@@ -435,11 +435,11 @@ class _SignInState extends State<SignIn> {
                               DatabaseReference db = database.reference()
                                   .child('Users').child(DataStream.UserId);
 
-                              db.set(<dynamic, dynamic>{
-                                'first_name': "",
-                                'last_name': "",
+                              db.update({
+                              //  'first_name': "",
+                              //  'last_name': "",
                                 'phone': user.phoneNumber,
-                                'email': "",
+                               // 'email': "",
                                 'userTokenID':DataStream.userTokenID,
 
 

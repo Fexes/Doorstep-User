@@ -1,4 +1,6 @@
 import 'package:Doorstep/models/Addresses.dart';
+import 'package:Doorstep/screens/auth/sign-in.dart';
+import 'package:Doorstep/screens/location-screen.dart';
 import 'package:Doorstep/styles/styles.dart';
 import 'package:Doorstep/utilts/UI/toast_utility.dart';
 import 'package:firebase_database/firebase_database.dart';
@@ -7,55 +9,29 @@ import 'package:flutter/material.dart';
 import 'package:glutton/glutton.dart';
 import 'package:google_map_location_picker/google_map_location_picker.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
+import 'package:location/location.dart';
 
 import 'AddLocationDialogue.dart';
 import 'DataStream.dart';
 
 
-class ChangeLocationDialogue extends StatefulWidget {
+class SelectLocationDialogue extends StatefulWidget {
 
 
 
 
   @override
-  _ChangeLocationDialogue createState() => new _ChangeLocationDialogue();
+  _SelectLocationDialogue createState() => new _SelectLocationDialogue();
 }
 
 
-class _ChangeLocationDialogue extends State<ChangeLocationDialogue> {
+class _SelectLocationDialogue extends State<SelectLocationDialogue> {
 
   Color selectedColor=const Color(0x3300ff72);
   @override
   Widget build(BuildContext context) {
 
-    //
-    // if(DataStream.addresses.isNotEmpty) {
-    //   try {
-    //     if (DataStream.addresses[0] != null) {
-    //       PickedAddressKeyHome = DataStream.addresses[0].key;
-    //       PickedAddressHome = DataStream.addresses[0].address;
-    //       PickedLocationHome = new LatLng(
-    //           double.parse(DataStream.addresses[0].location.split(",")[0]),
-    //           double.parse(DataStream.addresses[0].location.split(",")[1]));
-    //     }
-    //     if (DataStream.addresses[1] != null) {
-    //       PickedAddressKeyWork = DataStream.addresses[0].key;
-    //       PickedAddressWork = DataStream.addresses[0].address;
-    //       PickedLocationWork = new LatLng(
-    //           double.parse(DataStream.addresses[0].location.split(",")[0]),
-    //           double.parse(DataStream.addresses[0].location.split(",")[1]));
-    //     }
-    //     if (DataStream.addresses[2] != null) {
-    //       PickedAddressKeyOther = DataStream.addresses[0].key;
-    //       PickedAddressOther = DataStream.addresses[0].address;
-    //       PickedLocationOther = new LatLng(
-    //           double.parse(DataStream.addresses[0].location.split(",")[0]),
-    //           double.parse(DataStream.addresses[0].location.split(",")[1]));
-    //     }
-    //   }catch(e){
-    //
-    //   }
-  //  }
+
     return Dialog(
       shape: RoundedRectangleBorder(
         borderRadius: BorderRadius.circular(60),
@@ -94,7 +70,7 @@ class _ChangeLocationDialogue extends State<ChangeLocationDialogue> {
               mainAxisSize: MainAxisSize.min, // To make the card compact
               children: <Widget>[
                 Text(
-                  "Add Address",
+                  "Change Location",
                   style: TextStyle(
                     fontSize: 24.0,
                     fontWeight: FontWeight.w700,
@@ -110,7 +86,19 @@ class _ChangeLocationDialogue extends State<ChangeLocationDialogue> {
                       Padding(
                         padding: const EdgeInsets.fromLTRB(0, 5, 0, 5),
                         child: GestureDetector(
-                          onTap: (){
+                          onTap: () async {
+
+                            bool isSuccess = await Glutton.eat("SavedAddress", address.key);
+
+
+                            DataStream.userlocation=new LatLng(double.parse(address.location.split(",")[0]), double.parse(address.location.split(",")[1]));
+
+                            DataStream.userAddress=address.address;
+                            ToastUtils.showCustomToast(context, "${address.key} Selected",true);
+
+                            if(isSuccess) {
+                              Navigator.of(context).pop();
+                            }
 
 
 
@@ -173,63 +161,8 @@ class _ChangeLocationDialogue extends State<ChangeLocationDialogue> {
                                     ],
                                   ),
 
-                                  Row(
-                                    children: [
-                                      GestureDetector(
-                                          onTap: (){
-                                            addLocation().then((value) {
 
-
-                                              FirebaseDatabase database = new FirebaseDatabase();
-                                              DatabaseReference db = database.reference()
-                                                  .child('Users').child(DataStream.UserId).child("addresses").child(address.key);
-
-                                              db.set(<dynamic, dynamic>{
-                                                'location': "${PickedLocation.latitude},${PickedLocation.longitude}",
-                                                'address':PickedAddress,
-
-                                              }).then((value) {
-
-                                                ToastUtils.showCustomToast(context, "Address Updated",true);
-                                                Navigator.of(context).pop();
-
-                                              });
-
-                                            });
-                                          },
-
-                                          child: Icon(Icons.edit,color: Colors.blue,)),
-                                      SizedBox(width: 10,),
-                                      GestureDetector(
-                                          onTap: () async {
-
-
-                                            bool isSuccess =  await Glutton.flush();
-
-
-                                            if(isSuccess) {
-                                              FirebaseDatabase database = new FirebaseDatabase();
-                                              DatabaseReference db = database
-                                                  .reference()
-                                                  .child('Users').child(
-                                                  DataStream.UserId).child(
-                                                  "addresses").child(
-                                                  address.key);
-
-                                              db.remove().then((value) {
-                                                ToastUtils.showCustomToast(
-                                                    context, "Address Deleted",
-                                                    true);
-
-                                                Navigator.of(context).pop();
-                                              });
-                                            }
-
-                                          },
-
-                                          child: Icon(Icons.delete_forever,color: Colors.red,)),
-                                    ],
-                                  ),
+                                  SizedBox(width: 2,),
 
 
                                 ],
@@ -242,45 +175,49 @@ class _ChangeLocationDialogue extends State<ChangeLocationDialogue> {
                   }).toList(),
                 ),
 
-
                 Row(
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: [
+                    Align(
+                      alignment: Alignment.bottomRight,
+                      child: FlatButton(
+                        onPressed: () {
 
-                     Icon(Icons.add_circle,color: Colors.green,),
-                    FlatButton(
-                      onPressed: () {
-
-                         setState(() {
-
-                        });
-                        showDialog(context: context,
-                            builder: (BuildContext context) {
-                              return AddLocationDialogue(
-                                // title: "Charge Location",
-                                // description: "Base Delivery Charges are Rs.${DataStream.DeliverCharges}, Delivery Charges for Pharmacies are Rs.${DataStream.DeliverChargesPharmacy} and Delivery Charges for each addition shop are Rs.${DataStream.delivery_charges_per_shop}",
-                                // orderId: "# " ,
-                                //  buttonText: "Ok",
-                                // context:context
-
-                              );
-                            }
-                        ).then((value) {
-
-                          setState(() {
+                          addLocation().then((value) {
+                            Navigator.of(context).pop();
 
                           });
-                        });
 
 
-
-
-
-                      },
-                      child: Text("Add Location"),
+                        },
+                        child: Text("Pick Location",style: TextStyle(color: Colors.blue),),
+                      ),
                     ),
+                    Align(
+                      alignment: Alignment.bottomRight,
+                      child: FlatButton(
+                        onPressed: () async {
+
+                          bool s =await Glutton.flush();
+                          if(s){
+                            DataStream.userlocation=null;
+                            DataStream.userAddress="Current Location";
+                            Navigator.of(context).pop();
+
+                            Navigator.of(context).pushReplacement(MaterialPageRoute(builder: (context) => LocationScreen()));
+
+                          }
+
+
+
+                        },
+                        child: Text("Current Location",style: TextStyle(color: Colors.green),),
+                      ),
+                    ),
+
                   ],
                 ),
+
                 Row(
                   mainAxisAlignment: MainAxisAlignment.end,
                   children: [
@@ -292,9 +229,8 @@ class _ChangeLocationDialogue extends State<ChangeLocationDialogue> {
                           Navigator.of(context).pop();
 
 
-
                         },
-                        child: Text("Done",),
+                        child: Text("Dismiss",style: TextStyle(color: Colors.red),),
                       ),
                     ),
 
@@ -313,8 +249,8 @@ class _ChangeLocationDialogue extends State<ChangeLocationDialogue> {
   }
 
 
-  String PickedAddress="";
-  LatLng PickedLocation;
+ static String PickedAddress="";
+  static LatLng PickedLocation;
 
   // String PickedAddressKeyHome="Home";
   // String PickedAddressKeyWork="Work";

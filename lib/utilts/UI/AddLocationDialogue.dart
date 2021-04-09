@@ -111,7 +111,7 @@ class _AddLocationDialogue extends State<AddLocationDialogue> {
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: [
                     Icon(Icons.location_on),
-                    Text(PickedAddress),
+                    Container(width: screenWidth(context)/2,child: Text(PickedAddress,maxLines: 3,)),
                     Icon(Icons.location_on,color: Colors.white,),
 
                   ],
@@ -152,9 +152,19 @@ class _AddLocationDialogue extends State<AddLocationDialogue> {
                             'address': PickedAddress,
 
                           }).then((value) {
-                            setState(() {
 
+                            DataStream.addresses.clear();
+                            final locationDbRef = FirebaseDatabase.instance.reference().child("Users").child(DataStream.UserId).child("addresses");
+                            locationDbRef.onChildAdded.listen((event) {
+
+                              DataStream.addresses.add(Addresses.fromSnapshot(event.snapshot));
+
+                              print(Addresses.fromSnapshot(event.snapshot).key);
                             });
+
+                            Navigator.of(context).pop();
+
+
                           });
                         }else{
                           FocusScope.of(context).requestFocus(FocusNode());

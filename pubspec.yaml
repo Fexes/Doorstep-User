@@ -25,6 +25,7 @@ dependencies:
   image_picker: ^0.6.6+5
 
 
+  glutton: ^1.0.5
 
   location: ^3.0.0
   geolocator: ^5.3.1
