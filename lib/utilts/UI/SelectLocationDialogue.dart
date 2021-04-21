@@ -95,7 +95,7 @@ class _SelectLocationDialogue extends State<SelectLocationDialogue> {
 
                             DataStream.userAddress=address.address;
                             ToastUtils.showCustomToast(context, "${address.key} Selected",true);
-
+                            DataStream.savedAddresskey=address.key;
                             if(isSuccess) {
                               Navigator.of(context).pop();
                             }
@@ -106,7 +106,7 @@ class _SelectLocationDialogue extends State<SelectLocationDialogue> {
                           child: Container(
                             decoration: BoxDecoration(
                             //  color:const Color(0x3300ff72),
-                              color: Colors.white,
+                              color:address.key==DataStream.savedAddresskey? Colors.green.shade200:Colors.white,
                               borderRadius: BorderRadius.only(
                                   topLeft: Radius.circular(10),
                                   topRight: Radius.circular(10),
@@ -181,6 +181,7 @@ class _SelectLocationDialogue extends State<SelectLocationDialogue> {
                     Align(
                       alignment: Alignment.bottomRight,
                       child: FlatButton(
+                        color: Colors.blue.shade50,
                         onPressed: () {
 
                           addLocation().then((value) {
@@ -193,9 +194,12 @@ class _SelectLocationDialogue extends State<SelectLocationDialogue> {
                         child: Text("Pick Location",style: TextStyle(color: Colors.blue),),
                       ),
                     ),
+                    SizedBox(width: 20,),
                     Align(
                       alignment: Alignment.bottomRight,
                       child: FlatButton(
+                        color: Colors.deepPurple.shade50,
+
                         onPressed: () async {
 
                           bool s =await Glutton.flush();
@@ -211,7 +215,7 @@ class _SelectLocationDialogue extends State<SelectLocationDialogue> {
 
 
                         },
-                        child: Text("Current Location",style: TextStyle(color: Colors.green),),
+                        child: Text("Current Location",style: TextStyle(color: Colors.deepPurple),),
                       ),
                     ),
 

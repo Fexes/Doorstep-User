@@ -2154,7 +2154,7 @@ class HomePage extends State<Home> {
                                           width: screenWidth(context)/2,
                                           child: Text(
 
-                                            "Add Address",
+                                            "Add Location",
                                             style: TextStyle(fontSize: 12, fontWeight: FontWeight.w300,color: Colors.black),
                                             textAlign: TextAlign.left,
                                             maxLines: 4,

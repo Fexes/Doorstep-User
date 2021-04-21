@@ -94,7 +94,7 @@ class _ChangeLocationDialogue extends State<ChangeLocationDialogue> {
               mainAxisSize: MainAxisSize.min, // To make the card compact
               children: <Widget>[
                 Text(
-                  "Add Address",
+                  "Saved Locations",
                   style: TextStyle(
                     fontSize: 24.0,
                     fontWeight: FontWeight.w700,
@@ -110,7 +110,19 @@ class _ChangeLocationDialogue extends State<ChangeLocationDialogue> {
                       Padding(
                         padding: const EdgeInsets.fromLTRB(0, 5, 0, 5),
                         child: GestureDetector(
-                          onTap: (){
+                          onTap: () async {
+                            bool isSuccess = await Glutton.eat("SavedAddress", address.key);
+
+
+                            DataStream.userlocation=new LatLng(double.parse(address.location.split(",")[0]), double.parse(address.location.split(",")[1]));
+
+                            DataStream.userAddress=address.address;
+                            ToastUtils.showCustomToast(context, "${address.key} Selected",true);
+                            DataStream.savedAddresskey=address.key;
+                            if(isSuccess) {
+                              Navigator.of(context).pop();
+                            }
+
 
 
 
@@ -118,7 +130,7 @@ class _ChangeLocationDialogue extends State<ChangeLocationDialogue> {
                           child: Container(
                             decoration: BoxDecoration(
                             //  color:const Color(0x3300ff72),
-                              color: Colors.white,
+                              color:address.key==DataStream.savedAddresskey? Colors.green.shade200:Colors.white,
                               borderRadius: BorderRadius.only(
                                   topLeft: Radius.circular(10),
                                   topRight: Radius.circular(10),
@@ -145,7 +157,10 @@ class _ChangeLocationDialogue extends State<ChangeLocationDialogue> {
                                   address.key.toLowerCase().contains("work")?Icon(Icons.work):
                                   Icon(Icons.location_on),
 
+
                                   Column(
+                                    mainAxisAlignment: MainAxisAlignment.center,
+                                    crossAxisAlignment: CrossAxisAlignment.center,
                                     children: [
                                       Text(
                                         address.key,
@@ -162,6 +177,7 @@ class _ChangeLocationDialogue extends State<ChangeLocationDialogue> {
                                         child: Text(
                                           address.address,
                                           maxLines: 4,
+                                          textAlign: TextAlign.center,
                                           style: TextStyle(
 
                                             fontSize: 12.0,
@@ -173,63 +189,64 @@ class _ChangeLocationDialogue extends State<ChangeLocationDialogue> {
                                     ],
                                   ),
 
-                                  Row(
-                                    children: [
-                                      GestureDetector(
-                                          onTap: (){
-                                            addLocation().then((value) {
+                                  GestureDetector(
+                                      onTap: () async {
 
 
-                                              FirebaseDatabase database = new FirebaseDatabase();
-                                              DatabaseReference db = database.reference()
-                                                  .child('Users').child(DataStream.UserId).child("addresses").child(address.key);
-
-                                              db.set(<dynamic, dynamic>{
-                                                'location': "${PickedLocation.latitude},${PickedLocation.longitude}",
-                                                'address':PickedAddress,
-
-                                              }).then((value) {
-
-                                                ToastUtils.showCustomToast(context, "Address Updated",true);
-                                                Navigator.of(context).pop();
-
-                                              });
-
-                                            });
-                                          },
-
-                                          child: Icon(Icons.edit,color: Colors.blue,)),
-                                      SizedBox(width: 10,),
-                                      GestureDetector(
-                                          onTap: () async {
+                                        bool isSuccess =  await Glutton.flush();
 
 
-                                            bool isSuccess =  await Glutton.flush();
+                                        if(isSuccess) {
+                                          FirebaseDatabase database = new FirebaseDatabase();
+                                          DatabaseReference db = database
+                                              .reference()
+                                              .child('Users').child(
+                                              DataStream.UserId).child(
+                                              "addresses").child(
+                                              address.key);
 
+                                          db.remove().then((value) {
+                                            ToastUtils.showCustomToast(
+                                                context, "Address Deleted",
+                                                true);
 
-                                            if(isSuccess) {
-                                              FirebaseDatabase database = new FirebaseDatabase();
-                                              DatabaseReference db = database
-                                                  .reference()
-                                                  .child('Users').child(
-                                                  DataStream.UserId).child(
-                                                  "addresses").child(
-                                                  address.key);
+                                            Navigator.of(context).pop();
+                                          });
+                                        }
 
-                                              db.remove().then((value) {
-                                                ToastUtils.showCustomToast(
-                                                    context, "Address Deleted",
-                                                    true);
+                                      },
 
-                                                Navigator.of(context).pop();
-                                              });
-                                            }
-
-                                          },
-
-                                          child: Icon(Icons.delete_forever,color: Colors.red,)),
-                                    ],
-                                  ),
+                                      child: Icon(Icons.delete_forever,color: Colors.red,)),
+                                  // Row(
+                                  //   children: [
+                                  //     // GestureDetector(
+                                  //     //     onTap: (){
+                                  //     //       addLocation().then((value) {
+                                  //     //
+                                  //     //
+                                  //     //         FirebaseDatabase database = new FirebaseDatabase();
+                                  //     //         DatabaseReference db = database.reference()
+                                  //     //             .child('Users').child(DataStream.UserId).child("addresses").child(address.key);
+                                  //     //
+                                  //     //         db.set(<dynamic, dynamic>{
+                                  //     //           'location': "${PickedLocation.latitude},${PickedLocation.longitude}",
+                                  //     //           'address':PickedAddress,
+                                  //     //
+                                  //     //         }).then((value) {
+                                  //     //
+                                  //     //           ToastUtils.showCustomToast(context, "Address Updated",true);
+                                  //     //           Navigator.of(context).pop();
+                                  //     //
+                                  //     //         });
+                                  //     //
+                                  //     //       });
+                                  //     //     },
+                                  //     //
+                                  //     //     child: Icon(Icons.edit,color: Colors.blue,)),
+                                  //     SizedBox(width: 5,),
+                                  //
+                                  //   ],
+                                  // ),
 
 
                                 ],
@@ -277,7 +294,7 @@ class _ChangeLocationDialogue extends State<ChangeLocationDialogue> {
 
 
                       },
-                      child: Text("Add Location"),
+                      child: Text("Add New Location"),
                     ),
                   ],
                 ),

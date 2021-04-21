@@ -207,6 +207,8 @@ class LocationScreenState extends State<LocationScreen> {
                   for(int i=0;i<=DataStream.addresses.length-1;i++){
                     if(DataStream.addresses[i].key==data){
 
+                      DataStream.savedAddresskey=DataStream.addresses[i].key;
+
                       DataStream.userlocation=new LatLng(double.parse(DataStream.addresses[i].location.split(",")[0]), double.parse(DataStream.addresses[i].location.split(",")[1]));
                       DataStream.userAddress=DataStream.addresses[i].address;
 
@@ -218,6 +220,25 @@ class LocationScreenState extends State<LocationScreen> {
 
 
                     }
+                  }
+                  if(DataStream.addresses.length==0){
+                    _checkGps().then((value) {
+
+
+                      if(value){
+                        //  ToastUtils.showCustomToast(context, "Getting Location", null);
+                      }else{
+
+                        ToastUtils.showCustomToast(context, "Location Service Disabled", false);
+
+                      }
+
+                    }).whenComplete(() {
+
+
+                      addLocation();
+
+                    });
                   }
 
 
@@ -246,8 +267,6 @@ class LocationScreenState extends State<LocationScreen> {
 
 
               });
-
-
 
 
             }
@@ -295,6 +314,7 @@ class LocationScreenState extends State<LocationScreen> {
         //    });
 
 }
+
 
   void getUserDetails(){
 
@@ -475,9 +495,7 @@ bool error=false;
                 SizedBox(height: 15,),
 
               ],),
-
-
-
+              
             ],
           )),
         // color

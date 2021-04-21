@@ -22,6 +22,7 @@ class AddLocationDialogue extends StatefulWidget {
 
 class _AddLocationDialogue extends State<AddLocationDialogue> {
   final addresscontroller = TextEditingController();
+  final addressnamecontroller = TextEditingController();
 
   @override
   Widget build(BuildContext context) {
@@ -73,10 +74,10 @@ class _AddLocationDialogue extends State<AddLocationDialogue> {
               SizedBox(height: 16.0),
               TextField(
 
-                controller: addresscontroller,
+                controller: addressnamecontroller,
                 decoration: InputDecoration(
                   border: InputBorder.none,
-                  hintText: 'Name i.e. Home, Work etc.',
+                  hintText: 'Name  (Home, Work)',
 
                   enabledBorder: UnderlineInputBorder(
                     borderSide: BorderSide(color: Colors.green),
@@ -87,7 +88,24 @@ class _AddLocationDialogue extends State<AddLocationDialogue> {
 
                 ),
               ),
-              SizedBox(height: 16.0),
+              SizedBox(height: 10.0),
+              TextField(
+
+                controller: addresscontroller,
+                decoration: InputDecoration(
+                  border: InputBorder.none,
+                  hintText: 'Complete Address',
+
+                  enabledBorder: UnderlineInputBorder(
+                    borderSide: BorderSide(color: Colors.green),
+                  ),
+                  focusedBorder: UnderlineInputBorder(
+                    borderSide: BorderSide(color: Colors.green),
+                  ),
+
+                ),
+              ),
+              SizedBox(height: 10.0),
 
               FlatButton(
                 onPressed: () {
@@ -139,9 +157,14 @@ class _AddLocationDialogue extends State<AddLocationDialogue> {
                     child: FlatButton(
                       onPressed: () {
 
-                        AddressKey= addresscontroller.text;
+                        AddressKey= addressnamecontroller.text;
+                        CompleteAddress= addresscontroller.text;
 
-                        if((AddressKey!=""||AddressKey!=null)&&PickedAddress!="Pick Location") {
+                        AddressKey.trim();
+                        CompleteAddress.trim();
+
+
+                        if((AddressKey!=""||AddressKey!=null)&&PickedAddress!="Pick Location"&&(CompleteAddress!=""||CompleteAddress!=null)) {
                           FirebaseDatabase database = new FirebaseDatabase();
                           DatabaseReference db = database.reference()
                               .child('Users').child(DataStream.UserId).child("addresses").child(
@@ -149,7 +172,7 @@ class _AddLocationDialogue extends State<AddLocationDialogue> {
 
                           db.set(<dynamic, dynamic>{
                             'location': "${PickedLocation.latitude},${PickedLocation.longitude}",
-                            'address': PickedAddress,
+                            'address': CompleteAddress,
 
                           }).then((value) {
 
@@ -170,7 +193,7 @@ class _AddLocationDialogue extends State<AddLocationDialogue> {
                           FocusScope.of(context).requestFocus(FocusNode());
 
                           ToastUtils.showCustomToast(
-                              context, "Please add Address Name\nand Select Location", false);
+                              context, "Please add Address, Name\nand Select Location", false);
                         }
 
 
@@ -195,6 +218,7 @@ class _AddLocationDialogue extends State<AddLocationDialogue> {
 
 
   String AddressKey="";
+  String CompleteAddress="";
   String PickedAddress="Pick Location";
   LatLng PickedLocation;
 
@@ -212,6 +236,10 @@ class _AddLocationDialogue extends State<AddLocationDialogue> {
         automaticallyAnimateToCurrentLocation: true
 
     );
+    String encode(String key) {
+      return key.replaceAllMapped(new RegExp(r'[\.\$\#\[\]/%]'),
+              (match) => '%${match.group(0).codeUnitAt(0)}');
+    }
     print("result = $result");
     if(result!=null){
 
