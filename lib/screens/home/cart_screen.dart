@@ -545,6 +545,44 @@ class _CartScreenState extends State<CartScreen> {
                                 ),
                               ],
                             ),
+                            SizedBox(height: 5,),
+
+                            GestureDetector(
+                              onTap:(){
+                                showDialog(context: context,
+                                    builder: (BuildContext context) {
+                                      return InfoDialog(
+                                        title: "Prices Might Change",
+                                        description: "Prices of the products might Change. In case of any changed Prices team Doorstep will contact you before confirming the order. You will be provided with an Updated receipt upon receiving your order",
+                                        // orderId: "# " ,
+                                        buttonText: "Ok",
+
+                                      );
+                                    }
+                                );
+                              },
+                              child: Row(
+                                mainAxisAlignment: MainAxisAlignment.center,
+                                children: [
+                                  Icon(Icons.info,size: 18,
+                                    color: Colors.grey[500],),
+                                  SizedBox(width: 10,),
+
+                                  Container(
+                                    width: screenWidth(context) / 2,
+                                    child: Text(
+
+                                      "All prices are subject to change",
+                                      style: TextStyle(fontSize: 12,
+                                          fontWeight: FontWeight.w300,
+                                          color: Colors.black),
+                                      textAlign: TextAlign.left,
+                                      maxLines: 4,
+                                    ),
+                                  ),
+                                ],
+                              ),
+                            ),
                           ],
                         ),
                       ),
