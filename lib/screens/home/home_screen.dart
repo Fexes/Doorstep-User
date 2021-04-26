@@ -163,44 +163,51 @@ class HomePage extends State<Home> {
 
 
          if(DataStream.addresses.isEmpty){
-           showDialog(context: context,
-               builder: (BuildContext context) {
-                 return ChangeLocationDialogue(
-                   // title: "Charge Location",
-                   // description: "Base Delivery Charges are Rs.${DataStream.DeliverCharges}, Delivery Charges for Pharmacies are Rs.${DataStream.DeliverChargesPharmacy} and Delivery Charges for each addition shop are Rs.${DataStream.delivery_charges_per_shop}",
-                   // orderId: "# " ,
-                   //  buttonText: "Ok",
-                   // context:context
 
-                 );
-               }
-           ).then((value) {
+           if(DataStream.once2) {
+             DataStream.once2= false;
 
-             setState(() {
+             showDialog(context: context,
+                 builder: (BuildContext context) {
+                   return ChangeLocationDialogue(
+                     // title: "Charge Location",
+                     // description: "Base Delivery Charges are Rs.${DataStream.DeliverCharges}, Delivery Charges for Pharmacies are Rs.${DataStream.DeliverChargesPharmacy} and Delivery Charges for each addition shop are Rs.${DataStream.delivery_charges_per_shop}",
+                     // orderId: "# " ,
+                     //  buttonText: "Ok",
+                     // context:context
 
+                   );
+                 }
+             ).then((value) {
+               setState(() {
+
+               });
              });
-           });
+           }
          }
 
          bool isExist = await Glutton.have("SavedAddress");
          if(!isExist){
-           showDialog(context: context,
-               builder: (BuildContext context) {
-                 return SelectLocationDialogue(
-                   // title: "Charge Location",
-                   // description: "Base Delivery Charges are Rs.${DataStream.DeliverCharges}, Delivery Charges for Pharmacies are Rs.${DataStream.DeliverChargesPharmacy} and Delivery Charges for each addition shop are Rs.${DataStream.delivery_charges_per_shop}",
-                   // orderId: "# " ,
-                   //  buttonText: "Ok",
-                   // context:context
+           if(DataStream.once) {
+              DataStream.once= false;
 
-                 );
-               }
-           ).then((value) {
+               showDialog(context: context,
+                 builder: (BuildContext context) {
+                   return SelectLocationDialogue(
+                     // title: "Charge Location",
+                     // description: "Base Delivery Charges are Rs.${DataStream.DeliverCharges}, Delivery Charges for Pharmacies are Rs.${DataStream.DeliverChargesPharmacy} and Delivery Charges for each addition shop are Rs.${DataStream.delivery_charges_per_shop}",
+                     // orderId: "# " ,
+                     //  buttonText: "Ok",
+                     // context:context
 
-             setState(() {
+                   );
+                 }
+             ).then((value) {
+               setState(() {
 
+               });
              });
-           });
+           }
          }
 
 
@@ -719,7 +726,7 @@ class HomePage extends State<Home> {
                                                         Dialog errorDialog = Dialog(
                                                           shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12.0)), //this right here
                                                           child: Container(
-                                                            height: 180.0,
+                                                            height: 190.0,
                                                             width: screenWidth(context),
 
                                                             child: Column(
@@ -2189,7 +2196,7 @@ class HomePage extends State<Home> {
                                         Dialog errorDialog = Dialog(
                                           shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12.0)), //this right here
                                           child: Container(
-                                            height: 180.0,
+                                            height: 190.0,
                                             width: screenWidth(context),
 
                                             child: Column(

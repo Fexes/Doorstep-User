@@ -65,15 +65,17 @@ class LocationScreenState extends State<LocationScreen> {
   Future<void> addLocation() async {
    // showLoadingDialogue("Getting Location");
 
+     getLocation().then((value) async {
 
-    getLocation().then((value) async {
 
-      DataStream.userlocation=value;
-     // DataStream.userAddress=value.;
+         DataStream.userlocation=value;
+        // DataStream.userAddress=value.;
 
-      Navigator.of(context).pushReplacement(
-          MaterialPageRoute(
-              builder: (context) => Home()));
+        Navigator.of(context).pushReplacement(
+            MaterialPageRoute(
+                builder: (context) => Home()));
+
+
 
     });
 
@@ -179,101 +181,124 @@ class LocationScreenState extends State<LocationScreen> {
                   // print(value.value["home"]["address"]);
                   // print(value.value["home"]["location"]);
 
-                  DataStream.addresses.add(new Addresses("home", value.value["home"]["address"], value.value["home"]["location"]));
-                  DataStream.addresses.add(new Addresses("work", value.value["work"]["address"], value.value["work"]["location"]));
-                  DataStream.addresses.add(new Addresses("other", value.value["other"]["address"], value.value["other"]["location"]));
-
-
+                  try {
+                    DataStream.addresses.add(new Addresses("home", value
+                        .value["home"]["address"], value
+                        .value["home"]["location"]));
+                    DataStream.addresses.add(new Addresses("work", value
+                        .value["work"]["address"], value
+                        .value["work"]["location"]));
+                    DataStream.addresses.add(new Addresses("other", value
+                        .value["other"]["address"], value
+                        .value["other"]["location"]));
 
 
                     bool isExist = await Glutton.have("SavedAddress");
-                  print(isExist);
-                    if(isExist){
+                    print(isExist);
+                    if (isExist) {
                       String data = await Glutton.vomit("SavedAddress");
-                      if(data.contains("Current Location")){
+                      if (data.contains("Current Location")) {
                         _checkGps().then((value) {
-
-
-                          if(value){
+                          if (value) {
                             //  ToastUtils.showCustomToast(context, "Getting Location", null);
-                          }else{
-
-                            ToastUtils.showCustomToast(context, "Location Service Disabled", false);
-
+                          } else {
+                            ToastUtils.showCustomToast(
+                                context, "Location Service Disabled", false);
                           }
-
                         }).whenComplete(() {
-
-
                           addLocation();
-
                         });
                       }
 
-                      for(int i=0;i<=DataStream.addresses.length-1;i++){
-                        if(DataStream.addresses[i].key==data){
+                      for (int i = 0; i <=
+                          DataStream.addresses.length - 1; i++) {
+                        if (DataStream.addresses[i].key == data) {
+                          print("selected " + DataStream.addresses[i].key);
 
-                          print("selected "+DataStream.addresses[i].key);
 
+                          DataStream.savedAddresskey =
+                              DataStream.addresses[i].key;
 
-                          DataStream.savedAddresskey=DataStream.addresses[i].key;
-
-                          DataStream.userlocation=new LatLng(double.parse(DataStream.addresses[i].location.split(",")[0]), double.parse(DataStream.addresses[i].location.split(",")[1]));
-                          DataStream.userAddress=DataStream.addresses[i].address;
+                          DataStream.userlocation = new LatLng(double.parse(
+                              DataStream.addresses[i].location.split(",")[0]),
+                              double.parse(
+                                  DataStream.addresses[i].location.split(
+                                      ",")[1]));
+                          DataStream.userAddress =
+                              DataStream.addresses[i].address;
 
                           Navigator.of(context).pushReplacement(
                               MaterialPageRoute(
                                   builder: (context) => Home()));
 
                           break;
-
-
                         }
                       }
-                      if(DataStream.addresses.length==0){
+                      if (DataStream.addresses.length == 0) {
                         _checkGps().then((value) {
-
-
-                          if(value){
+                          if (value) {
                             //  ToastUtils.showCustomToast(context, "Getting Location", null);
-                          }else{
-
-                            ToastUtils.showCustomToast(context, "Location Service Disabled", false);
-
+                          } else {
+                            ToastUtils.showCustomToast(
+                                context, "Location Service Disabled", false);
                           }
-
                         }).whenComplete(() {
-
-
                           addLocation();
-
                         });
                       }
-
-
-
-                    }else{
+                    } else {
                       _checkGps().then((value) {
-
-
-                        if(value){
+                        if (value) {
                           //  ToastUtils.showCustomToast(context, "Getting Location", null);
-                        }else{
-
-                          ToastUtils.showCustomToast(context, "Location Service Disabled", false);
-
+                        } else {
+                          ToastUtils.showCustomToast(
+                              context, "Location Service Disabled", false);
                         }
-
                       }).whenComplete(() {
-
-
                         addLocation();
-
                       });
                     }
+                  }catch(e){
 
 
 
+                    _checkGps().then((value) {
+
+
+                      if(value){
+                        //  ToastUtils.showCustomToast(context, "Getting Location", null);
+                      }else{
+
+                        ToastUtils.showCustomToast(context, "Location Service Disabled", false);
+
+                      }
+
+                    }).whenComplete(() {
+
+
+                      addLocation();
+
+                    });
+                  }
+
+                }).then((value) {
+                  _checkGps().then((value) {
+
+
+                    if(value){
+                      //  ToastUtils.showCustomToast(context, "Getting Location", null);
+                    }else{
+
+                      ToastUtils.showCustomToast(context, "Location Service Disabled", false);
+
+                    }
+
+                  }).whenComplete(() {
+
+
+                    addLocation();
+
+                  });
                 });
                 //print(value.value["no_of_orders"]);
                 // locationDbRef.onChildAdded.listen((event) {

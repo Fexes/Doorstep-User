@@ -7,6 +7,9 @@ import 'package:google_maps_flutter/google_maps_flutter.dart';
 
 class DataStream{
 
+  static bool once=true;
+  static bool once2=true;
+
   static String UserId;
   static String Username;
   static String Email;
