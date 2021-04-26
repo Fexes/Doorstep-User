@@ -21,6 +21,7 @@ class DataStream{
   static AppUser appuser;
 
   static String ShopId;
+  static String savedAddresskey;
   static String ShopCatagory;
   static String ShopName;
   static int DeliverCharges;

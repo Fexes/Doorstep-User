@@ -145,7 +145,7 @@ class HomePage extends State<Home> {
 
     haswhatsapp();
 
-    FirebaseAuth.instance.currentUser().then((firebaseUser){
+    FirebaseAuth.instance.currentUser().then((firebaseUser) async {
 
        PickedAddress=DataStream.userAddress;
        PickedLocation=DataStream.userlocation;
@@ -182,7 +182,29 @@ class HomePage extends State<Home> {
            });
          }
 
-      }else{
+         bool isExist = await Glutton.have("SavedAddress");
+         if(!isExist){
+           showDialog(context: context,
+               builder: (BuildContext context) {
+                 return SelectLocationDialogue(
+                   // title: "Charge Location",
+                   // description: "Base Delivery Charges are Rs.${DataStream.DeliverCharges}, Delivery Charges for Pharmacies are Rs.${DataStream.DeliverChargesPharmacy} and Delivery Charges for each addition shop are Rs.${DataStream.delivery_charges_per_shop}",
+                   // orderId: "# " ,
+                   //  buttonText: "Ok",
+                   // context:context
+
+                 );
+               }
+           ).then((value) {
+
+             setState(() {
+
+             });
+           });
+         }
+
+
+       }else{
          setupBanner();
        }
 
@@ -778,7 +800,6 @@ class HomePage extends State<Home> {
                                                                         });
                                                                       });
 
-
                                                                     },
                                                                         child: Text('Change Location', style: TextStyle(color: Colors.redAccent, fontSize: 14.0),)),
                                                                   ],
@@ -789,7 +810,7 @@ class HomePage extends State<Home> {
                                                         );
 
 
-                                                        if( FirebaseAuth.instance.currentUser()!=null) {
+                                                        if( carts!=null) {
                                                           if (carts.length >
                                                               0) {
                                                             showDialog(
@@ -2154,7 +2175,7 @@ class HomePage extends State<Home> {
                                           width: screenWidth(context)/2,
                                           child: Text(
 
-                                            "Add Address",
+                                            "Add Location",
                                             style: TextStyle(fontSize: 12, fontWeight: FontWeight.w300,color: Colors.black),
                                             textAlign: TextAlign.left,
                                             maxLines: 4,

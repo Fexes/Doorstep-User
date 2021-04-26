@@ -174,81 +174,123 @@ class LocationScreenState extends State<LocationScreen> {
 
                 final locationDbRef = FirebaseDatabase.instance.reference().child("Users").child(DataStream.UserId).child("addresses");
 
-                locationDbRef.onChildAdded.listen((event) {
+                locationDbRef.once().then((value) async {
 
-                  DataStream.addresses.add(Addresses.fromSnapshot(event.snapshot));
+                  // print(value.value["home"]["address"]);
+                  // print(value.value["home"]["location"]);
 
-                  print(Addresses.fromSnapshot(event.snapshot).key);
-                });
-
-                // db.set(<dynamic, dynamic>{
-                //   'first_name':  DataStream.appuser.first_name,
-                //   'last_name':  DataStream.appuser.last_name,
-                //   'phone':  DataStream.appuser.phone,
-                //   'email':  DataStream.appuser.email,
-                //
-                //   // 'first_name':  " ",
-                //   // 'last_name': " ",
-                //   // 'phone': "+921234567890",
-                //   // 'email':  " ",
-                //   'userTokenID':token,
-                //
-                // }).then((value) {
-                //   print("Token Set");
-                // });
-
-              }).then((value) async {
-
-                bool isExist = await Glutton.have("SavedAddress");
-
-                if(isExist){
-                  String data = await Glutton.vomit("SavedAddress");
-
-                  for(int i=0;i<=DataStream.addresses.length-1;i++){
-                    if(DataStream.addresses[i].key==data){
-
-                      DataStream.userlocation=new LatLng(double.parse(DataStream.addresses[i].location.split(",")[0]), double.parse(DataStream.addresses[i].location.split(",")[1]));
-                      DataStream.userAddress=DataStream.addresses[i].address;
-
-                      Navigator.of(context).pushReplacement(
-                          MaterialPageRoute(
-                              builder: (context) => Home()));
-
-                      break;
-
-
-                    }
-                  }
+                  DataStream.addresses.add(new Addresses("home", value.value["home"]["address"], value.value["home"]["location"]));
+                  DataStream.addresses.add(new Addresses("work", value.value["work"]["address"], value.value["work"]["location"]));
+                  DataStream.addresses.add(new Addresses("other", value.value["other"]["address"], value.value["other"]["location"]));
 
 
 
-                }else{
-                  _checkGps().then((value) {
+
+                    bool isExist = await Glutton.have("SavedAddress");
+                  print(isExist);
+                    if(isExist){
+                      String data = await Glutton.vomit("SavedAddress");
+                      if(data.contains("Current Location")){
+                        _checkGps().then((value) {
 
 
-                    if(value){
-                      //  ToastUtils.showCustomToast(context, "Getting Location", null);
+                          if(value){
+                            //  ToastUtils.showCustomToast(context, "Getting Location", null);
+                          }else{
+
+                            ToastUtils.showCustomToast(context, "Location Service Disabled", false);
+
+                          }
+
+                        }).whenComplete(() {
+
+
+                          addLocation();
+
+                        });
+                      }
+
+                      for(int i=0;i<=DataStream.addresses.length-1;i++){
+                        if(DataStream.addresses[i].key==data){
+
+                          print("selected "+DataStream.addresses[i].key);
+
+
+                          DataStream.savedAddresskey=DataStream.addresses[i].key;
+
+                          DataStream.userlocation=new LatLng(double.parse(DataStream.addresses[i].location.split(",")[0]), double.parse(DataStream.addresses[i].location.split(",")[1]));
+                          DataStream.userAddress=DataStream.addresses[i].address;
+
+                          Navigator.of(context).pushReplacement(
+                              MaterialPageRoute(
+                                  builder: (context) => Home()));
+
+                          break;
+
+
+                        }
+                      }
+                      if(DataStream.addresses.length==0){
+                        _checkGps().then((value) {
+
+
+                          if(value){
+                            //  ToastUtils.showCustomToast(context, "Getting Location", null);
+                          }else{
+
+                            ToastUtils.showCustomToast(context, "Location Service Disabled", false);
+
+                          }
+
+                        }).whenComplete(() {
+
+
+                          addLocation();
+
+                        });
+                      }
+
+
+
                     }else{
+                      _checkGps().then((value) {
 
-                      ToastUtils.showCustomToast(context, "Location Service Disabled", false);
 
+                        if(value){
+                          //  ToastUtils.showCustomToast(context, "Getting Location", null);
+                        }else{
+
+                          ToastUtils.showCustomToast(context, "Location Service Disabled", false);
+
+                        }
+
+                      }).whenComplete(() {
+
+
+                        addLocation();
+
+                      });
                     }
 
-                  }).whenComplete(() {
 
 
-                    addLocation();
+                });
+                //print(value.value["no_of_orders"]);
+                // locationDbRef.onChildAdded.listen((event) {
+                //
+                //   DataStream.addresses.add(Addresses.fromSnapshot(event.snapshot));
+                //
+                //   print(Addresses.fromSnapshot(event.snapshot).key);
+                // }) .onDone(() async {
+                //
+                //
+                //
 
-                  });
-                }
-
+                // });
 
 
 
               });
-
-
-
 
             }
 
@@ -295,6 +337,7 @@ class LocationScreenState extends State<LocationScreen> {
         //    });
 
 }
+
 
   void getUserDetails(){
 
@@ -475,9 +518,7 @@ bool error=false;
                 SizedBox(height: 15,),
 
               ],),
-
-
-
+              
             ],
           )),
         // color

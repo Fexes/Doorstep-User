@@ -27,10 +27,17 @@ class SelectLocationDialogue extends StatefulWidget {
 
 class _SelectLocationDialogue extends State<SelectLocationDialogue> {
 
+  bool allAddressedAdded=false;
   Color selectedColor=const Color(0x3300ff72);
   @override
   Widget build(BuildContext context) {
 
+  //  print("DataStream.addresses.length ${DataStream.addresses.length}");
+    if(DataStream.addresses.length==3){
+      allAddressedAdded=true;
+    //  print("allAddressedAdded ${allAddressedAdded}");
+
+    }
 
     return Dialog(
       shape: RoundedRectangleBorder(
@@ -95,7 +102,7 @@ class _SelectLocationDialogue extends State<SelectLocationDialogue> {
 
                             DataStream.userAddress=address.address;
                             ToastUtils.showCustomToast(context, "${address.key} Selected",true);
-
+                            DataStream.savedAddresskey=address.key;
                             if(isSuccess) {
                               Navigator.of(context).pop();
                             }
@@ -106,7 +113,7 @@ class _SelectLocationDialogue extends State<SelectLocationDialogue> {
                           child: Container(
                             decoration: BoxDecoration(
                             //  color:const Color(0x3300ff72),
-                              color: Colors.white,
+                              color:address.key==DataStream.savedAddresskey? Colors.green.shade200:Colors.white,
                               borderRadius: BorderRadius.only(
                                   topLeft: Radius.circular(10),
                                   topRight: Radius.circular(10),
@@ -174,6 +181,79 @@ class _SelectLocationDialogue extends State<SelectLocationDialogue> {
 
                   }).toList(),
                 ),
+                allAddressedAdded?SizedBox():
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+
+                    GestureDetector(
+
+
+                        onTap: () {
+
+                          setState(() {
+
+                          });
+                          showDialog(context: context,
+                              builder: (BuildContext context) {
+                                return AddLocationDialogue(
+                                  // title: "Charge Location",
+                                  // description: "Base Delivery Charges are Rs.${DataStream.DeliverCharges}, Delivery Charges for Pharmacies are Rs.${DataStream.DeliverChargesPharmacy} and Delivery Charges for each addition shop are Rs.${DataStream.delivery_charges_per_shop}",
+                                  // orderId: "# " ,
+                                  //  buttonText: "Ok",
+                                  // context:context
+
+                                );
+                              }
+                          ).then((value) {
+
+                            setState(() {
+
+                            });
+                          });
+
+
+
+
+
+                        },
+                        child: Icon(Icons.add_circle,color: Colors.green,)),
+                    FlatButton(
+                      onPressed: () {
+
+                        setState(() {
+
+                        });
+                        showDialog(context: context,
+                            builder: (BuildContext context) {
+                              return AddLocationDialogue(
+                                // title: "Charge Location",
+                                // description: "Base Delivery Charges are Rs.${DataStream.DeliverCharges}, Delivery Charges for Pharmacies are Rs.${DataStream.DeliverChargesPharmacy} and Delivery Charges for each addition shop are Rs.${DataStream.delivery_charges_per_shop}",
+                                // orderId: "# " ,
+                                //  buttonText: "Ok",
+                                // context:context
+
+                              );
+                            }
+                        ).then((value) {
+
+                          setState(() {
+
+                          });
+                        });
+
+
+
+
+
+                      },
+                      child: Text("Add New Location"),
+                    ),
+                  ],
+                ),
+                SizedBox(height: 10,),
+                Text("Edit Addresses in Profile Tab",style: TextStyle(color: Colors.grey,fontSize: 12),),
+                SizedBox(height: 5,),
 
                 Row(
                   mainAxisAlignment: MainAxisAlignment.center,
@@ -181,6 +261,7 @@ class _SelectLocationDialogue extends State<SelectLocationDialogue> {
                     Align(
                       alignment: Alignment.bottomRight,
                       child: FlatButton(
+                        color: Colors.blue.shade50,
                         onPressed: () {
 
                           addLocation().then((value) {
@@ -193,25 +274,35 @@ class _SelectLocationDialogue extends State<SelectLocationDialogue> {
                         child: Text("Pick Location",style: TextStyle(color: Colors.blue),),
                       ),
                     ),
+                    SizedBox(width: 20,),
                     Align(
                       alignment: Alignment.bottomRight,
                       child: FlatButton(
+                        color: Colors.deepPurple.shade50,
+
                         onPressed: () async {
 
                           bool s =await Glutton.flush();
-                          if(s){
-                            DataStream.userlocation=null;
-                            DataStream.userAddress="Current Location";
-                            Navigator.of(context).pop();
+                          bool isSuccess = await Glutton.eat("SavedAddress", "Current Location");
 
-                            Navigator.of(context).pushReplacement(MaterialPageRoute(builder: (context) => LocationScreen()));
+                          if(s){
+                            bool isSuccess = await Glutton.eat("SavedAddress", "Current Location");
+
+                            if(isSuccess){
+                              DataStream.userlocation=null;
+                              DataStream.userAddress="Current Location";
+                              Navigator.of(context).pop();
+
+                              Navigator.of(context).pushReplacement(MaterialPageRoute(builder: (context) => LocationScreen()));
+
+                            }
 
                           }
 
 
 
                         },
-                        child: Text("Current Location",style: TextStyle(color: Colors.green),),
+                        child: Text("Current Location",style: TextStyle(color: Colors.deepPurple),),
                       ),
                     ),
 
@@ -294,99 +385,6 @@ class _SelectLocationDialogue extends State<SelectLocationDialogue> {
 
     }
   }
-  // Future<void> addLocationHome() async {
-  //
-  //
-  //   LocationResult result = await showLocationPicker(
-  //       context,
-  //       DataStream.googleAPIKey,
-  //
-  //       // appBarColor: Colors.green,
-  //       initialCenter: DataStream.userlocation,
-  //       myLocationButtonEnabled: true,
-  //       automaticallyAnimateToCurrentLocation: true
-  //
-  //   );
-  //   print("result = $result");
-  //   if(result!=null){
-  //
-  //     //  Navigator.of(context).pop();
-  //
-  //     //   errorDialog.p
-  //
-  //     PickedAddress=result.address;
-  //     PickedLocation=result.latLng;
-  //
-  //     PickedAddressHome=result.address;
-  //     PickedLocationHome=result.latLng;
-  //
-  //
-  //
-  //   }
-  // }
-  // Future<void> addLocationWork() async {
-  //
-  //
-  //   LocationResult result = await showLocationPicker(
-  //       context,
-  //       DataStream.googleAPIKey,
-  //
-  //       // appBarColor: Colors.green,
-  //       initialCenter: DataStream.userlocation,
-  //       myLocationButtonEnabled: true,
-  //       automaticallyAnimateToCurrentLocation: true
-  //
-  //   );
-  //   print("result = $result");
-  //   if(result!=null){
-  //
-  //     //  Navigator.of(context).pop();
-  //
-  //     //   errorDialog.p
-  //
-  //     PickedAddress=result.address;
-  //     PickedLocation=result.latLng;
-  //
-  //
-  //     PickedAddressWork=result.address;
-  //     PickedLocationWork=result.latLng;
-  //
-  //     // DataStream.userlocation=PickedLocation;
-  //     // DataStream.userAddress=PickedAddress;
-  //
-  //     print(PickedAddress);
-  //
-  //   }
-  // }
-  // Future<void> addLocationOther() async {
-  //
-  //
-  //   LocationResult result = await showLocationPicker(
-  //       context,
-  //       DataStream.googleAPIKey,
-  //
-  //       // appBarColor: Colors.green,
-  //       initialCenter: DataStream.userlocation,
-  //       myLocationButtonEnabled: true,
-  //       automaticallyAnimateToCurrentLocation: true
-  //
-  //   );
-  //   print("result = $result");
-  //   if(result!=null){
-  //
-  //     //  Navigator.of(context).pop();
-  //
-  //     //   errorDialog.p
-  //
-  //     PickedAddressOther=result.address;
-  //     PickedLocationOther=result.latLng;
-  //
-  //     // DataStream.userlocation=PickedLocation;
-  //     // DataStream.userAddress=PickedAddress;
-  //
-  //     print(PickedAddress);
-  //
-  //   }
-  // }
+
 }
  

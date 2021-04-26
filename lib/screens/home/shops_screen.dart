@@ -192,20 +192,45 @@ class _ShopsScreenState extends State<ShopsScreen> {
     final endTime = DateTime(currentTime.year, currentTime.month, currentTime.day,int.parse(close.split(":")[0]) , int.parse(close.split(":")[1]));
 
 
-     if(endTime.difference(currentTime).inMinutes<30){
-    //  print("Closing Soon");
-   //   print("Difference"+(currentTime.difference(endTime).inMinutes).toString());
+    if(startTime.isBefore(endTime)) {
+      // print("day shop");
 
-      return "Closing Soon";
+      if(endTime.difference(currentTime).inMinutes<30){
+        //  print("Closing Soon");
+          print("day closing Difference"+(currentTime.difference(endTime).inMinutes).toString());
 
-    }else if(startTime.difference(currentTime).inMinutes<30){
-    //  print("Opening Soon");
-    //  print("open Difference"+(currentTime.difference(startTime).inMinutes).toString());
-      return "Opening Soon";
+        return "Closing Soon";
 
+      }else if(startTime.difference(currentTime).inMinutes<30){
+        //  print("Opening Soon");
+          print("day open Difference"+(currentTime.difference(startTime).inMinutes).toString());
+        return "Opening Soon";
+
+      }
+
+      return "null";
+    }else{
+
+      // print("night shop");
+     // print("Difference "+(currentTime.difference(endTime).inMinutes).toString());
+
+      if(endTime.difference(currentTime).inMinutes>-30){
+        //  print("Closing Soon");
+           print("night closing Difference "+(endTime.difference(currentTime).inMinutes).toString());
+
+        return "Closing Soon";
+
+      }else if(startTime.difference(currentTime).inMinutes<-30){
+        //  print("Opening Soon");
+           print("night open Difference"+(currentTime.difference(startTime).inMinutes).toString());
+        return "Opening Soon";
+
+      }
+
+      return "null";
     }
 
-     return "null";
+
 
   }
 

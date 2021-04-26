@@ -22,6 +22,9 @@ class AddLocationDialogue extends StatefulWidget {
 
 class _AddLocationDialogue extends State<AddLocationDialogue> {
   final addresscontroller = TextEditingController();
+  final addressnamecontroller = TextEditingController();
+
+  String selectedicon="";
 
   @override
   Widget build(BuildContext context) {
@@ -71,12 +74,99 @@ class _AddLocationDialogue extends State<AddLocationDialogue> {
                 ),
               ),
               SizedBox(height: 16.0),
+              Row(
+                mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                children: [
+
+                  Column(
+                    children: [
+                      Container(
+                        width: 50.0,
+                        height: 50.0,
+                        child: FloatingActionButton(
+                          onPressed:() {
+                            setState(() {
+                              selectedicon="home";
+
+                            });
+                          },
+                          backgroundColor: selectedicon=="home"?Colors.green:Colors.grey,
+                          child: const Icon(Icons.home),
+                        ),
+                      ),
+                      SizedBox(height: 5,),
+                      Text("Home",style: TextStyle(color: selectedicon=="home"?Colors.green:Colors.grey),),
+                    ],
+                  ),
+                  Column(
+                    children: [
+                      Container(
+                        width: 50.0,
+                        height: 50.0,
+                        child: FloatingActionButton(
+                          onPressed:() {
+                            setState(() {
+                              selectedicon="work";
+
+                            });
+                          },
+                          backgroundColor: selectedicon=="work"?Colors.green:Colors.grey,
+                          child: const Icon(Icons.work),
+                        ),
+                      ),
+                      SizedBox(height: 5,),
+                      Text("Work",style: TextStyle(color: selectedicon=="work"?Colors.green:Colors.grey),),
+                    ],
+                  ),
+                  Column(
+                    children: [
+                      Container(
+                        width: 50.0,
+                        height: 50.0,
+                        child: FloatingActionButton(
+
+                          onPressed:() {
+                            setState(() {
+                              selectedicon="other";
+
+                            });
+                          },
+                          backgroundColor: selectedicon=="other"?Colors.green:Colors.grey,
+
+                          // tooltip: 'Increment',
+                          child: const Icon(Icons.location_on),
+                        ),
+                      ),
+                      SizedBox(height: 5,),
+                      Text("Other",style: TextStyle(color: selectedicon=="other"?Colors.green:Colors.grey),),
+                    ],
+                  ),
+
+                ],
+              ),
+              // TextField(
+              //
+              //   controller: addressnamecontroller,
+              //   decoration: InputDecoration(
+              //     border: InputBorder.none,
+              //     hintText: 'Name  (Home, Work)',
+              //
+              //     enabledBorder: UnderlineInputBorder(
+              //       borderSide: BorderSide(color: Colors.green),
+              //     ),
+              //     focusedBorder: UnderlineInputBorder(
+              //       borderSide: BorderSide(color: Colors.green),
+              //     ),
+              //
+              //   ),
+              // ),
+              SizedBox(height: 10.0),
               TextField(
 
                 controller: addresscontroller,
                 decoration: InputDecoration(
                   border: InputBorder.none,
-                  hintText: 'Name i.e. Home, Work etc.',
+                  hintText: ' Complete Address',
 
                   enabledBorder: UnderlineInputBorder(
                     borderSide: BorderSide(color: Colors.green),
@@ -87,7 +177,7 @@ class _AddLocationDialogue extends State<AddLocationDialogue> {
 
                 ),
               ),
-              SizedBox(height: 16.0),
+              SizedBox(height: 10.0),
 
               FlatButton(
                 onPressed: () {
@@ -108,12 +198,11 @@ class _AddLocationDialogue extends State<AddLocationDialogue> {
 
                 },
                 child: Row(
-                  mainAxisAlignment: MainAxisAlignment.center,
+                  mainAxisAlignment: MainAxisAlignment.start,
                   children: [
                     Icon(Icons.location_on),
                     Container(width: screenWidth(context)/2,child: Text(PickedAddress,maxLines: 3,)),
-                    Icon(Icons.location_on,color: Colors.white,),
-
+ 
                   ],
                 ),
               ),
@@ -139,17 +228,23 @@ class _AddLocationDialogue extends State<AddLocationDialogue> {
                     child: FlatButton(
                       onPressed: () {
 
-                        AddressKey= addresscontroller.text;
 
-                        if((AddressKey!=""||AddressKey!=null)&&PickedAddress!="Pick Location") {
+                         CompleteAddress= addresscontroller.text;
+
+                         CompleteAddress.trim();
+
+ // ., $, #, [, ], /,
+
+
+                        if((selectedicon!="")&&PickedAddress!="Pick Location"&&(CompleteAddress!=""||CompleteAddress!=null)) {
                           FirebaseDatabase database = new FirebaseDatabase();
                           DatabaseReference db = database.reference()
                               .child('Users').child(DataStream.UserId).child("addresses").child(
-                              AddressKey);
+                              selectedicon);
 
                           db.set(<dynamic, dynamic>{
                             'location': "${PickedLocation.latitude},${PickedLocation.longitude}",
-                            'address': PickedAddress,
+                            'address': CompleteAddress,
 
                           }).then((value) {
 
@@ -170,7 +265,7 @@ class _AddLocationDialogue extends State<AddLocationDialogue> {
                           FocusScope.of(context).requestFocus(FocusNode());
 
                           ToastUtils.showCustomToast(
-                              context, "Please add Address Name\nand Select Location", false);
+                              context, "Please Select category\nType Complete Address\nand Select Location", false);
                         }
 
 
@@ -194,7 +289,7 @@ class _AddLocationDialogue extends State<AddLocationDialogue> {
   }
 
 
-  String AddressKey="";
+  String CompleteAddress="";
   String PickedAddress="Pick Location";
   LatLng PickedLocation;
 
@@ -212,6 +307,10 @@ class _AddLocationDialogue extends State<AddLocationDialogue> {
         automaticallyAnimateToCurrentLocation: true
 
     );
+    String encode(String key) {
+      return key.replaceAllMapped(new RegExp(r'[\.\$\#\[\]/%]'),
+              (match) => '%${match.group(0).codeUnitAt(0)}');
+    }
     print("result = $result");
     if(result!=null){
 

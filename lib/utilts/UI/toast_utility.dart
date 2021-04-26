@@ -106,7 +106,7 @@ class ToastUtils {
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: <Widget>[
                   Icon(Icons.close,color: Colors.white,),
-                  SizedBox(width: 40),
+                  SizedBox(width: 10),
                   Align(
                     alignment: Alignment.center,
                     child: Text(
