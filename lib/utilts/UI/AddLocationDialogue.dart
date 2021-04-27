@@ -73,7 +73,7 @@ class _AddLocationDialogue extends State<AddLocationDialogue> {
                   fontWeight: FontWeight.w700,
                 ),
               ),
-              SizedBox(height: 16.0),
+              SizedBox(height: 12.0),
               Row(
                 mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                 children: [
@@ -160,7 +160,7 @@ class _AddLocationDialogue extends State<AddLocationDialogue> {
               //
               //   ),
               // ),
-              SizedBox(height: 10.0),
+              SizedBox(height: 8.0),
               TextField(
 
                 controller: addresscontroller,

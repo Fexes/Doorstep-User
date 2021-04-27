@@ -180,17 +180,45 @@ class LocationScreenState extends State<LocationScreen> {
 
                   // print(value.value["home"]["address"]);
                   // print(value.value["home"]["location"]);
+                  if(value.value!=null) {
+                    if (value.value["home"] != null) {
+                      DataStream.addresses.add(new Addresses("home", value
+                          .value["home"]["address"], value
+                          .value["home"]["location"]));
+                    }
 
-                  try {
-                    DataStream.addresses.add(new Addresses("home", value
-                        .value["home"]["address"], value
-                        .value["home"]["location"]));
-                    DataStream.addresses.add(new Addresses("work", value
-                        .value["work"]["address"], value
-                        .value["work"]["location"]));
-                    DataStream.addresses.add(new Addresses("other", value
-                        .value["other"]["address"], value
-                        .value["other"]["location"]));
+                    if (value.value["work"] != null) {
+                      DataStream.addresses.add(new Addresses("work", value
+                          .value["work"]["address"], value
+                          .value["work"]["location"]));
+                    }
+
+                    if (value.value["other"] != null) {
+                      DataStream.addresses.add(new Addresses("other", value
+                          .value["other"]["address"], value
+                          .value["other"]["location"]));
+                    }
+                  }else{
+                    _checkGps().then((value) {
+
+
+                      if(value){
+                        //  ToastUtils.showCustomToast(context, "Getting Location", null);
+                      }else{
+
+                        ToastUtils.showCustomToast(context, "Location Service Disabled", false);
+
+                      }
+
+                    }).whenComplete(() {
+
+
+                      addLocation();
+
+                    });
+                  }
+
+
 
 
                     bool isExist = await Glutton.have("SavedAddress");
@@ -209,6 +237,8 @@ class LocationScreenState extends State<LocationScreen> {
                           addLocation();
                         });
                       }
+
+
 
                       for (int i = 0; i <=
                           DataStream.addresses.length - 1; i++) {
@@ -232,8 +262,30 @@ class LocationScreenState extends State<LocationScreen> {
                                   builder: (context) => Home()));
 
                           break;
+                        }else{
+                          if(i==DataStream.addresses.length - 1){
+                            _checkGps().then((value) {
+
+
+                              if(value){
+                                //  ToastUtils.showCustomToast(context, "Getting Location", null);
+                              }else{
+
+                                ToastUtils.showCustomToast(context, "Location Service Disabled", false);
+
+                              }
+
+                            }).whenComplete(() {
+
+
+                              addLocation();
+
+                            });
+                          }
                         }
                       }
+
+
                       if (DataStream.addresses.length == 0) {
                         _checkGps().then((value) {
                           if (value) {
@@ -258,28 +310,7 @@ class LocationScreenState extends State<LocationScreen> {
                         addLocation();
                       });
                     }
-                  }catch(e){
 
-
-
-                    _checkGps().then((value) {
-
-
-                      if(value){
-                        //  ToastUtils.showCustomToast(context, "Getting Location", null);
-                      }else{
-
-                        ToastUtils.showCustomToast(context, "Location Service Disabled", false);
-
-                      }
-
-                    }).whenComplete(() {
-
-
-                      addLocation();
-
-                    });
-                  }
 
                 }).then((value) {
                   _checkGps().then((value) {
