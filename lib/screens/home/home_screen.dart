@@ -34,6 +34,7 @@ import 'package:glutton/glutton.dart';
 import 'package:google_map_location_picker/google_map_location_picker.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:in_app_review/in_app_review.dart';
+import 'package:package_info/package_info.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'dart:async';
 import 'dart:convert' show jsonDecode, utf8;
@@ -137,6 +138,7 @@ class HomePage extends State<Home> {
   final lasename = TextEditingController();
    final email = TextEditingController();
 
+   String appVersion;
   @override
   Future<void> initState()  {
     super.initState();
@@ -221,6 +223,11 @@ class HomePage extends State<Home> {
   }
 
   haswhatsapp() async {
+
+    PackageInfo packageInfo = await PackageInfo.fromPlatform();
+    String versionName = packageInfo.buildNumber;
+
+    appVersion = packageInfo.version;
  //   whatsapp = await FlutterLaunch.hasApp(name: "whatsapp");
   //  final InAppReview inAppReview = InAppReview.instance;
 
@@ -2454,6 +2461,12 @@ class HomePage extends State<Home> {
                          ),
                        ),
                      ),
+                     SizedBox(height: 20,),
+
+                     Text("Version "+appVersion,
+                       style: TextStyle(fontSize: 10, fontWeight: FontWeight.w300,color: Colors.grey[500],
+                       ),),
+
                      // GestureDetector(
                      //   onTap: (){
                      //     //https://doorsteppolicy.web.app/
