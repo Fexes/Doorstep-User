@@ -148,8 +148,16 @@ class _CheckOutScreenState extends State<CheckOutScreen> {
     _focusNode2.addListener(_onOnFocusNodeEvent);
     _add();
 
-    if(DataStream.userAddress!=""){
-      isaddressaded=true;
+
+
+    if(DataStream.userAddress==""||DataStream.userAddress=="Current Location"||DataStream.userAddress==null){
+
+      Useraddress = "";
+      isaddressaded=false;
+    }else{
+
+        isaddressaded=true;
+
     }
 
     getodercount();
@@ -1491,7 +1499,7 @@ class _CheckOutScreenState extends State<CheckOutScreen> {
 
                                       child: Column(
                                         children: [
-                                          DataStream.userAddress==""?
+                                          DataStream.userAddress==""||DataStream.userAddress=="Current Location"?
                                           Container(
                                             margin: EdgeInsets.only(
                                                 bottom: 18.0),
@@ -1505,7 +1513,7 @@ class _CheckOutScreenState extends State<CheckOutScreen> {
                                                       0.7,
                                                   child: TextFormField(
                                                     maxLength: 150,
-                                                    initialValue: DataStream.userAddress,
+                                                   // initialValue: DataStream.userAddress,
 
                                                     cursorColor: primaryDark,
                                                     cursorRadius: Radius
@@ -2149,7 +2157,13 @@ class _CheckOutScreenState extends State<CheckOutScreen> {
       if (gotuserdata) {
         if (isaddressaded) {
           showLoadingDialogue("Placing Order");
-          String orderID = getRandomString(4) + "-" + getRandomString(3);
+          var now = new DateTime.now();
+          var date = new DateFormat('yyyy-MM-dd');
+          var orderIDdate = new DateFormat('yyMMdd');
+
+          var time = new DateFormat('HH:mm');
+
+          String orderID = getRandomString(4) + "-" + getRandomString(3)+ "-" +orderIDdate.format(now);
           FirebaseDatabase database = new FirebaseDatabase();
 
           DatabaseReference ordercount = database.reference()
@@ -2167,9 +2181,7 @@ class _CheckOutScreenState extends State<CheckOutScreen> {
           DatabaseReference adminorder = database.reference()
               .child('Admin').child("Orders");
 
-          var now = new DateTime.now();
-          var date = new DateFormat('yyyy-MM-dd');
-          var time = new DateFormat('HH:mm');
+
 
 
           ordercount.set(<dynamic, dynamic>{
