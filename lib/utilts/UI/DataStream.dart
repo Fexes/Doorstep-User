@@ -7,8 +7,10 @@ import 'package:google_maps_flutter/google_maps_flutter.dart';
 
 class DataStream{
 
-  static bool once=true;
-  static bool once2=true;
+  static bool once=true; //used for location dialogue in home page
+  static bool once2=true;//used for location dialogue in home page
+
+  static double systemFontSize;
 
   static String UserId;
   static String Username;
@@ -16,9 +18,10 @@ class DataStream{
   static String PhoneNumber;
   static String userTokenID;
   static FirebaseUser user;
+
   static String googleAPIKey ="AIzaSyBoLgH-s1XnyhCQ2PZEUbIaH_Jj2RKhMSU";
 
-   static LatLng userlocation;
+  static LatLng userlocation;
   static String userAddress="Current Location";
 
   static AppUser appuser;

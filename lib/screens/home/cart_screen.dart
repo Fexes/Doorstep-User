@@ -396,8 +396,7 @@ class _CartScreenState extends State<CartScreen> {
                   crossAxisAlignment: CrossAxisAlignment.center,
                   children: [
                     Container(
-                      height: 175,
-                      width: screenWidth(context)-40,
+                       width: screenWidth(context)-40,
 
                       decoration: BoxDecoration(
                         color: Colors.white,
@@ -416,175 +415,179 @@ class _CartScreenState extends State<CartScreen> {
                           ),
                         ],
                       ),
-                      child: Padding(
-                        padding: EdgeInsets.all(20),
-                        child: Column(
-                          children: [
-
-                            Row(
-                              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      child: Wrap(
+                        children: [
+                          Padding(
+                            padding: EdgeInsets.all(20),
+                            child: Column(
                               children: [
-                                Text(
-                                  'Subtotal ',
-                                  style: TextStyle(fontSize: 16, fontWeight: FontWeight.w300,color: Colors.black),
-                                ),
-                                Text(
-                                  'Rs. ${calSubtotal()}',
-                                  style: TextStyle(fontSize: 16, fontWeight: FontWeight.w300,color: Colors.black),
-                                ),
-                              ],
-                            ),
 
-                            SizedBox(height: 5,),
-                            Row(
-                              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                              children: [
-                                Text(
-                                  'Discount ',
-                                  style: TextStyle(fontSize: 16, fontWeight: FontWeight.w300,color: Colors.black),
+                                Row(
+                                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                                  children: [
+                                    Text(
+                                      'Subtotal ',
+                                      style: TextStyle(fontSize: 16, fontWeight: FontWeight.w300,color: Colors.black),
+                                    ),
+                                    Text(
+                                      'Rs. ${calSubtotal()}',
+                                      style: TextStyle(fontSize: 16, fontWeight: FontWeight.w300,color: Colors.black),
+                                    ),
+                                  ],
                                 ),
-                                Text(
-                                  'Rs. ${DataStream.Discount}',
-                                  style: TextStyle(fontSize: 16, fontWeight: FontWeight.w300,color: Colors.black),
-                                ),
-                              ],
-                            ),
-                            SizedBox(height: 5,),
-                            Row(
-                              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                              children: [
-                                Text(
-                                  'Delivery Charges ',
-                                  style: TextStyle(fontSize: 16, fontWeight: FontWeight.w300,color: Colors.black),
-                                ),
-                                // hasPharmacy?
-                                // Text(
-                                //   'Rs. ${calDeliveryCharges()}',
-                                //   style: TextStyle(fontSize: 16, fontWeight: FontWeight.w300,color: Colors.black),
-                                // ):
-                                Text(
-                                  'Rs. ${calDeliveryCharges()}',
-                                  style: TextStyle(fontSize: 16, fontWeight: FontWeight.w300,color: Colors.black),
-                                ),
-                              ],
-                            ),
-                            SizedBox(height: 5,),
 
-                            shopcount>1?
-                            GestureDetector(
-                              onTap:() {
-                                showDialog(context: context,
-                                    builder: (BuildContext context) {
-                                      return InfoDialog(
-                                        title: "Delivery Charges",
-                                        description: "Base Delivery Charges are Rs.${DataStream.DeliverCharges}, Delivery Charges for Pharmacies are Rs.${DataStream.DeliverChargesPharmacy} and Delivery Charges for each addition shop are Rs.${DataStream.delivery_charges_per_shop}",
-                                       // orderId: "# " ,
-                                        buttonText: "Ok",
+                                SizedBox(height: 5,),
+                                Row(
+                                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                                  children: [
+                                    Text(
+                                      'Discount ',
+                                      style: TextStyle(fontSize: 16, fontWeight: FontWeight.w300,color: Colors.black),
+                                    ),
+                                    Text(
+                                      'Rs. ${DataStream.Discount}',
+                                      style: TextStyle(fontSize: 16, fontWeight: FontWeight.w300,color: Colors.black),
+                                    ),
+                                  ],
+                                ),
+                                SizedBox(height: 5,),
+                                Row(
+                                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                                  children: [
+                                    Text(
+                                      'Delivery Charges ',
+                                      style: TextStyle(fontSize: 16, fontWeight: FontWeight.w300,color: Colors.black),
+                                    ),
+                                    // hasPharmacy?
+                                    // Text(
+                                    //   'Rs. ${calDeliveryCharges()}',
+                                    //   style: TextStyle(fontSize: 16, fontWeight: FontWeight.w300,color: Colors.black),
+                                    // ):
+                                    Text(
+                                      'Rs. ${calDeliveryCharges()}',
+                                      style: TextStyle(fontSize: 16, fontWeight: FontWeight.w300,color: Colors.black),
+                                    ),
+                                  ],
+                                ),
+                                SizedBox(height: 5,),
 
-                                      );
-                                    }
-                                );
-                              },
-                              child: Row(
-                                crossAxisAlignment: CrossAxisAlignment.center,
-                                mainAxisAlignment: MainAxisAlignment
-                                    .center,
+                                shopcount>1?
+                                GestureDetector(
+                                  onTap:() {
+                                    showDialog(context: context,
+                                        builder: (BuildContext context) {
+                                          return InfoDialog(
+                                            title: "Delivery Charges",
+                                            description: "Base Delivery Charges are Rs.${DataStream.DeliverCharges}, Delivery Charges for Pharmacies are Rs.${DataStream.DeliverChargesPharmacy} and Delivery Charges for each addition shop are Rs.${DataStream.delivery_charges_per_shop}",
+                                            // orderId: "# " ,
+                                            buttonText: "Ok",
 
-                                children: [
-                                  Icon(Icons.warning_amber_outlined,color: Colors.amber,size: 15,),
-                                  SizedBox(width: 10,),
-                                  Column(
+                                          );
+                                        }
+                                    );
+                                  },
+                                  child: Row(
+                                    crossAxisAlignment: CrossAxisAlignment.center,
+                                    mainAxisAlignment: MainAxisAlignment
+                                        .center,
+
                                     children: [
-                                      //
-                                      Container(
-                                         width: screenWidth(context)-120,
-                                        child: Text(
-                                          'Multiple shops orders have additional delivery charges',
-                                          maxLines: 2,
-                                          textAlign: TextAlign.center,
+                                      Icon(Icons.warning_amber_outlined,color: Colors.amber,size: 15,),
+                                      SizedBox(width: 10,),
+                                      Column(
+                                        children: [
+                                          //
+                                          Container(
+                                            width: screenWidth(context)-120,
+                                            child: Text(
+                                              'Multiple shops orders have additional delivery charges',
+                                              maxLines: 2,
+                                              textAlign: TextAlign.center,
 
-                                          style: TextStyle(fontSize: 12,
+                                              style: TextStyle(fontSize: 12,
 
-                                              fontWeight: FontWeight.w300,
-                                              color: Colors.black),
-                                        ),
+                                                  fontWeight: FontWeight.w300,
+                                                  color: Colors.black),
+                                            ),
+                                          ),
+
+                                        ],
                                       ),
 
                                     ],
                                   ),
-
-                                ],
-                              ),
-                            ):SizedBox(),
-                            SizedBox(height: 10,),
-                            Container(
-                              height: 1,
-                              color: Colors.grey[400],
-                            ),
-                            SizedBox(height: 10,),
-                            Row(
-                              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                              children: [
+                                ):SizedBox(),
+                                SizedBox(height: 10,),
+                                Container(
+                                  height: 1,
+                                  color: Colors.grey[400],
+                                ),
+                                SizedBox(height: 10,),
                                 Row(
-                                  mainAxisAlignment: MainAxisAlignment.end,
-                                  crossAxisAlignment: CrossAxisAlignment.end,
+                                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
                                   children: [
-                                    Text(
-                                      'Total ',
-                                      style: TextStyle(fontSize: 16, fontWeight: FontWeight.w500,color: Colors.black),
+                                    Row(
+                                      mainAxisAlignment: MainAxisAlignment.end,
+                                      crossAxisAlignment: CrossAxisAlignment.end,
+                                      children: [
+                                        Text(
+                                          'Total ',
+                                          style: TextStyle(fontSize: 16, fontWeight: FontWeight.w500,color: Colors.black),
+                                        ),
+                                        Text(
+                                          '(incl. VAT)',
+                                          style: TextStyle(fontSize: 12, fontWeight: FontWeight.w300,color: Colors.black),
+                                        ),
+                                      ],
                                     ),
                                     Text(
-                                      '(incl. VAT)',
-                                      style: TextStyle(fontSize: 12, fontWeight: FontWeight.w300,color: Colors.black),
+                                      'Rs. ${caltotal()}',
+                                      style: TextStyle(fontSize: 16, fontWeight: FontWeight.w500,color: Colors.black),
                                     ),
                                   ],
                                 ),
-                                Text(
-                                  'Rs. ${caltotal()}',
-                                  style: TextStyle(fontSize: 16, fontWeight: FontWeight.w500,color: Colors.black),
+                                SizedBox(height: 5,),
+
+                                GestureDetector(
+                                  onTap:(){
+                                    showDialog(context: context,
+                                        builder: (BuildContext context) {
+                                          return InfoDialog(
+                                            title: "Prices Might Change",
+                                            description: "Prices of the products might Change. In case of any changed Prices team Doorstep will contact you before confirming the order. You will be provided with an Updated receipt upon receiving your order",
+                                            // orderId: "# " ,
+                                            buttonText: "Ok",
+
+                                          );
+                                        }
+                                    );
+                                  },
+                                  child: Row(
+                                    mainAxisAlignment: MainAxisAlignment.center,
+                                    children: [
+                                      Icon(Icons.info,size: 18,
+                                        color: Colors.grey[500],),
+                                      SizedBox(width: 10,),
+
+                                      Container(
+                                        width: screenWidth(context) / 2,
+                                        child: Text(
+
+                                          "All prices are subject to change",
+                                          style: TextStyle(fontSize: 12,
+                                              fontWeight: FontWeight.w300,
+                                              color: Colors.black),
+                                          textAlign: TextAlign.left,
+                                          maxLines: 4,
+                                        ),
+                                      ),
+                                    ],
+                                  ),
                                 ),
                               ],
                             ),
-                            SizedBox(height: 5,),
-
-                            GestureDetector(
-                              onTap:(){
-                                showDialog(context: context,
-                                    builder: (BuildContext context) {
-                                      return InfoDialog(
-                                        title: "Prices Might Change",
-                                        description: "Prices of the products might Change. In case of any changed Prices team Doorstep will contact you before confirming the order. You will be provided with an Updated receipt upon receiving your order",
-                                        // orderId: "# " ,
-                                        buttonText: "Ok",
-
-                                      );
-                                    }
-                                );
-                              },
-                              child: Row(
-                                mainAxisAlignment: MainAxisAlignment.center,
-                                children: [
-                                  Icon(Icons.info,size: 18,
-                                    color: Colors.grey[500],),
-                                  SizedBox(width: 10,),
-
-                                  Container(
-                                    width: screenWidth(context) / 2,
-                                    child: Text(
-
-                                      "All prices are subject to change",
-                                      style: TextStyle(fontSize: 12,
-                                          fontWeight: FontWeight.w300,
-                                          color: Colors.black),
-                                      textAlign: TextAlign.left,
-                                      maxLines: 4,
-                                    ),
-                                  ),
-                                ],
-                              ),
-                            ),
-                          ],
-                        ),
+                          ),
+                        ],
                       ),
 
                     ),

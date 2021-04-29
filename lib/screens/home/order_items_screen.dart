@@ -230,7 +230,7 @@ class _OrderItemsScreenState extends State<OrderItemsScreen> {
 
           },
         ),
-        title:  Text("Order   # "+order.orderID),
+        title:  Text("Order #  "+order.orderID),
         automaticallyImplyLeading: false,
       ),
 
@@ -364,78 +364,81 @@ class _OrderItemsScreenState extends State<OrderItemsScreen> {
                             padding: const EdgeInsets.all(5.0),
                             child: Container(
 
-                              height: 135,
-                               width: screenWidth(context)-10,
+                                width: screenWidth(context)-10,
                               child: Padding(
                                 padding: EdgeInsets.all(20),
-                                child: Column(
+                                child: Wrap(
                                   children: [
-
-                                    Container(
-                                      height: 1,
-                                      color: Colors.grey[400],
-                                    ),
-                                    SizedBox(height: 10,),
-
-                                    Row(
-                                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                                    Column(
                                       children: [
-                                        Text(
-                                          'Subtotal ',
-                                          style: TextStyle(fontSize: 16, fontWeight: FontWeight.w300,color: Colors.black),
-                                        ),
-                                        Text(
-                                          'Rs. ${calSubtotal()}',
-                                          style: TextStyle(fontSize: 16, fontWeight: FontWeight.w300,color: Colors.black),
-                                        ),
-                                      ],
-                                    ),
 
-                                    SizedBox(height: 5,),
-                                    Row(
-                                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                                      children: [
-                                        Text(
-                                          'Delivery Charges ',
-                                          style: TextStyle(fontSize: 16, fontWeight: FontWeight.w300,color: Colors.black),
+                                        Container(
+                                          height: 1,
+                                          color: Colors.grey[400],
                                         ),
-                                        Text(
-                                          'Rs. ${DataStream.DeliverCharges}',
-                                          style: TextStyle(fontSize: 16, fontWeight: FontWeight.w300,color: Colors.black),
-                                        ),
-                                      ],
-                                    ),
-                                    SizedBox(height: 10,),
-                                    Container(
-                                      height: 1,
-                                      color: Colors.grey[400],
-                                    ),
-                                    SizedBox(height: 10,),
-                                    Row(
-                                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                                      children: [
+                                        SizedBox(height: 10,),
+
                                         Row(
-                                          mainAxisAlignment: MainAxisAlignment.end,
-                                          crossAxisAlignment: CrossAxisAlignment.end,
+                                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
                                           children: [
                                             Text(
-                                              'Total ',
-                                              style: TextStyle(fontSize: 16, fontWeight: FontWeight.w500,color: Colors.black),
+                                              'Subtotal ',
+                                              style: TextStyle(fontSize: 16, fontWeight: FontWeight.w300,color: Colors.black),
                                             ),
                                             Text(
-                                              '(incl. VAT)',
-                                              style: TextStyle(fontSize: 12, fontWeight: FontWeight.w300,color: Colors.black),
+                                              'Rs. ${calSubtotal()}',
+                                              style: TextStyle(fontSize: 16, fontWeight: FontWeight.w300,color: Colors.black),
                                             ),
                                           ],
                                         ),
-                                        Text(
-                                          'Rs. ${caltotal()}',
-                                          style: TextStyle(fontSize: 16, fontWeight: FontWeight.w400,color: Colors.black),
+
+                                        SizedBox(height: 5,),
+                                        Row(
+                                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                                          children: [
+                                            Text(
+                                              'Delivery Charges ',
+                                              style: TextStyle(fontSize: 16, fontWeight: FontWeight.w300,color: Colors.black),
+                                            ),
+                                            Text(
+                                              'Rs. ${DataStream.DeliverCharges}',
+                                              style: TextStyle(fontSize: 16, fontWeight: FontWeight.w300,color: Colors.black),
+                                            ),
+                                          ],
+                                        ),
+                                        SizedBox(height: 10,),
+                                        Container(
+                                          height: 1,
+                                          color: Colors.grey[400],
+                                        ),
+                                        SizedBox(height: 10,),
+                                        Row(
+                                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                                          children: [
+                                            Row(
+                                              mainAxisAlignment: MainAxisAlignment.end,
+                                              crossAxisAlignment: CrossAxisAlignment.end,
+                                              children: [
+                                                Text(
+                                                  'Total ',
+                                                  style: TextStyle(fontSize: 16, fontWeight: FontWeight.w500,color: Colors.black),
+                                                ),
+                                                Text(
+                                                  '(incl. VAT)',
+                                                  style: TextStyle(fontSize: 12, fontWeight: FontWeight.w300,color: Colors.black),
+                                                ),
+                                              ],
+                                            ),
+                                            Text(
+                                              'Rs. ${caltotal()}',
+                                              style: TextStyle(fontSize: 16, fontWeight: FontWeight.w400,color: Colors.black),
+                                            ),
+                                          ],
                                         ),
                                       ],
                                     ),
                                   ],
-                                ),
+                                )
                               ),
 
                             ),

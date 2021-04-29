@@ -634,7 +634,7 @@ class _ProductCatalogState extends State<ProductCatalog> {
                             gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
                               crossAxisCount: 3,
                               // childAspectRatio: 0.570,
-                              childAspectRatio: 0.570,
+                              childAspectRatio: 0.500,
                               mainAxisSpacing: 1.0,
                               crossAxisSpacing: 1.0,
                             ),

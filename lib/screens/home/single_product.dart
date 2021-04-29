@@ -466,15 +466,17 @@ class _SingleProductState extends State<SingleProduct> {
                   Badge(
                     badgeColor: Colors.redAccent,
                     badgeContent: Container(
-                      height: 25,
-                      width: 25,
-                      child: Column(
-                        mainAxisAlignment: MainAxisAlignment.center,
-                        crossAxisAlignment: CrossAxisAlignment.center,
-                        children: [
 
-                          Text(carts.length.toString(),style: TextStyle(color: Colors.white,fontSize: 20),),
-                        ],
+                      child: Padding(
+                        padding: const EdgeInsets.all(6.0),
+                        child: Column(
+                          mainAxisAlignment: MainAxisAlignment.center,
+                          crossAxisAlignment: CrossAxisAlignment.center,
+                          children: [
+
+                            Text(carts.length.toString(),style: TextStyle(color: Colors.white,fontSize: 20),),
+                          ],
+                        ),
                       ),
                     ),
                     child: Container(

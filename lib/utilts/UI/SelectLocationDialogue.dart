@@ -85,7 +85,7 @@ class _SelectLocationDialogue extends State<SelectLocationDialogue> {
                 ),
                 SizedBox(height: 3.0),
 
-                Text("Tap on Saved Address to save Location",style: TextStyle(color: Colors.grey,fontSize: 12),),
+                Text("Tap on Saved Address to set Location",style: TextStyle(color: Colors.grey,fontSize: 12),),
 
                 SizedBox(height: 16.0),
 

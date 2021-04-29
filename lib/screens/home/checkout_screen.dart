@@ -539,273 +539,277 @@ class _CheckOutScreenState extends State<CheckOutScreen> {
                             padding: const EdgeInsets.all(5.0),
                             child: Container(
 
-                              height: 225,
-                              width: screenWidth(context) - 10,
+                               width: screenWidth(context) - 10,
                               child: Padding(
                                 padding: EdgeInsets.all(20),
-                                child: Column(
-                                  children: [
-
-                                    Container(
-                                      height: 1,
-                                      color: Colors.grey[400],
-                                    ),
-                                    SizedBox(height: 10,),
-
-                                    Row(
-                                      mainAxisAlignment: MainAxisAlignment
-                                          .center,
-                                      children: [
-                                        Text(
-                                          'Promo Code : ',
-                                          style: TextStyle(fontSize: 16,
-                                            fontWeight: FontWeight.w300,
-                                            color: Colors.black,),
-                                        ),
-                                        GestureDetector(
-                                          onTap: () {
-                                            showDialog(context: context,
-                                                builder: (
-                                                    BuildContext context) {
-                                                  return PromoDialogBox(
-                                                    title: "Enter Promo Code",
-                                                    descriptions: "Enter a valid Promo Code to Avail an ongoing Offer or get a Discount on the items you are about to purchase",
-                                                    text: "Validate",
-
-                                                  );
-                                                }
-                                            ).then((value) {
-                                              if (DataStream.PromoCode !=
-                                                  null) {
-                                                Discount = DataStream.PromoCode
-                                                    .discount;
-
-
-
-                                                setState(() {
-
-                                                });
-                                              }
-                                            });
-                                          },
-                                          child: DataStream.PromoCode == null
-                                              ? Container(
-                                              height: 18.0,
-                                              width: 18.0,
-                                              decoration: BoxDecoration(
-                                                shape: BoxShape.rectangle,
-                                                borderRadius: BorderRadius.all(
-                                                    Radius.circular(10.0)),
-                                                color: Colors.green,
-
-                                              ),
-                                              child: InkWell(
-                                                child: Icon(
-                                                    Icons.add, size: 16.0,
-                                                    color: Colors.white
-
-                                                ),
-                                              )
-
-                                          )
-                                              : Text(
-                                            DataStream.PromoCode.promoID,
-                                            style: TextStyle(fontSize: 16,
-                                              fontWeight: FontWeight.w500,
-                                              color: Colors.green,),
-                                          ),
-                                        ),
-
-                                      ],
-                                    ),
-                                    SizedBox(height: 5,),
-
-                                    Row(
-                                      mainAxisAlignment: MainAxisAlignment
-                                          .spaceBetween,
-                                      children: [
-                                        Text(
-                                          'Subtotal ',
-                                          style: TextStyle(fontSize: 16,
-                                              fontWeight: FontWeight.w300,
-                                              color: Colors.black),
-                                        ),
-                                        Text(
-                                          'Rs. ${calSubtotal()}',
-                                          style: TextStyle(fontSize: 16,
-                                              fontWeight: FontWeight.w300,
-                                              color: Colors.black),
-                                        ),
-                                      ],
-                                    ),
-
-
-                                    SizedBox(height: 5,),
-                                    Row(
-                                      mainAxisAlignment: MainAxisAlignment
-                                          .spaceBetween,
-                                      children: [
-                                        Text(
-                                          'Discount ',
-                                          style: TextStyle(fontSize: 16,
-                                              fontWeight: FontWeight.w300,
-                                              color: Colors.black),
-                                        ),
-                                        Text(
-                                          'Rs. ${Discount}',
-                                          style: TextStyle(fontSize: 16,
-                                              fontWeight: FontWeight.w300,
-                                              color: Colors.black),
-                                        ),
-                                      ],
-                                    ),
-                                    SizedBox(height: 5,),
-                                    Row(
-                                      mainAxisAlignment: MainAxisAlignment
-                                          .spaceBetween,
-                                      children: [
-                                        Text(
-                                          'Delivery Charges ',
-                                          style: TextStyle(fontSize: 16,
-                                              fontWeight: FontWeight.w300,
-                                              color: Colors.black),
-                                        ),
-                                        Text(
-                                          'Rs. ${calDeliveryCharges()}',
-                                          style: TextStyle(fontSize: 16,
-                                              fontWeight: FontWeight.w300,
-                                              color: Colors.black),
-                                        ),
-                                      ],
-                                    ),
-                                    SizedBox(height: 5,),
-
-                                    shopcount>1?
-                                    GestureDetector(
-                                      onTap:() {
-                                        showDialog(context: context,
-                                            builder: (BuildContext context) {
-                                              return InfoDialog(
-                                                title: "Delivery Charges",
-                                                description: "Base Delivery Charges are Rs.${DataStream.DeliverCharges}, Delivery Charges for Pharmacies are Rs.${DataStream.DeliverChargesPharmacy} and Delivery Charges for each addition shop are Rs.${DataStream.delivery_charges_per_shop}",
-                                                // orderId: "# " ,
-                                                buttonText: "Ok",
-
-                                              );
-                                            }
-                                        );
-                                      },
-                                      child: Row(
-                                        crossAxisAlignment: CrossAxisAlignment.center,
-                                        mainAxisAlignment: MainAxisAlignment
-                                            .center,
-
+                                child:
+                                  Wrap(
+                                    children: [
+                                      Column(
                                         children: [
-                                          Icon(Icons.warning_amber_outlined,color: Colors.amber,size: 15,),
-                                          SizedBox(width: 10,),
-                                          Column(
+
+                                          Container(
+                                            height: 1,
+                                            color: Colors.grey[400],
+                                          ),
+                                          SizedBox(height: 10,),
+
+                                          Row(
+                                            mainAxisAlignment: MainAxisAlignment
+                                                .center,
                                             children: [
-                                              //
-                                              Container(
-                                                width: screenWidth(context)-120,
-                                                child: Text(
-                                                  'Multiple shops orders have additional delivery charges',
-                                                  maxLines: 2,
-                                                  textAlign: TextAlign.center,
+                                              Text(
+                                                'Promo Code : ',
+                                                style: TextStyle(fontSize: 16,
+                                                  fontWeight: FontWeight.w300,
+                                                  color: Colors.black,),
+                                              ),
+                                              GestureDetector(
+                                                onTap: () {
+                                                  showDialog(context: context,
+                                                      builder: (
+                                                          BuildContext context) {
+                                                        return PromoDialogBox(
+                                                          title: "Enter Promo Code",
+                                                          descriptions: "Enter a valid Promo Code to Avail an ongoing Offer or get a Discount on the items you are about to purchase",
+                                                          text: "Validate",
 
-                                                  style: TextStyle(fontSize: 12,
+                                                        );
+                                                      }
+                                                  ).then((value) {
+                                                    if (DataStream.PromoCode !=
+                                                        null) {
+                                                      Discount = DataStream.PromoCode
+                                                          .discount;
 
-                                                      fontWeight: FontWeight.w300,
-                                                      color: Colors.black),
+
+
+                                                      setState(() {
+
+                                                      });
+                                                    }
+                                                  });
+                                                },
+                                                child: DataStream.PromoCode == null
+                                                    ? Container(
+                                                    height: 18.0,
+                                                    width: 18.0,
+                                                    decoration: BoxDecoration(
+                                                      shape: BoxShape.rectangle,
+                                                      borderRadius: BorderRadius.all(
+                                                          Radius.circular(10.0)),
+                                                      color: Colors.green,
+
+                                                    ),
+                                                    child: InkWell(
+                                                      child: Icon(
+                                                          Icons.add, size: 16.0,
+                                                          color: Colors.white
+
+                                                      ),
+                                                    )
+
+                                                )
+                                                    : Text(
+                                                  DataStream.PromoCode.promoID,
+                                                  style: TextStyle(fontSize: 16,
+                                                    fontWeight: FontWeight.w500,
+                                                    color: Colors.green,),
                                                 ),
                                               ),
 
                                             ],
                                           ),
+                                          SizedBox(height: 5,),
 
-                                        ],
-                                      ),
-                                    ):SizedBox(),
-                                    SizedBox(height: 10,),
-                                    Container(
-                                      height: 1,
-                                      color: Colors.grey[400],
-                                    ),
-                                    SizedBox(height: 10,),
-                                    Row(
-                                      mainAxisAlignment: MainAxisAlignment
-                                          .spaceBetween,
-                                      children: [
-                                        Row(
-                                          mainAxisAlignment: MainAxisAlignment
-                                              .end,
-                                          crossAxisAlignment: CrossAxisAlignment
-                                              .end,
-                                          children: [
-                                            Text(
-                                              'Total ',
-                                              style: TextStyle(fontSize: 16,
-                                                  fontWeight: FontWeight.w500,
-                                                  color: Colors.black),
-                                            ),
-                                            Text(
-                                              '(incl. VAT)',
-                                              style: TextStyle(fontSize: 12,
-                                                  fontWeight: FontWeight.w300,
-                                                  color: Colors.black),
-                                            ),
-                                          ],
-                                        ),
-                                        Text(
-                                          'Rs. ${caltotal()}',
-                                          style: TextStyle(fontSize: 16,
-                                              fontWeight: FontWeight.w500,
-                                              color: Colors.black),
-                                        ),
-                                      ],
-                                    ),
-                                    SizedBox(height: 5,),
+                                          Row(
+                                            mainAxisAlignment: MainAxisAlignment
+                                                .spaceBetween,
+                                            children: [
+                                              Text(
+                                                'Subtotal ',
+                                                style: TextStyle(fontSize: 16,
+                                                    fontWeight: FontWeight.w300,
+                                                    color: Colors.black),
+                                              ),
+                                              Text(
+                                                'Rs. ${calSubtotal()}',
+                                                style: TextStyle(fontSize: 16,
+                                                    fontWeight: FontWeight.w300,
+                                                    color: Colors.black),
+                                              ),
+                                            ],
+                                          ),
 
-                                    GestureDetector(
-                                      onTap:(){
-                                        showDialog(context: context,
-                                            builder: (BuildContext context) {
-                                              return InfoDialog(
-                                                title: "Prices Might Change",
-                                                description: "Prices of the products might Change. In case of any changed Prices team Doorstep will contact you before confirming the order. You will be provided with an Updated receipt upon receiving your order",
-                                                // orderId: "# " ,
-                                                buttonText: "Ok",
 
+                                          SizedBox(height: 5,),
+                                          Row(
+                                            mainAxisAlignment: MainAxisAlignment
+                                                .spaceBetween,
+                                            children: [
+                                              Text(
+                                                'Discount ',
+                                                style: TextStyle(fontSize: 16,
+                                                    fontWeight: FontWeight.w300,
+                                                    color: Colors.black),
+                                              ),
+                                              Text(
+                                                'Rs. ${Discount}',
+                                                style: TextStyle(fontSize: 16,
+                                                    fontWeight: FontWeight.w300,
+                                                    color: Colors.black),
+                                              ),
+                                            ],
+                                          ),
+                                          SizedBox(height: 5,),
+                                          Row(
+                                            mainAxisAlignment: MainAxisAlignment
+                                                .spaceBetween,
+                                            children: [
+                                              Text(
+                                                'Delivery Charges ',
+                                                style: TextStyle(fontSize: 16,
+                                                    fontWeight: FontWeight.w300,
+                                                    color: Colors.black),
+                                              ),
+                                              Text(
+                                                'Rs. ${calDeliveryCharges()}',
+                                                style: TextStyle(fontSize: 16,
+                                                    fontWeight: FontWeight.w300,
+                                                    color: Colors.black),
+                                              ),
+                                            ],
+                                          ),
+                                          SizedBox(height: 5,),
+
+                                          shopcount>1?
+                                          GestureDetector(
+                                            onTap:() {
+                                              showDialog(context: context,
+                                                  builder: (BuildContext context) {
+                                                    return InfoDialog(
+                                                      title: "Delivery Charges",
+                                                      description: "Base Delivery Charges are Rs.${DataStream.DeliverCharges}, Delivery Charges for Pharmacies are Rs.${DataStream.DeliverChargesPharmacy} and Delivery Charges for each addition shop are Rs.${DataStream.delivery_charges_per_shop}",
+                                                      // orderId: "# " ,
+                                                      buttonText: "Ok",
+
+                                                    );
+                                                  }
                                               );
-                                            }
-                                        );
-                                      },
-                                      child: Row(
-                                        mainAxisAlignment: MainAxisAlignment.center,
-                                        children: [
-                                          Icon(Icons.info,size: 18,
-                                            color: Colors.grey[500],),
-                                          SizedBox(width: 10,),
+                                            },
+                                            child: Row(
+                                              crossAxisAlignment: CrossAxisAlignment.center,
+                                              mainAxisAlignment: MainAxisAlignment
+                                                  .center,
 
+                                              children: [
+                                                Icon(Icons.warning_amber_outlined,color: Colors.amber,size: 15,),
+                                                SizedBox(width: 10,),
+                                                Column(
+                                                  children: [
+                                                    //
+                                                    Container(
+                                                      width: screenWidth(context)-120,
+                                                      child: Text(
+                                                        'Multiple shops orders have additional delivery charges',
+                                                        maxLines: 2,
+                                                        textAlign: TextAlign.center,
+
+                                                        style: TextStyle(fontSize: 12,
+
+                                                            fontWeight: FontWeight.w300,
+                                                            color: Colors.black),
+                                                      ),
+                                                    ),
+
+                                                  ],
+                                                ),
+
+                                              ],
+                                            ),
+                                          ):SizedBox(),
+                                          SizedBox(height: 10,),
                                           Container(
-                                            width: screenWidth(context) / 2,
-                                            child: Text(
+                                            height: 1,
+                                            color: Colors.grey[400],
+                                          ),
+                                          SizedBox(height: 10,),
+                                          Row(
+                                            mainAxisAlignment: MainAxisAlignment
+                                                .spaceBetween,
+                                            children: [
+                                              Row(
+                                                mainAxisAlignment: MainAxisAlignment
+                                                    .end,
+                                                crossAxisAlignment: CrossAxisAlignment
+                                                    .end,
+                                                children: [
+                                                  Text(
+                                                    'Total ',
+                                                    style: TextStyle(fontSize: 16,
+                                                        fontWeight: FontWeight.w500,
+                                                        color: Colors.black),
+                                                  ),
+                                                  Text(
+                                                    '(incl. VAT)',
+                                                    style: TextStyle(fontSize: 12,
+                                                        fontWeight: FontWeight.w300,
+                                                        color: Colors.black),
+                                                  ),
+                                                ],
+                                              ),
+                                              Text(
+                                                'Rs. ${caltotal()}',
+                                                style: TextStyle(fontSize: 16,
+                                                    fontWeight: FontWeight.w500,
+                                                    color: Colors.black),
+                                              ),
+                                            ],
+                                          ),
+                                          SizedBox(height: 5,),
 
-                                              "All prices are subject to change",
-                                              style: TextStyle(fontSize: 12,
-                                                  fontWeight: FontWeight.w300,
-                                                  color: Colors.black),
-                                              textAlign: TextAlign.left,
-                                              maxLines: 4,
+                                          GestureDetector(
+                                            onTap:(){
+                                              showDialog(context: context,
+                                                  builder: (BuildContext context) {
+                                                    return InfoDialog(
+                                                      title: "Prices Might Change",
+                                                      description: "Prices of the products might Change. In case of any changed Prices team Doorstep will contact you before confirming the order. You will be provided with an Updated receipt upon receiving your order",
+                                                      // orderId: "# " ,
+                                                      buttonText: "Ok",
+
+                                                    );
+                                                  }
+                                              );
+                                            },
+                                            child: Row(
+                                              mainAxisAlignment: MainAxisAlignment.center,
+                                              children: [
+                                                Icon(Icons.info,size: 18,
+                                                  color: Colors.grey[500],),
+                                                SizedBox(width: 10,),
+
+                                                Container(
+                                                  width: screenWidth(context) / 2,
+                                                  child: Text(
+
+                                                    "All prices are subject to change",
+                                                    style: TextStyle(fontSize: 12,
+                                                        fontWeight: FontWeight.w300,
+                                                        color: Colors.black),
+                                                    textAlign: TextAlign.left,
+                                                    maxLines: 4,
+                                                  ),
+                                                ),
+                                              ],
                                             ),
                                           ),
+
+
                                         ],
                                       ),
-                                    ),
-
-
-                                  ],
-                                ),
+                                    ],
+                                  )
                               ),
 
                             ),

@@ -191,9 +191,9 @@ class HomePage extends State<Home> {
          bool isExist = await Glutton.have("SavedAddress");
          if(!isExist){
            if(DataStream.once) {
-              DataStream.once= false;
+             DataStream.once= false;
 
-               showDialog(context: context,
+             showDialog(context: context,
                  builder: (BuildContext context) {
                    return SelectLocationDialogue(
                      // title: "Charge Location",
@@ -209,6 +209,34 @@ class HomePage extends State<Home> {
 
                });
              });
+           }
+
+
+         }else{
+           String data = await Glutton.vomit("SavedAddress");
+           if (data.contains("Current Location")) {
+             if(DataStream.once) {
+               DataStream.once= false;
+
+               showDialog(context: context,
+                   builder: (BuildContext context) {
+                     return SelectLocationDialogue(
+                       // title: "Charge Location",
+                       // description: "Base Delivery Charges are Rs.${DataStream.DeliverCharges}, Delivery Charges for Pharmacies are Rs.${DataStream.DeliverChargesPharmacy} and Delivery Charges for each addition shop are Rs.${DataStream.delivery_charges_per_shop}",
+                       // orderId: "# " ,
+                       //  buttonText: "Ok",
+                       // context:context
+
+                     );
+                   }
+               ).then((value) {
+                 setState(() {
+
+                 });
+               });
+             }
+
+
            }
          }
 
