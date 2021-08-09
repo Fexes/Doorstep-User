@@ -159,7 +159,7 @@ class _CartScreenState extends State<CartScreen> {
           userid = firebaseUser.uid;
           final FirebaseDatabase database = FirebaseDatabase.instance;
           volunteerRef =
-              database.reference().child("Cart").child(firebaseUser.uid);
+              database.reference().child("Cart").child(firebaseUser.uid).child("items");
           volunteerRef.onChildAdded.listen(_onEntryAdded);
        //   volunteerRef.onChildChanged.listen(_onEntryChanged);
           volunteerRef.onChildRemoved.listen(_onEntryRemoved);
@@ -546,7 +546,7 @@ class _CartScreenState extends State<CartScreen> {
                                     ),
                                   ],
                                 ),
-                                SizedBox(height: 5,),
+                                SizedBox(height: 10,),
 
                                 GestureDetector(
                                   onTap:(){
@@ -562,8 +562,10 @@ class _CartScreenState extends State<CartScreen> {
                                         }
                                     );
                                   },
+
                                   child: Row(
                                     mainAxisAlignment: MainAxisAlignment.center,
+
                                     children: [
                                       Icon(Icons.info,size: 18,
                                         color: Colors.grey[500],),
@@ -793,7 +795,7 @@ class _CartScreenState extends State<CartScreen> {
     DatabaseReference volunteerRef;
 
     final FirebaseDatabase database = FirebaseDatabase.instance;
-    volunteerRef = database.reference().child("Cart").child(DataStream.UserId);
+    volunteerRef = database.reference().child("Cart").child(DataStream.UserId).child("items");
     volunteerRef.onChildAdded.listen(_onEntryAdded);
     volunteerRef.onChildChanged.listen(_onEntryChanged);
 

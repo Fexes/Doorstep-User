@@ -1,7 +1,8 @@
 import 'dart:io';
 import 'dart:math';
 
- import 'package:Doorstep/models/AppUser.dart';
+
+import 'package:Doorstep/models/AppUser.dart';
 import 'package:Doorstep/models/Cart.dart';
 import 'package:Doorstep/models/Shops.dart';
 import 'package:Doorstep/screens/auth/sign-in.dart';
@@ -24,6 +25,7 @@ import 'package:flutter/material.dart';
 import 'package:Doorstep/styles/styles.dart';
  
 import 'package:geolocator/geolocator.dart';
+
 import 'package:google_map_location_picker/google_map_location_picker.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:intl/intl.dart';
@@ -1923,12 +1925,20 @@ class _CheckOutScreenState extends State<CheckOutScreen> {
         if (gotuserdata) {
           if (isaddressaded) {
             showLoadingDialogue("Uploading Prescription");
-            String orderID = getRandomString(4) + "-" + getRandomString(3);
+
+            var now = new DateTime.now();
+            var date = new DateFormat('yyyy-MM-dd');
+            var orderIDdate = new DateFormat('MMdd');
+
+            var time = new DateFormat('HH:mm');
+
+            String orderID = getRandomString(4) + "-" + getRandomString(4)+ "-" +orderIDdate.format(now);
 
             addImageToFirebase(orderID, new File(DataStream.prescriptionImage))
                 .then((value) {
               hideLoadingDialogue();
               showLoadingDialogue("Placing Order");
+
 
 
               FirebaseDatabase database = new FirebaseDatabase();
@@ -1948,9 +1958,7 @@ class _CheckOutScreenState extends State<CheckOutScreen> {
               DatabaseReference adminorder = database.reference()
                   .child('Admin').child("Orders");
 
-              var now = new DateTime.now();
-              var date = new DateFormat('yyyy-MM-dd');
-              var time = new DateFormat('HH:mm');
+
 
 
               ordercount.set(<dynamic, dynamic>{
@@ -2163,11 +2171,11 @@ class _CheckOutScreenState extends State<CheckOutScreen> {
           showLoadingDialogue("Placing Order");
           var now = new DateTime.now();
           var date = new DateFormat('yyyy-MM-dd');
-          var orderIDdate = new DateFormat('yyMMdd');
+          var orderIDdate = new DateFormat('MMdd');
 
           var time = new DateFormat('HH:mm');
 
-          String orderID = getRandomString(4) + "-" + getRandomString(3)+ "-" +orderIDdate.format(now);
+          String orderID = getRandomString(4) + "-" + getRandomString(4)+ "-" +orderIDdate.format(now);
           FirebaseDatabase database = new FirebaseDatabase();
 
           DatabaseReference ordercount = database.reference()

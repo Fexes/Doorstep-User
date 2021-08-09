@@ -192,7 +192,8 @@ class _ProductCatalogState extends State<ProductCatalog> {
         try {
           final FirebaseDatabase database = FirebaseDatabase.instance;
           volunteerRef =
-              database.reference().child("Cart").child(firebaseUser.uid);
+              database.reference().child("Cart").child(firebaseUser.uid).child("items");
+
           volunteerRef.onChildAdded.listen(_onEntryAddedcart);
           volunteerRef.onChildChanged.listen(_onEntryChangedcart);
         }catch(e){
@@ -634,7 +635,7 @@ class _ProductCatalogState extends State<ProductCatalog> {
                             gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
                               crossAxisCount: 3,
                               // childAspectRatio: 0.570,
-                              childAspectRatio: 0.500,
+                              childAspectRatio: 0.570,
                               mainAxisSpacing: 1.0,
                               crossAxisSpacing: 1.0,
                             ),
@@ -683,34 +684,94 @@ class _ProductCatalogState extends State<ProductCatalog> {
 
 
                                         }else{
-                                          productsItemcount[index]++;
 
+                                          if(DataStream.cartShop==null){
+                                            productsItemcount[index]++;
 
-                                          FirebaseDatabase database = new FirebaseDatabase();
-                                          DatabaseReference _userRef = database
-                                              .reference()
-                                              .child('Cart').child(DataStream.UserId).child(products[index].cardid+shop.shopid);
+                                            FirebaseDatabase database = new FirebaseDatabase();
+                                            DatabaseReference _userRef = database
+                                                .reference()
+                                            // .child('Cart').child(DataStream.UserId).child(products[index].cardid+shop.shopid);
+                                                .child('Cart').child(DataStream.UserId).child("items").child(products[index].cardid+shop.shopid);
 
-                                          _userRef.set(<dynamic, dynamic>{
-                                            'no_of_items': productsItemcount[index],
-                                            'cardid': products[index].cardid.toString(),
-                                            'cardname': products[index].cardname
-                                                .toString(),
-                                            'cardimage': products[index].cardimage
-                                                .toString(),
-                                            'cardprice': products[index].cardprice,
-                                            'unit': products[index].unit,
-                                            'shopcatagory': DataStream.ShopCatagory,
-                                            'itemcatagory': products[index].category,
-                                            'shopid': DataStream.ShopId,
-
-
-                                          }).then((value) {
-                                            setState(() {
-
+                                            DatabaseReference shopref = database
+                                                .reference()
+                                                .child('Cart').child(DataStream.UserId).child("shop");
+                                            shopref.set(shop.toJson()).then((value) {
+                                              DataStream.cartShop=shop;
                                             });
-                                          });
-                                        }
+
+                                            _userRef.set(<dynamic, dynamic>{
+                                              'no_of_items': productsItemcount[index],
+                                              'cardid': products[index].cardid.toString(),
+                                              'cardname': products[index].cardname
+                                                  .toString(),
+                                              'cardimage': products[index].cardimage
+                                                  .toString(),
+                                              'cardprice': products[index].cardprice,
+                                              'unit': products[index].unit,
+                                              'shopcatagory': DataStream.ShopCatagory,
+                                              'itemcatagory': products[index].category,
+                                              'shopid': DataStream.ShopId,
+
+
+                                            }).then((value) {
+                                              setState(() {
+
+                                              });
+                                            });
+                                          }else{
+                                            if(DataStream.cartShop.shopid==shop.shopid){
+
+                                              productsItemcount[index]++;
+
+                                              FirebaseDatabase database = new FirebaseDatabase();
+                                              DatabaseReference _userRef = database
+                                                  .reference()
+                                              // .child('Cart').child(DataStream.UserId).child(products[index].cardid+shop.shopid);
+                                                  .child('Cart').child(DataStream.UserId).child("items").child(products[index].cardid+shop.shopid);
+
+                                              DatabaseReference shopref = database
+                                                  .reference()
+                                                  .child('Cart').child(DataStream.UserId).child("shop");
+                                              shopref.set(shop.toJson()).then((value) {
+                                                DataStream.cartShop=shop;
+                                              });
+
+                                              _userRef.set(<dynamic, dynamic>{
+                                                'no_of_items': productsItemcount[index],
+                                                'cardid': products[index].cardid.toString(),
+                                                'cardname': products[index].cardname
+                                                    .toString(),
+                                                'cardimage': products[index].cardimage
+                                                    .toString(),
+                                                'cardprice': products[index].cardprice,
+                                                'unit': products[index].unit,
+                                                'shopcatagory': DataStream.ShopCatagory,
+                                                'itemcatagory': products[index].category,
+                                                'shopid': DataStream.ShopId,
+
+
+                                              }).then((value) {
+                                                setState(() {
+
+                                                });
+                                              });
+                                            }else{
+
+                                              ToastUtils.showCustomToast(context, "Another Shop Selected",false);
+
+
+                                            }
+                                          }
+
+
+
+
+                                          }
+
+
+
 
                                       }
 
@@ -843,9 +904,8 @@ class _ProductCatalogState extends State<ProductCatalog> {
                                         FirebaseDatabase database = new FirebaseDatabase();
                                         DatabaseReference _userRef = database
                                             .reference()
-                                            .child('Cart').child(
-                                            DataStream.UserId).child(
-                                            products[index].cardid + shop.shopid);
+                                            .child('Cart').child(DataStream.UserId).child("items").child(products[index].cardid+shop.shopid);
+
 
                                         _userRef.set(<dynamic, dynamic>{
                                           'no_of_items': productsItemcount[index],
@@ -862,6 +922,15 @@ class _ProductCatalogState extends State<ProductCatalog> {
 
 
                                         }).then((value) {
+
+                                          if(productsItemcount[index]<=0) {
+                                            DatabaseReference itemdelreff = database
+                                                .reference()
+                                                .child('Cart').child(DataStream.UserId).child("items").child(products[index].cardid+shop.shopid);
+
+                                            itemdelreff.remove();
+                                          }
+
 
                                         });
 

@@ -91,6 +91,7 @@ class SplashScreenState extends State<SplashScreen> with TickerProviderStateMixi
     super.initState();
     _getToken();
     _configureFirebaseListeners();
+   // _controller = AnimationController();
     _controller = AnimationController(vsync: this);
 
   }

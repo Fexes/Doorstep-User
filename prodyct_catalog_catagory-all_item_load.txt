@@ -142,7 +142,7 @@ class _ProductCatalogState extends State<ProductCatalog> {
         if (_controller.position.pixels == 0) {
 
         }else {
-        //  loadmore(lastProductKet);
+          //  loadmore(lastProductKet);
 
         }
         setState(() {
@@ -176,7 +176,7 @@ class _ProductCatalogState extends State<ProductCatalog> {
         try {
           final FirebaseDatabase database = FirebaseDatabase.instance;
           volunteerRef =
-              database.reference().child("Cart").child(firebaseUser.uid);
+              database.reference().child("Cart").child(firebaseUser.uid).child("items");
           volunteerRef.onChildAdded.listen(_onEntryAddedcart);
           volunteerRef.onChildChanged.listen(_onEntryChangedcart);
         }catch(e){
@@ -241,7 +241,7 @@ class _ProductCatalogState extends State<ProductCatalog> {
 
     final FirebaseDatabase database = FirebaseDatabase.instance;
     volunteerRef = database.reference().child("Shops").child(DataStream.ShopCatagory).child(shop.shopid).child("Products").child("Categories").child("ALL");
-    volunteerRef.orderByChild("cardname").startAt(filter.toUpperCase()).endAt(filter.toLowerCase()).onChildAdded.listen(
+    volunteerRef.orderByChild("cardname").endAt(filter.toLowerCase()+"\uf8ff").onChildAdded.listen(
             (event){
           isLoaded=true;
 
@@ -447,7 +447,7 @@ class _ProductCatalogState extends State<ProductCatalog> {
   List<int> productsItemcount;
 
   List<Product> productscat;
-   List<Product> Searchproducts;
+  List<Product> Searchproducts;
 
 
   String selectfilter="ALL";
@@ -598,7 +598,7 @@ class _ProductCatalogState extends State<ProductCatalog> {
                                     }
                                     else{
 
-                                          filterProductSearch(search);
+                                      filterProductSearch(search);
 
                                     }
 
@@ -633,6 +633,7 @@ class _ProductCatalogState extends State<ProductCatalog> {
                                         _searchTextController.clear();
 
                                         setuplist(selectfilter);
+                                        filterProductSearch("");
 
                                       },
                                       child: Icon(Icons.cancel,color: Colors.redAccent,))),
@@ -678,7 +679,7 @@ class _ProductCatalogState extends State<ProductCatalog> {
                                   onPressed: (){
                                     search="";
                                     //   filterProducts(search);
-                                     FocusScope.of(context).unfocus();
+                                    FocusScope.of(context).unfocus();
                                     _searchTextController.clear();
 
                                     _controller.jumpTo(0);
@@ -795,7 +796,13 @@ class _ProductCatalogState extends State<ProductCatalog> {
                                         FirebaseDatabase database = new FirebaseDatabase();
                                         DatabaseReference _userRef = database
                                             .reference()
-                                            .child('Cart').child(DataStream.UserId).child(products[index].cardid+shop.shopid);
+                                            .child('Cart').child(DataStream.UserId).child("items").child(products[index].cardid+shop.shopid);
+
+
+                                        DatabaseReference shopref = database
+                                            .reference()
+                                            .child('Cart').child(DataStream.UserId).child("shop");
+                                        shopref.set(shop.toJson());
 
                                         _userRef.set(<dynamic, dynamic>{
                                           'no_of_items': productsItemcount[index],
@@ -943,35 +950,40 @@ class _ProductCatalogState extends State<ProductCatalog> {
 
 
                                       productsItemcount[index]--;
-
                                       FirebaseDatabase database = new FirebaseDatabase();
                                       DatabaseReference _userRef = database
                                           .reference()
-                                          .child('Cart').child(
-                                          DataStream.UserId).child(
-                                          products[index].cardid + shop.shopid);
-
-                                      _userRef.set(<dynamic, dynamic>{
-                                        'no_of_items': productsItemcount[index],
-                                        'cardid': products[index].cardid
-                                            .toString(),
-                                        'cardname': products[index].cardname
-                                            .toString(),
-                                        'cardimage': products[index].cardimage
-                                            .toString(),
-                                        'cardprice': products[index].cardprice,
-                                        'unit': products[index].unit,
-                                        'shopcatagory': DataStream.ShopCatagory,
-                                        'shopid': DataStream.ShopId,
+                                          .child('Cart')
+                                          .child(DataStream.UserId).child("items")
+                                          .child(products[index].cardid + shop.shopid);
 
 
-                                      }).then((value) {
+                                        _userRef.set(<dynamic, dynamic>{
+                                          'no_of_items': productsItemcount[index],
+                                          'cardid': products[index].cardid
+                                              .toString(),
+                                          'cardname': products[index].cardname
+                                              .toString(),
+                                          'cardimage': products[index].cardimage
+                                              .toString(),
+                                          'cardprice': products[index].cardprice,
+                                          'unit': products[index].unit,
+                                          'shopcatagory': DataStream.ShopCatagory,
+                                          'shopid': DataStream.ShopId,
 
-                                      });
 
-                                      setState(() {
+                                        }).then((value) {
+                                          if(productsItemcount[index]<=0){
+                                            _userRef.remove();
+                                          }
+                                        });
 
-                                      });
+                                        setState(() {
+
+                                        });
+
+
+
 
                                     },
                                     child: new Container(

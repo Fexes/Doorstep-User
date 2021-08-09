@@ -17,7 +17,7 @@ import 'package:flutter/material.dart';
 import 'package:Doorstep/styles/styles.dart';
  
 import 'package:geolocator/geolocator.dart';
-import 'package:google_map_location_picker/google_map_location_picker.dart';
+
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:intl/intl.dart';
 import 'package:permission_handler/permission_handler.dart';

@@ -1,6 +1,7 @@
 import 'dart:io';
 import 'dart:math';
 
+
 import 'package:Doorstep/models/Addresses.dart';
 import 'package:Doorstep/models/Banners.dart';
 import 'package:Doorstep/models/Cart.dart';
@@ -30,8 +31,9 @@ import 'package:Doorstep/utilts/UI/toast_utility.dart';
 import 'package:flutter/material.dart';
 import 'package:Doorstep/styles/styles.dart';
 import 'package:glutton/glutton.dart';
-
 import 'package:google_map_location_picker/google_map_location_picker.dart';
+
+
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:in_app_review/in_app_review.dart';
 import 'package:package_info/package_info.dart';
@@ -155,7 +157,7 @@ class HomePage extends State<Home> {
       user=firebaseUser;
 
        if(firebaseUser != null){
-         print(user.uid);
+         print("User ID :"+user.uid);
 
         setupCart();
         setupBanner();
@@ -186,7 +188,10 @@ class HomePage extends State<Home> {
                });
              });
            }
-         }
+         }else{
+
+
+          }
 
          bool isExist = await Glutton.have("SavedAddress");
          if(!isExist){
@@ -276,7 +281,7 @@ class HomePage extends State<Home> {
     locationDbRef.once().then((value) async {
       if(value.value!=null){
 
-        print(value.value["no_of_orders"]);
+        print("no_of_orders by User :"+value.value["no_of_orders"].toString());
         DataStream.order_count = value.value['no_of_orders'];
 
       }
@@ -379,7 +384,7 @@ class HomePage extends State<Home> {
     DatabaseReference volunteerRef;
 
     final FirebaseDatabase database = FirebaseDatabase.instance;
-    volunteerRef = database.reference().child("Cart").child(DataStream.UserId);
+    volunteerRef = database.reference().child("Cart").child(DataStream.UserId).child("items");
     volunteerRef.onChildAdded.listen(_onEntryAdded);
     volunteerRef.onChildChanged.listen(_onEntryChanged);
 
@@ -2330,7 +2335,7 @@ class HomePage extends State<Home> {
 
                                             DataStream.addresses.add(Addresses.fromSnapshot(event.snapshot));
 
-                                            print(Addresses.fromSnapshot(event.snapshot).key);
+                                            print("Addresses Key:"+Addresses.fromSnapshot(event.snapshot).key);
                                           });
 
                                           showDialog(context: context,

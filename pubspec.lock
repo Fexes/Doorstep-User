@@ -16,7 +16,7 @@ packages:
     source: hosted
     version: "0.39.17"
   android_intent:
-    dependency: transitive
+    dependency: "direct main"
     description:
       name: android_intent
       url: "https://pub.dartlang.org"
@@ -294,7 +294,7 @@ packages:
       name: firebase_messaging
       url: "https://pub.dartlang.org"
     source: hosted
-    version: "5.1.8"
+    version: "6.0.16"
   firebase_storage:
     dependency: "direct main"
     description:
@@ -736,7 +736,7 @@ packages:
     source: hosted
     version: "1.2.4"
   provider:
-    dependency: transitive
+    dependency: "direct main"
     description:
       name: provider
       url: "https://pub.dartlang.org"
@@ -860,7 +860,7 @@ packages:
     source: hosted
     version: "1.0.3+3"
   stack_trace:
-    dependency: transitive
+    dependency: "direct main"
     description:
       name: stack_trace
       url: "https://pub.dartlang.org"

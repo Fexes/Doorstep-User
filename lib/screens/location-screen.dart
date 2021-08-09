@@ -3,6 +3,7 @@ import 'dart:io';
 
 import 'package:Doorstep/models/Addresses.dart';
 import 'package:Doorstep/models/AppUser.dart';
+import 'package:Doorstep/models/Shops.dart';
 import 'package:Doorstep/screens/home/home_screen.dart';
 import 'package:Doorstep/styles/styles.dart';
 import 'package:Doorstep/utilts/UI/DataStream.dart';
@@ -49,12 +50,6 @@ class LocationScreenState extends State<LocationScreen> {
     super.initState();
 
 
-
-    // for(int i=901;i<=1050;i++){
-    //   //Code128
-    //   print("Doorstep0000$i");
-    // }
-
    start();
 
   }
@@ -65,22 +60,33 @@ class LocationScreenState extends State<LocationScreen> {
   Future<void> addLocation() async {
    // showLoadingDialogue("Getting Location");
 
-     getLocation().then((value) async {
+    _checkGps().then((value) {
 
 
-         DataStream.userlocation=value;
-        // DataStream.userAddress=value.;
+      if(value){
+        getLocation().then((value) async {
 
-        Navigator.of(context).pushReplacement(
-            MaterialPageRoute(
-                builder: (context) => Home()));
+          DataStream.userlocation=value;
 
 
+          Navigator.of(context).pushReplacement(
+              MaterialPageRoute(
+                  builder: (context) => Home()));
+
+
+
+        });      }else{
+
+        ToastUtils.showCustomToast(context, "Location Service Disabled", false);
+
+      }
 
     });
 
 
+
   }
+
   Future<LatLng> getLocation() async {
     LatLng userPosition;
     // print(userPosition.toString());
@@ -117,8 +123,7 @@ class LocationScreenState extends State<LocationScreen> {
 
             userPosition = LatLng(_position.latitude, _position.longitude);
 
-            setState((){
-            });
+
           }
         });
         break;
@@ -128,13 +133,188 @@ class LocationScreenState extends State<LocationScreen> {
 
   }
 
+  Future<void> getUserData() async {
+    DataStream.addresses = new List();
+
+
+    FirebaseAuth.instance.currentUser().then((firebaseUser){
+
+
+
+
+      if(firebaseUser != null){
+
+        DataStream.UserId=firebaseUser.uid;
+        DataStream.PhoneNumber=firebaseUser.phoneNumber;
+
+
+
+
+        final userDbRef = FirebaseDatabase.instance.reference().child("Users").child(DataStream.UserId);
+
+        userDbRef.once().then((value) async {
+          if(value.value!=null){
+
+
+
+            DataStream.appuser= new AppUser(value.value["first_name"], value.value["last_name"],value.value["phone"] , value.value["email"],value.value["userTokenID"]);
+
+
+            _firebaseMessaging.getToken().then((token) {
+              //  print("Device Token: $token");
+              userTokenID=token;
+              FirebaseDatabase database = new FirebaseDatabase();
+              DatabaseReference db = database.reference()
+                  .child('Users').child(DataStream.UserId);
+
+              db.update({
+                'userTokenID':token,
+              }).then((value) {
+                getUserSavedAddresses();
+
+              });
+            });
+
+          }
+
+        }
+        );
+      }else{
+        addLocation();
+      }
+
+    });
+
+
+  }
+
+  Future<void> getUserSavedAddresses() async {
+    final locationDbRef = FirebaseDatabase.instance.reference().child("Users").child(DataStream.UserId).child("addresses");
+
+    locationDbRef.once().then((value) async {
+
+      // print(value.value["home"]["address"]);
+      // print(value.value["home"]["location"]);
+      if(value.value!=null) {
+        if (value.value["home"] != null) {
+          DataStream.addresses.add(new Addresses("home", value
+              .value["home"]["address"], value
+              .value["home"]["location"]));
+        }
+
+        if (value.value["work"] != null) {
+          DataStream.addresses.add(new Addresses("work", value
+              .value["work"]["address"], value
+              .value["work"]["location"]));
+        }
+
+        if (value.value["other"] != null) {
+          DataStream.addresses.add(new Addresses("other", value
+              .value["other"]["address"], value
+              .value["other"]["location"]));
+        }
+      }else{
+         addLocation();
+      }
+
+
+
+
+      bool isExist = await Glutton.have("SavedAddress");
+      print("SavedAddress :" +isExist.toString());
+      if (isExist) {
+        String data = await Glutton.vomit("SavedAddress");
+        if (data.contains("Current Location")) {
+          print("Selected Address :" +data.toString());
+
+          addLocation();
+        }
+
+
+
+        for (int i = 0; i <= DataStream.addresses.length - 1; i++) {
+          if (DataStream.addresses[i].key == data) {
+            print("selected Address :" + DataStream.addresses[i].key);
+
+            DataStream.savedAddresskey =
+                DataStream.addresses[i].key;
+
+
+
+
+
+            DataStream.userlocation = new LatLng(double.parse(DataStream.addresses[i].location.split(",")[0]),
+                double.parse(DataStream.addresses[i].location.split(",")[1]));
+
+            DataStream.userAddress =
+                DataStream.addresses[i].address;
+
+            final cartShopref = FirebaseDatabase.instance.reference().child(
+                "Cart").child(DataStream.UserId).child("shop");
+
+
+            cartShopref.once().then((value) async {
+
+
+              try{
+                DataStream.cartShop  =new Shops(
+                    null,
+                    value.value["address"],
+                    value.value["shopid"],
+                    value.value["shopcategory"],
+                    value.value["shopdiscription"],
+                    value.value["shopimage"],
+                    value.value["shopname"],
+                    value.value["location"],
+                    value.value["openTime"],
+                    value.value["closeTime"],
+                    value.value["radius"],
+                    value.value["distanceInKM"],
+                    value.value["ShopStatus"]);
+
+
+                print("Cart Shop:"+ DataStream.cartShop.shopname);
+              }catch(e){
+                print("Cart Shop Not Found");
+
+              }
+
+
+              Navigator.of(context).pushReplacement(
+                  MaterialPageRoute(
+                      builder: (context) => Home()));
+            }
+            );
+
+            break;
+          }else{
+            if(i==DataStream.addresses.length - 1){
+              addLocation();
+            }
+          }
+        }
+
+
+        if (DataStream.addresses.length == 0) {
+          addLocation();
+        }
+      } else {
+        addLocation();
+      }
+
+
+    }).then((value) {
+     // addLocation();
+    });
+  }
+
   String userTokenID;
   final FirebaseMessaging _firebaseMessaging = FirebaseMessaging();
 
 
   static FirebaseUser userD;
 
-  Future<Timer> loadData() async {
+  Future<Timer> loadDatagone() async {
 
     DataStream.addresses = new List();
 
@@ -203,7 +383,7 @@ class LocationScreenState extends State<LocationScreen> {
 
 
                       if(value){
-                        //  ToastUtils.showCustomToast(context, "Getting Location", null);
+                         ToastUtils.showCustomToast(context, "Getting Location", null);
                       }else{
 
                         ToastUtils.showCustomToast(context, "Location Service Disabled", false);
@@ -222,10 +402,12 @@ class LocationScreenState extends State<LocationScreen> {
 
 
                     bool isExist = await Glutton.have("SavedAddress");
-                    print(isExist);
+                    print("SavedAddress :" +isExist.toString());
                     if (isExist) {
                       String data = await Glutton.vomit("SavedAddress");
                       if (data.contains("Current Location")) {
+                        print("Selected Address :" +data.toString());
+
                         _checkGps().then((value) {
                           if (value) {
                             //  ToastUtils.showCustomToast(context, "Getting Location", null);
@@ -243,23 +425,58 @@ class LocationScreenState extends State<LocationScreen> {
                       for (int i = 0; i <=
                           DataStream.addresses.length - 1; i++) {
                         if (DataStream.addresses[i].key == data) {
-                          print("selected " + DataStream.addresses[i].key);
+                          print("selected Address :" + DataStream.addresses[i].key);
 
 
                           DataStream.savedAddresskey =
                               DataStream.addresses[i].key;
 
-                          DataStream.userlocation = new LatLng(double.parse(
-                              DataStream.addresses[i].location.split(",")[0]),
-                              double.parse(
-                                  DataStream.addresses[i].location.split(
-                                      ",")[1]));
+
+
+
+
+                          DataStream.userlocation = new LatLng(double.parse(DataStream.addresses[i].location.split(",")[0]),
+                              double.parse(DataStream.addresses[i].location.split(",")[1]));
+
                           DataStream.userAddress =
                               DataStream.addresses[i].address;
 
-                          Navigator.of(context).pushReplacement(
-                              MaterialPageRoute(
-                                  builder: (context) => Home()));
+                          final cartShopref = FirebaseDatabase.instance.reference().child(
+                              "Cart").child(DataStream.UserId).child("shop");
+
+
+                          cartShopref.once().then((value) async {
+
+
+                            try{
+                              DataStream.cartShop  =new Shops(
+                                  null,
+                                  value.value["address"],
+                                  value.value["shopid"],
+                                  value.value["shopcategory"],
+                                  value.value["shopdiscription"],
+                                  value.value["shopimage"],
+                                  value.value["shopname"],
+                                  value.value["location"],
+                                  value.value["openTime"],
+                                  value.value["closeTime"],
+                                  value.value["radius"],
+                                  value.value["distanceInKM"],
+                                  value.value["ShopStatus"]);
+
+
+                              print("Cart Shop:"+ DataStream.cartShop.shopname);
+                            }catch(e){
+                              print("Cart Shop Not Found");
+
+                            }
+
+
+                            Navigator.of(context).pushReplacement(
+                                MaterialPageRoute(
+                                    builder: (context) => Home()));
+                          }
+                          );
 
                           break;
                         }else{
@@ -313,36 +530,9 @@ class LocationScreenState extends State<LocationScreen> {
 
 
                 }).then((value) {
-                  _checkGps().then((value) {
 
-
-                    if(value){
-                      //  ToastUtils.showCustomToast(context, "Getting Location", null);
-                    }else{
-
-                      ToastUtils.showCustomToast(context, "Location Service Disabled", false);
-
-                    }
-
-                  }).whenComplete(() {
-
-
-                    addLocation();
-
-                  });
                 });
-                //print(value.value["no_of_orders"]);
-                // locationDbRef.onChildAdded.listen((event) {
-                //
-                //   DataStream.addresses.add(Addresses.fromSnapshot(event.snapshot));
-                //
-                //   print(Addresses.fromSnapshot(event.snapshot).key);
-                // }) .onDone(() async {
-                //
-                //
-                //
 
-                // });
 
 
 
@@ -395,12 +585,7 @@ class LocationScreenState extends State<LocationScreen> {
 }
 
 
-  void getUserDetails(){
 
-
-
-
-  }
   loc.Location location = loc.Location();//explicit reference to the Location class
 
   Future _checkGps() async {
@@ -413,7 +598,6 @@ class LocationScreenState extends State<LocationScreen> {
 
   }
 
-bool error=false;
 
   @override
   Widget build(BuildContext context) {
@@ -443,13 +627,7 @@ bool error=false;
                   FlatButton(
 
                     color: Colors.white,
-                    onPressed: () async {
-                      error=false;
-                      loadData();
-                      setState(() {
 
-                      });
-                    },
                     child: Text( updateavail?"Update Available":
                         "Getting Location" ,textAlign: TextAlign.center,style: TextStyle(color: Colors.black,fontSize: 32,fontWeight: FontWeight.w100,
                     ),),
@@ -459,26 +637,6 @@ bool error=false;
 
 
               Column(children: [
-                error?
-                SizedBox(
-                  width:200,
-                  child: RaisedButton(
-                    shape: RoundedRectangleBorder(
-                      borderRadius: new BorderRadius.circular(18.0),
-
-                    ),
-
-                    color: primaryDark,
-                    onPressed: () async {
-                      error=false;
-                      loadData();
-                      setState(() {
-
-                      });
-                    },
-                    child: Text( "Retry",style: TextStyle(color: Colors.white),),
-                  ),
-                ):
 
 
                 updateavail?
@@ -560,13 +718,7 @@ bool error=false;
                   child: FlatButton(
 
                     color: Colors.white,
-                    onPressed: () async {
-                      error=false;
-                      loadData();
-                      setState(() {
 
-                      });
-                    },
                     child: Text( "Version    $appVersion" ,textAlign: TextAlign.center,style: TextStyle(color: Colors.black,fontSize: 12,fontWeight: FontWeight.w200,
                     ),),
                   ),
@@ -589,6 +741,7 @@ bool error=false;
   bool maintenance=false;
 
   Future<void> start() async {
+
     PackageInfo packageInfo = await PackageInfo.fromPlatform();
     String versionName = packageInfo.buildNumber;
 
@@ -597,7 +750,7 @@ bool error=false;
 
     });
 
-    print(versionName);
+    print("versionName :"+versionName);
 
     final versionDbRef = FirebaseDatabase.instance.reference().child("Admin").child("AppVersion");
 
@@ -625,7 +778,7 @@ bool error=false;
               "Admin").child("Delivery");
 
           locationDbRef.once().then((value) async {
-            print(value.value["delivery_charges"]);
+            print("delivery_charges :"+value.value["delivery_charges"].toString());
 
             DataStream.DeliverCharges = value.value['delivery_charges'];
             DataStream.DeliverChargesPharmacy = value.value['delivery_charges_pharmacy'];
@@ -635,12 +788,13 @@ bool error=false;
                 "Admin").child("Radius");
 
             locationDbRef.once().then((value) async {
-              print(value.value["user_order_radius"]);
+              print("user_order_radius :"+value.value["user_order_radius"].toString());
 
               DataStream.OrderRadius = value.value['user_order_radius'];
 
 
-              loadData();
+
+              getUserData();
             }
             );
           }

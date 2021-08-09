@@ -2,6 +2,7 @@ import 'package:Doorstep/models/Addresses.dart';
 import 'package:Doorstep/models/AppUser.dart';
 import 'package:Doorstep/models/Cart.dart';
 import 'package:Doorstep/models/Promo.dart';
+import 'package:Doorstep/models/Shops.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 
@@ -44,8 +45,12 @@ class DataStream{
 
   static String prescriptionImage;
 
+  static Shops cartShop;
+
 
   List<Cart> carts;
+
+
 
 
 }
