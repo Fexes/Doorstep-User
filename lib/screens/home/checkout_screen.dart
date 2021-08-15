@@ -77,7 +77,7 @@ class _CheckOutScreenState extends State<CheckOutScreen> {
               Stack(
                 alignment: Alignment.center,
                 children: [
-                  Image.asset("assets/icons/logo.png", height: 23, width: 23,),
+                  Image.asset("assets/icons/dslogo.png", height: 23, width: 23,),
 
                   SpinKitFadingCircle(
                     size: 70,

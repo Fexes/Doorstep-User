@@ -201,7 +201,7 @@ class _SignInState extends State<SignIn> {
 
               //  physics: ScrollPhysics(),
                 children: <Widget>[
-                  Image.asset("assets/icons/logo.png", width: 200.0, height: 180.0, fit: BoxFit.contain,),
+                  Image.asset("assets/icons/dslogo.png", width: 200.0, height: 180.0, fit: BoxFit.contain,),
                   Container(
                     alignment: AlignmentDirectional.center,
                     padding: const EdgeInsets.only(top: 20.0, bottom: 12.0),

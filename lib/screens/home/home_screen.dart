@@ -537,7 +537,7 @@ class HomePage extends State<Home> {
                  :SizedBox(height: 1,),
 
              Text('Doorstep'),
-           //  Image.asset("assets/icons/logo.png",height: 40,width: 40, ),
+           //  Image.asset("assets/icons/dslogo.png",height: 40,width: 40, ),
 
              user!=null?
                GestureDetector(
@@ -1179,7 +1179,7 @@ class HomePage extends State<Home> {
                                 Stack(
                                   alignment: Alignment.center,
                                   children: [
-                                    Image.asset("assets/icons/logo.png",height: 23,width: 23, ),
+                                    Image.asset("assets/icons/dslogo.png",height: 23,width: 23, ),
 
                                     SpinKitFadingCircle(
                                       size: 60,

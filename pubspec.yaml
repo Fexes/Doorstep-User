@@ -1,7 +1,7 @@
 name: Doorstep
 description: A new Flutter application.
 
-version: 4.1.5+19
+version: 5.0.0+20
 
 
 environment:
@@ -87,39 +87,16 @@ flutter:
   uses-material-design: true
 
   assets:
-    - assets/bgs/bg-gradient.png
-    - assets/bgs/bg-signup.png
-    - assets/fonts/AcuminProBold.otf
-    - assets/fonts/AcuminProRegular.otf
-    - assets/fonts/SfProTextRegular.ttf
-    - assets/fonts/SfProTextSemibold.ttf
-    - assets/gif/load.gif
-    - assets/icons/facebook.png
-    - assets/icons/google-plus.png
-    - assets/icons/lock-grey.png
-    - assets/icons/lock.png
-    - assets/icons/logo.png
+    - assets/icons/dslogo.png
     - assets/icons/whatsapp.png
-    - assets/icons/not-show.png
-    - assets/icons/show-grey.png
-    - assets/icons/show.png
-    - assets/icons/twitter.png
-    - assets/icons/user-grey.png
-    - assets/icons/user.png
-    - assets/imgs/centerLogo.png
-    - assets/imgs/dairy.jpg
-    - assets/imgs/naan.jpg
-    - assets/imgs/super_market.jpg
-    - assets/imgs/grocery_store.jpg
-    - assets/imgs/bbq.jpg
     - assets/imgs/tag.png
     - assets/location.json
     - assets/done.json
     - assets/coupon.json
     - assets/update.json
+    - assets/no_shops.json
     - assets/empty_cart.json
     - assets/logo.json
     - assets/prescription.json
-    - assets/imgs/bk.jpg
 
 

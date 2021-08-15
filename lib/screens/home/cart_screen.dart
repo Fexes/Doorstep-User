@@ -17,6 +17,7 @@ import 'package:flutter_spinkit/flutter_spinkit.dart';
 import 'package:Doorstep/utilts/UI/toast_utility.dart';
 import 'package:flutter/material.dart';
 import 'package:Doorstep/styles/styles.dart';
+import 'package:lottie/lottie.dart';
  
 import 'package:shared_preferences/shared_preferences.dart';
 import 'dart:async';
@@ -69,7 +70,7 @@ class _CartScreenState extends State<CartScreen> {
               Stack(
                   alignment: Alignment.center,
                   children: [
-                    Image.asset("assets/icons/logo.png",height: 23,width: 23, ),
+                    Image.asset("assets/icons/dslogo.png",height: 23,width: 23, ),
 
                     SpinKitFadingCircle(
                       size: 60,
@@ -771,7 +772,19 @@ class _CartScreenState extends State<CartScreen> {
 
         ],
       ):
-      Center(child: Text("Empty")),
+      Center(child:
+
+      Column(
+        mainAxisAlignment: MainAxisAlignment.center,
+        children: [
+          Lottie.asset('assets/empty_cart.json',repeat: true,),
+          Text("Your Cart is Empty", style: TextStyle(fontSize: 16,color: Colors.black,fontWeight: FontWeight.w300),),
+
+          SizedBox(height: 150,)
+        ],
+      )
+
+      ),
     );
 
   }

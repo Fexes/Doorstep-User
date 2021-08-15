@@ -62,7 +62,7 @@ class _ShopsScreenState extends State<ShopsScreen> {
               Stack(
                   alignment: Alignment.center,
                   children: [
-                    Image.asset("assets/icons/logo.png",height: 23,width: 23, ),
+                    Image.asset("assets/icons/dslogo.png",height: 23,width: 23, ),
 
                     SpinKitFadingCircle(
                       size: 60,
@@ -735,7 +735,7 @@ class _ShopsScreenState extends State<ShopsScreen> {
                        Column(
                          mainAxisAlignment: MainAxisAlignment.center,
                          children: [
-                           Lottie.asset('assets/empty_cart.json',repeat: true,),
+                           Lottie.asset('assets/no_shops.json',repeat: true,),
                            Text("No Shops Available in your Area yet", style: TextStyle(fontSize: 16,color: Colors.black,fontWeight: FontWeight.w300),),
 
                            SizedBox(height: 150,)
@@ -755,7 +755,7 @@ class _ShopsScreenState extends State<ShopsScreen> {
                                 Stack(
                                       alignment: Alignment.center,
                                       children: [
-                                        Image.asset("assets/icons/logo.png",height: 23,width: 23, ),
+                                        Image.asset("assets/icons/dslogo.png",height: 23,width: 23, ),
 
                                         SpinKitFadingCircle(
                                           size: 60,

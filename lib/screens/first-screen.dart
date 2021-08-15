@@ -132,7 +132,7 @@ class SplashScreenState extends State<SplashScreen> with TickerProviderStateMixi
                         ),
                     ),
 
-                    //Image.asset("assets/icons/logo.png", ),
+                    //Image.asset("assets/icons/dslogo.png", ),
                   ),
                   Padding(
                     padding: EdgeInsets.fromLTRB(70,10,70,10),

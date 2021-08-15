@@ -622,7 +622,7 @@ class LocationScreenState extends State<LocationScreen> {
 
                     ),
 
-                    //Image.asset("assets/icons/logo.png", ),
+                    //Image.asset("assets/icons/dslogo.png", ),
                   ),
                   FlatButton(
 
@@ -681,7 +681,7 @@ class LocationScreenState extends State<LocationScreen> {
                 Stack(
                   alignment: Alignment.center,
                   children: [
-                    Image.asset("assets/icons/logo.png",height: 23,width: 23, ),
+                    Image.asset("assets/icons/dslogo.png",height: 23,width: 23, ),
 
                     SpinKitFadingCircle(
                       size: 60,

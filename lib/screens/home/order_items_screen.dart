@@ -89,7 +89,7 @@ class _OrderItemsScreenState extends State<OrderItemsScreen> {
               Stack(
                   alignment: Alignment.center,
                   children: [
-                    Image.asset("assets/icons/logo.png",height: 23,width: 23, ),
+                    Image.asset("assets/icons/dslogo.png",height: 23,width: 23, ),
 
                     SpinKitFadingCircle(
                       size: 60,
