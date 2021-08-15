@@ -163,6 +163,7 @@ class _CartScreenState extends State<CartScreen> {
           volunteerRef.onChildAdded.listen(_onEntryAdded);
        //   volunteerRef.onChildChanged.listen(_onEntryChanged);
           volunteerRef.onChildRemoved.listen(_onEntryRemoved);
+
         }catch(e){
 
         }
@@ -201,6 +202,9 @@ class _CartScreenState extends State<CartScreen> {
 
     setState(() {
       carts.add(Cart.fromSnapshot(event.snapshot));
+      if(carts.length<=0){
+        DataStream.cartShop=null;
+      }
       if(Cart.fromSnapshot(event.snapshot).shopcatagory=="Pharmacy"){
         hasPharmacy=true;
         caltotal();
@@ -212,7 +216,9 @@ class _CartScreenState extends State<CartScreen> {
 
   _onEntryRemoved(Event event) {
     carts.remove(Cart.fromSnapshot(event.snapshot));
-
+    if(carts.length<=0){
+      DataStream.cartShop=null;
+    }
     setState(() {
     });
   }
@@ -303,7 +309,7 @@ class _CartScreenState extends State<CartScreen> {
 
                                 print(userid);
                                 final FirebaseDatabase _databaseCustom = FirebaseDatabase.instance;
-                                _databaseCustom.reference().child("Cart").child(userid).child(snapshot.key).remove().then((value) {
+                                _databaseCustom.reference().child("Cart").child(userid).child("items").child(snapshot.key).remove().then((value) {
                                   setState(() {
                                     shopcount=0;
                                     shopIDchk="";
@@ -646,7 +652,7 @@ class _CartScreenState extends State<CartScreen> {
 
                                         Padding(
                                           padding:  EdgeInsets.all(20.0),
-                                          child: Text('Are yoy sure you want to clear your Cart ?', style: TextStyle(color: Colors.black,fontSize: 14),),
+                                          child: Text('Are you sure you want to clear your Cart ?', style: TextStyle(color: Colors.black,fontSize: 14),),
                                         ),
 
 
@@ -677,6 +683,7 @@ class _CartScreenState extends State<CartScreen> {
                                                   .child("Cart").child(DataStream.UserId);
                                               del.remove().then((value) {
                                                 carts.clear();
+                                                DataStream.cartShop=null;
                                                 Navigator.of(context).pop();
 
                                                 setState(() {
@@ -688,7 +695,7 @@ class _CartScreenState extends State<CartScreen> {
 
 
                                             },
-                                                child: Text('Clear', style: TextStyle(color: Colors.redAccent, fontSize: 14.0),)),
+                                                child: Text('Clear Cart', style: TextStyle(color: Colors.redAccent, fontSize: 14.0),)),
                                           ],
                                         )
                                       ],

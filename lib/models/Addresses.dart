@@ -9,13 +9,10 @@ class Addresses {
 
    Addresses(this.key,this.address,this.location);
 
-
-
-  Addresses.fromSnapshot(DataSnapshot snapshot):
-        key = snapshot.key,
-        address = snapshot.value["address"],
-        location = snapshot.value["location"];
-
+    Addresses.fromSnapshot(DataSnapshot snapshot):
+          key = snapshot.key,
+          address = snapshot.value["address"],
+          location = snapshot.value["location"];
 
   toJson() {
     return {

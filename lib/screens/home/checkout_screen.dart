@@ -245,7 +245,7 @@ class _CheckOutScreenState extends State<CheckOutScreen> {
         userid = firebaseUser.uid;
         final FirebaseDatabase database = FirebaseDatabase.instance;
         volunteerRef =
-            database.reference().child("Cart").child(firebaseUser.uid);
+            database.reference().child("Cart").child(firebaseUser.uid).child("items");
         volunteerRef.onChildAdded.listen(_onEntryAdded);
       }
     });
@@ -775,7 +775,7 @@ class _CheckOutScreenState extends State<CheckOutScreen> {
                                               showDialog(context: context,
                                                   builder: (BuildContext context) {
                                                     return InfoDialog(
-                                                      title: "Prices Might Change",
+                                                      title: "Prices may Change",
                                                       description: "Prices of the products might Change. In case of any changed Prices team Doorstep will contact you before confirming the order. You will be provided with an Updated receipt upon receiving your order",
                                                       // orderId: "# " ,
                                                       buttonText: "Ok",

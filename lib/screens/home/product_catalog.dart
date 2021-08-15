@@ -162,11 +162,150 @@ class _ProductCatalogState extends State<ProductCatalog> {
 // Here you can write your code
 
       setupessentials();
+      shopClosedDialogue();
 
     });
 
+  }
+
+  bool shopClosedDialogue(){
+    if(!checkShopTime(shop.openTime,
+        shop.closeTime) ){
+
+      Dialog errorDialog = Dialog(
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12.0)), //this right here
+        child: Container(
+          height: 215.0,
+          width: screenWidth(context),
+
+          child: Column(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: <Widget>[
+              SizedBox(height: 20,),
+
+              Padding(
+                padding:  EdgeInsets.all(1.0),
+                child: Text('Shop Closed', style: TextStyle(color: Colors.red,fontSize: 18,fontWeight: FontWeight.w500),),
+              ),
+              // SizedBox(height: 20,),
 
 
+              Padding(
+                padding:  EdgeInsets.all(20.0),
+                child:
+                Text.rich(
+                  TextSpan(
+
+                    children: <TextSpan>[
+                      TextSpan(
+                          text: 'This Shop is closed at the moment. you can shop here from ',
+                          style: TextStyle(
+                              color: Colors.black,fontSize: 14                                                                  )),
+                      TextSpan(
+                          text: DateFormat("h:mma").format(DateFormat("hh:mm").parse(shop.openTime))  +"  to  "+ DateFormat("h:mma").format(DateFormat("hh:mm").parse(shop.closeTime)),
+
+                          style: TextStyle(
+                            decoration: TextDecoration.underline,
+                            color: Colors.black,fontSize: 14,fontWeight: FontWeight.w600,
+                          )),
+                      TextSpan(
+                          text: '. In the meantime you can still browse the shop for items.',
+                          style: TextStyle(
+                              color: Colors.black,fontSize: 14
+                          )),
+                      // can add more TextSpans here...
+                    ],
+                  ),
+                ),
+
+
+              ),
+
+//                                                        Text('', style: TextStyle(color: Colors.black,fontSize: 14),),
+
+              SizedBox(height: 10,),
+              Row(
+                mainAxisAlignment: MainAxisAlignment.end,
+                crossAxisAlignment: CrossAxisAlignment.end,
+                children: [
+                  FlatButton(
+
+                      onPressed: (){
+                        Navigator.of(context).pop();
+
+                      },
+                      child: Text('Dismiss', style: TextStyle(color: Colors.grey, fontSize: 14.0),)),
+
+                  FlatButton(
+
+                      onPressed: (){
+                        Navigator.of(context).pop();
+                        Navigator.of(context).pop();
+
+
+                      },
+                      child: Text('Exit Shop', style: TextStyle(color: Colors.redAccent, fontSize: 14.0),)),
+
+
+                ],
+              ),
+
+            ],
+          ),
+        ),
+      );
+
+      showDialog(context: context,
+          builder: (
+              BuildContext context) => errorDialog);
+
+      return true;
+    }
+    return false;
+  }
+  bool checkShopTime(String open, String close){
+
+
+
+
+
+    final currentTime = DateTime.now();
+
+
+    final startTime = DateTime(currentTime.year, currentTime.month, currentTime.day,int.parse(open.split(":")[0]) , int.parse(open.split(":")[1]));
+    final endTime = DateTime(currentTime.year, currentTime.month, currentTime.day,int.parse(close.split(":")[0]) , int.parse(close.split(":")[1]));
+
+
+
+    if(startTime.isBefore(endTime)) {
+      // print("day shop");
+
+      if (currentTime.isBefore(startTime) || currentTime.isAfter(endTime)) {
+
+
+        return false;
+      } else {
+        // if(currentTime.isBefore(startTime) && currentTime.isAfter(endTime)){
+        return true;
+
+
+      }
+    }else{
+
+      // print("night shop");
+
+      if (currentTime.isAfter(startTime) || currentTime.isBefore(endTime)) {
+
+        return true;
+      } else {
+        // if(currentTime.isBefore(startTime) && currentTime.isAfter(endTime)){
+
+
+        return false;
+
+
+      }
+    }
   }
 
   void setupessentials(){
@@ -289,12 +428,17 @@ class _ProductCatalogState extends State<ProductCatalog> {
 
   }
 
+  bool isShopClosed=false;
   bool checkTime(String open, String close){
+
+
+
+
+
 
     if(open==null||close==null){
       return true;
     }
-
 
     final currentTime = DateTime.now();
 
@@ -308,6 +452,10 @@ class _ProductCatalogState extends State<ProductCatalog> {
       // print("day shop");
 
       if (currentTime.isBefore(startTime) || currentTime.isAfter(endTime)) {
+
+        // showDialog(context: context,
+        //     builder: (
+        //         BuildContext context) => errorDialog);
         return false;
       } else {
         // if(currentTime.isBefore(startTime) && currentTime.isAfter(endTime)){
@@ -324,6 +472,9 @@ class _ProductCatalogState extends State<ProductCatalog> {
         return true;
       } else {
         // if(currentTime.isBefore(startTime) && currentTime.isAfter(endTime)){
+        // showDialog(context: context,
+        //     builder: (
+        //         BuildContext context) => errorDialog);
         return false;
 
 
@@ -353,6 +504,71 @@ class _ProductCatalogState extends State<ProductCatalog> {
 
 
   _onOnFocusNodeEvent() {
+
+  }
+  String checkopenclosesoon(String open, String close){
+
+    final currentTime = DateTime.now();
+
+
+    final startTime = DateTime(currentTime.year, currentTime.month, currentTime.day,int.parse(open.split(":")[0]) , int.parse(open.split(":")[1]));
+    final endTime = DateTime(currentTime.year, currentTime.month, currentTime.day,int.parse(close.split(":")[0]) , int.parse(close.split(":")[1]));
+
+
+    if(endTime.difference(currentTime).inMinutes.abs()<30){
+      //  print("Closing Soon");
+      print("day closing Difference"+(currentTime.difference(endTime).inMinutes).toString());
+
+      return "Closing Soon";
+
+    }else if(startTime.difference(currentTime).inMinutes.abs()<30){
+      //  print("Opening Soon");
+      print("day open Difference"+(currentTime.difference(startTime).inMinutes).toString());
+      return "Opening Soon";
+
+    }
+
+    return "null";
+
+    // if(startTime.isBefore(endTime)) {
+    //   // print("day shop");
+    //
+    //   if(endTime.difference(currentTime).inMinutes<30){
+    //     //  print("Closing Soon");
+    //       print("day closing Difference"+(currentTime.difference(endTime).inMinutes).toString());
+    //
+    //     return "Closing Soon";
+    //
+    //   }else if(startTime.difference(currentTime).inMinutes<30){
+    //     //  print("Opening Soon");
+    //       print("day open Difference"+(currentTime.difference(startTime).inMinutes).toString());
+    //     return "Opening Soon";
+    //
+    //   }
+    //
+    //   return "null";
+    // }else{
+    //
+    //   // print("night shop");
+    //  // print("Difference "+(currentTime.difference(endTime).inMinutes).toString());
+    //
+    //   if(endTime.difference(currentTime).inMinutes>-30){
+    //     //  print("Closing Soon");
+    //        print("night closing Difference "+(endTime.difference(currentTime).inMinutes).toString());
+    //
+    //     return "Closing Soon";
+    //
+    //   }else if(startTime.difference(currentTime).inMinutes<-30){
+    //     //  print("Opening Soon");
+    //        print("night open Difference"+(currentTime.difference(startTime).inMinutes).toString());
+    //     return "Opening Soon";
+    //
+    //   }
+    //
+    //   return "null";
+    // }
+
+
 
   }
 
@@ -467,7 +683,106 @@ class _ProductCatalogState extends State<ProductCatalog> {
                                     style: TextStyle(fontSize: 20, fontWeight: FontWeight.w300,color: Colors.white),
                                   ):SizedBox(),
 
+                                  SizedBox(height: 5,),
+                                  !checkShopTime(shop.openTime,
+                                      shop.closeTime) ?
+                                  Container(
+                                    decoration: BoxDecoration(
 
+                                        shape: BoxShape.rectangle,
+                                        borderRadius: BorderRadius
+                                            .all(
+                                            Radius.circular(4.0)),
+                                        color:
+                                        checkopenclosesoon(
+                                            shop.openTime,
+                                            shop.closeTime)
+                                            .contains("Opening") ?
+                                        Colors.green[700] : Colors
+                                            .redAccent[700]
+
+                                    ),
+                                    child: Padding(
+                                      padding: const EdgeInsets
+                                          .fromLTRB(20, 3, 20, 3),
+                                      child:
+                                      checkopenclosesoon(
+                                          shop.openTime,
+                                          shop.closeTime)
+                                          .contains("Opening") ?
+                                      Text(
+                                        "Opening Soon",
+                                        style: TextStyle(
+                                            fontSize: 20,
+                                            fontWeight: FontWeight
+                                                .w300,
+                                            color: Colors.white),
+                                      ) : Text(
+                                        "Closed",
+                                        style: TextStyle(
+                                            fontSize: 20,
+                                            fontWeight: FontWeight
+                                                .w300,
+                                            color: Colors.white),
+                                      ),
+                                    ),
+                                  ) :
+
+                                  shop.ShopStatus.contains(
+                                      "Closed") ?
+                                  Container(
+                                    decoration: BoxDecoration(
+
+                                        shape: BoxShape.rectangle,
+                                        borderRadius: BorderRadius
+                                            .all(
+                                            Radius.circular(4.0)),
+                                        color: Colors
+                                            .redAccent[700]
+
+                                    ),
+                                    child: Padding(
+                                      padding: const EdgeInsets
+                                          .fromLTRB(20, 3, 20, 3),
+                                      child: Text(
+                                        "Closed",
+                                        style: TextStyle(
+                                            fontSize: 20,
+                                            fontWeight: FontWeight
+                                                .w300,
+                                            color: Colors.white),
+                                      ),
+                                    ),
+                                  ) :
+                                  checkopenclosesoon(
+                                      shop.openTime,
+                                      shop.closeTime)
+                                      .contains("Closing") &&
+                                      shop.openTime !=
+                                          shop.closeTime ?
+                                  Container(
+                                    decoration: BoxDecoration(
+
+                                        shape: BoxShape.rectangle,
+                                        borderRadius: BorderRadius
+                                            .all(
+                                            Radius.circular(4.0)),
+                                        color: Colors.amber[900]
+
+                                    ),
+                                    child: Padding(
+                                      padding: const EdgeInsets
+                                          .fromLTRB(20, 3, 20, 3),
+                                      child: Text(
+                                        "Closing Soon",
+                                        style: TextStyle(
+                                            fontSize: 20,
+                                            fontWeight: FontWeight
+                                                .w300,
+                                            color: Colors.white),
+                                      ),
+                                    ),
+                                  ) : SizedBox()
                                 ],
                               ),
 
@@ -721,48 +1036,174 @@ class _ProductCatalogState extends State<ProductCatalog> {
                                               });
                                             });
                                           }else{
-                                            if(DataStream.cartShop.shopid==shop.shopid){
 
-                                              productsItemcount[index]++;
+                                            if(!shopClosedDialogue()){
+                                              if(DataStream.cartShop.shopid==shop.shopid){
 
-                                              FirebaseDatabase database = new FirebaseDatabase();
-                                              DatabaseReference _userRef = database
-                                                  .reference()
-                                              // .child('Cart').child(DataStream.UserId).child(products[index].cardid+shop.shopid);
-                                                  .child('Cart').child(DataStream.UserId).child("items").child(products[index].cardid+shop.shopid);
+                                                productsItemcount[index]++;
 
-                                              DatabaseReference shopref = database
-                                                  .reference()
-                                                  .child('Cart').child(DataStream.UserId).child("shop");
-                                              shopref.set(shop.toJson()).then((value) {
-                                                DataStream.cartShop=shop;
-                                              });
+                                                FirebaseDatabase database = new FirebaseDatabase();
+                                                DatabaseReference _userRef = database
+                                                    .reference()
+                                                // .child('Cart').child(DataStream.UserId).child(products[index].cardid+shop.shopid);
+                                                    .child('Cart').child(DataStream.UserId).child("items").child(products[index].cardid+shop.shopid);
 
-                                              _userRef.set(<dynamic, dynamic>{
-                                                'no_of_items': productsItemcount[index],
-                                                'cardid': products[index].cardid.toString(),
-                                                'cardname': products[index].cardname
-                                                    .toString(),
-                                                'cardimage': products[index].cardimage
-                                                    .toString(),
-                                                'cardprice': products[index].cardprice,
-                                                'unit': products[index].unit,
-                                                'shopcatagory': DataStream.ShopCatagory,
-                                                'itemcatagory': products[index].category,
-                                                'shopid': DataStream.ShopId,
-
-
-                                              }).then((value) {
-                                                setState(() {
-
+                                                DatabaseReference shopref = database
+                                                    .reference()
+                                                    .child('Cart').child(DataStream.UserId).child("shop");
+                                                shopref.set(shop.toJson()).then((value) {
+                                                  DataStream.cartShop=shop;
                                                 });
-                                              });
-                                            }else{
 
-                                              ToastUtils.showCustomToast(context, "Another Shop Selected",false);
+                                                _userRef.set(<dynamic, dynamic>{
+                                                  'no_of_items': productsItemcount[index],
+                                                  'cardid': products[index].cardid.toString(),
+                                                  'cardname': products[index].cardname
+                                                      .toString(),
+                                                  'cardimage': products[index].cardimage
+                                                      .toString(),
+                                                  'cardprice': products[index].cardprice,
+                                                  'unit': products[index].unit,
+                                                  'shopcatagory': DataStream.ShopCatagory,
+                                                  'itemcatagory': products[index].category,
+                                                  'shopid': DataStream.ShopId,
 
 
+                                                }).then((value) {
+                                                  setState(() {
+
+                                                  });
+                                                });
+                                              }else{
+
+                                                Dialog errorDialog = Dialog(
+                                                  shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12.0)), //this right here
+                                                  child: Container(
+                                                    height: 215.0,
+                                                    width: screenWidth(context),
+
+                                                    child: Column(
+                                                      mainAxisAlignment: MainAxisAlignment.center,
+                                                      children: <Widget>[
+                                                        SizedBox(height: 20,),
+
+                                                        Padding(
+                                                          padding:  EdgeInsets.all(1.0),
+                                                          child: Text('Another Shop Selected', style: TextStyle(color: Colors.red,fontSize: 18,fontWeight: FontWeight.w500),),
+                                                        ),
+                                                        // SizedBox(height: 20,),
+
+
+                                                        Padding(
+                                                          padding:  EdgeInsets.all(20.0),
+                                                          child:
+                                                          Text.rich(
+                                                            TextSpan(
+
+                                                              children: <TextSpan>[
+                                                                TextSpan(
+                                                                    text: 'You still have items form ',
+                                                                    style: TextStyle(
+                                                                        color: Colors.black,fontSize: 14                                                                  )),
+                                                                TextSpan(
+                                                                    text: '${DataStream.cartShop.shopname.trim()}',
+                                                                    style: TextStyle(
+                                                                      decoration: TextDecoration.underline,
+                                                                      color: Colors.black,fontSize: 14,fontWeight: FontWeight.w600,
+                                                                    )),
+                                                                TextSpan(
+                                                                    text: ' in your cart. The previous items from your cart will be cleared. Are you sure you want to clear your Cart ?',
+                                                                    style: TextStyle(
+                                                                        color: Colors.black,fontSize: 14
+                                                                    )),
+                                                                // can add more TextSpans here...
+                                                              ],
+                                                            ),
+                                                          ),
+
+
+                                                        ),
+
+//                                                        Text('', style: TextStyle(color: Colors.black,fontSize: 14),),
+
+                                                        SizedBox(height: 10,),
+                                                        Row(
+                                                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                                                          children: [
+                                                            Row(
+                                                              mainAxisAlignment: MainAxisAlignment.start,
+                                                              crossAxisAlignment: CrossAxisAlignment.start,
+                                                              children: [
+                                                                FlatButton(
+
+                                                                    onPressed: (){
+                                                                      Navigator.of(context).pop();
+
+                                                                    },
+                                                                    child: Text('Dismiss', style: TextStyle(color: Colors.grey, fontSize: 14.0),)),
+
+                                                                FlatButton(
+
+                                                                    onPressed: (){
+                                                                      Navigator.of(context).pushReplacement(
+                                                                          MaterialPageRoute(
+                                                                              builder: (context) => CartScreen()));
+
+                                                                    },
+                                                                    child: Text('View Cart', style: TextStyle(color: Colors.green, fontSize: 14.0),)),
+
+
+                                                              ],
+                                                            ),
+                                                            FlatButton(
+                                                                onPressed: (){
+
+
+                                                                  FirebaseDatabase database = new FirebaseDatabase();
+
+                                                                  DatabaseReference del = database.reference();
+
+
+                                                                  del = database.reference()
+                                                                      .child("Cart").child(DataStream.UserId);
+                                                                  del.remove().then((value) {
+                                                                    carts.clear();
+                                                                    DataStream.cartShop=null;
+                                                                    Navigator.of(context).pop();
+
+
+                                                                  });
+
+
+
+
+                                                                },
+                                                                child: Text('Clear Cart', style: TextStyle(color: Colors.redAccent, fontSize: 14.0),)),
+                                                          ],
+                                                        )
+
+                                                      ],
+                                                    ),
+                                                  ),
+                                                );
+
+
+
+                                                showDialog(context: context,
+                                                    builder: (
+                                                        BuildContext context) => errorDialog);
+
+
+
+
+                                                ToastUtils.showCustomToast(context, "Another Shop Selected",false);
+
+
+                                              }
                                             }
+
+
+
                                           }
 
 
