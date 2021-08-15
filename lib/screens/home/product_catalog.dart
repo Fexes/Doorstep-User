@@ -120,7 +120,6 @@ class _ProductCatalogState extends State<ProductCatalog> {
   List<Cart> carts;
   int cartsize=0;
 
-  FirebaseUser user=null;
 
   String img;
 
@@ -314,24 +313,18 @@ class _ProductCatalogState extends State<ProductCatalog> {
 
 
 
-    FirebaseAuth.instance.currentUser().then((firebaseUser){
-      user=firebaseUser;
-
-    });
-
     //  filterProductCatagory("fruit");
 
 
-    FirebaseAuth.instance.currentUser().then((firebaseUser){
 
-      user=firebaseUser;
 
-      if(firebaseUser != null) {
+
+      if(DataStream.user != null) {
 
         try {
           final FirebaseDatabase database = FirebaseDatabase.instance;
           volunteerRef =
-              database.reference().child("Cart").child(firebaseUser.uid).child("items");
+              database.reference().child("Cart").child(DataStream.user.uid).child("items");
 
           volunteerRef.onChildAdded.listen(_onEntryAddedcart);
           volunteerRef.onChildChanged.listen(_onEntryChangedcart);
@@ -343,7 +336,7 @@ class _ProductCatalogState extends State<ProductCatalog> {
       }
 
 
-    });
+
   }
 
 
@@ -801,7 +794,7 @@ class _ProductCatalogState extends State<ProductCatalog> {
 
                     //    SizedBox(height: 90,),
                     Padding(
-                      padding: const EdgeInsets.fromLTRB(20, 15, 20, 15),
+                      padding: const EdgeInsets.fromLTRB(20, 35, 20, 10),
                       child: Container(
 
                         child: Padding(
@@ -989,7 +982,7 @@ class _ProductCatalogState extends State<ProductCatalog> {
                                     onTap: (){
 
 
-                                      if(user==null){
+                                      if(DataStream.user==null){
                                         ToastUtils.showCustomToast(context, "Long Press to View Details", null);
 
                                       }else{
@@ -1509,7 +1502,7 @@ class _ProductCatalogState extends State<ProductCatalog> {
                     //   Navigator.push( context, MaterialPageRoute( builder: (BuildContext context) => CartScreen(),),);
 
 
-                    if(user!=null) {
+                    if(DataStream.user!=null) {
                       Navigator.of(context).pushReplacement(
                           MaterialPageRoute(
                               builder: (context) => CartScreen()));
@@ -1523,9 +1516,9 @@ class _ProductCatalogState extends State<ProductCatalog> {
                   child: Row(
                     mainAxisAlignment: MainAxisAlignment.center,
                     children: [
-                      user!=null?Icon(Icons.shopping_cart,color: Colors.white,size: 20,):SizedBox(),
+                      DataStream.user!=null?Icon(Icons.shopping_cart,color: Colors.white,size: 20,):SizedBox(),
                       SizedBox(width: 10,),
-                      Text(user!=null?'My Cart':'Sign In',style: TextStyle(color: Colors.white,fontWeight: FontWeight.w500, fontSize: 16),),
+                      Text(DataStream.user!=null?'My Cart':'Sign In',style: TextStyle(color: Colors.white,fontWeight: FontWeight.w500, fontSize: 16),),
 
 
 

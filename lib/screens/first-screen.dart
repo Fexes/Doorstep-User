@@ -93,7 +93,10 @@ class SplashScreenState extends State<SplashScreen> with TickerProviderStateMixi
     _configureFirebaseListeners();
    // _controller = AnimationController();
     _controller = AnimationController(vsync: this);
+    FirebaseAuth.instance.currentUser().then((firebaseUser){
+      DataStream.user=firebaseUser;
 
+    });
   }
 
   AnimationController _controller;
